@@ -52,121 +52,62 @@ const HorseshoeIcon = ({ isCompleted }: { isCompleted: boolean }) => (
 
 const GallopingHorseIcon = () => (
   <svg
-    width="80"
-    height="70"
-    viewBox="0 0 100 100"
+    width="90"
+    height="80"
+    viewBox="0 0 120 100"
     className="drop-shadow-xl"
-    style={{ animation: 'bounce 1s ease-in-out infinite' }}
   >
-    <g transform="translate(50, 50)">
-      {/* Flowing mane */}
-      <path
-        d="M-20,-15 Q-25,-18 -28,-15 Q-30,-20 -32,-18 Q-28,-22 -25,-20"
-        stroke="hsl(var(--primary))"
-        strokeWidth="2"
-        fill="none"
-        strokeLinecap="round"
-        opacity="0.7"
-      />
+    <g transform="translate(60, 50)" stroke="hsl(var(--primary))" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      {/* Flowing mane on tail */}
+      <path d="M 48,-8 Q 52,-6 54,-2 Q 56,2 58,8" strokeWidth="2.5" />
+      <path d="M 49,-6 Q 54,-2 56,4" strokeWidth="2" opacity="0.6" />
+      <path d="M 50,-4 Q 55,0 57,6" strokeWidth="1.5" opacity="0.4" />
+      
+      {/* Body - elegant curve */}
+      <ellipse cx="18" cy="-8" rx="18" ry="11" stroke="hsl(var(--primary))" strokeWidth="2.5" />
+      
+      {/* Neck - flowing line */}
+      <path d="M 0,-12 Q -8,-16 -18,-16" strokeWidth="3" />
       
       {/* Head - elegant profile */}
-      <path
-        d="M-25,-12 Q-28,-10 -28,-6 L-28,-2 Q-28,2 -25,3 L-20,3 Q-18,3 -18,0 L-18,-8 Q-18,-12 -22,-14 Z"
-        fill="hsl(var(--primary))"
-        stroke="hsl(var(--primary))"
-        strokeWidth="1.5"
-      />
+      <path d="M -18,-16 Q -24,-16 -26,-12 L -26,-4 Q -26,-2 -24,0" strokeWidth="2.5" />
       
-      {/* Ear pointed */}
-      <path
-        d="M-22,-14 L-21,-18 L-19,-14 Z"
-        fill="hsl(var(--primary))"
-      />
-      
-      {/* Eye */}
-      <circle cx="-23" cy="-8" r="1.5" fill="hsl(var(--background))" />
+      {/* Ear */}
+      <path d="M -20,-16 L -19,-20 L -17,-16" strokeWidth="2" />
       
       {/* Nostril */}
-      <circle cx="-26" cy="-2" r="0.8" fill="hsl(var(--background))" opacity="0.5" />
+      <circle cx="-25" cy="-2" r="1" fill="hsl(var(--primary))" />
       
-      {/* Elegant curved neck */}
-      <path
-        d="M-18,-10 Q-12,-14 -4,-16 Q4,-18 10,-16"
-        stroke="hsl(var(--primary))"
-        strokeWidth="6"
-        fill="none"
-        strokeLinecap="round"
-      />
+      {/* Eye */}
+      <circle cx="-22" cy="-10" r="1.5" fill="hsl(var(--primary))" />
       
-      {/* Body - dynamic shape */}
-      <ellipse
-        cx="15"
-        cy="-8"
-        rx="16"
-        ry="10"
-        fill="hsl(var(--primary))"
-      />
+      {/* Mane flowing back */}
+      <path d="M -16,-14 Q -18,-18 -20,-16" strokeWidth="1.5" opacity="0.7" />
+      <path d="M -12,-13 Q -14,-17 -16,-15" strokeWidth="1.5" opacity="0.7" />
+      <path d="M -8,-14 Q -10,-18 -12,-16" strokeWidth="1.5" opacity="0.7" />
       
-      {/* Front leg - extended forward (galloping) */}
-      <path
-        d="M5,0 Q3,8 5,16"
-        stroke="hsl(var(--primary))"
-        strokeWidth="4"
-        strokeLinecap="round"
-        fill="none"
-      />
+      {/* Front leg extended forward (galloping) */}
+      <path d="M 6,2 Q 4,12 6,22" strokeWidth="3" />
       
-      {/* Front leg - tucked under */}
-      <path
-        d="M10,0 Q11,4 10,8"
-        stroke="hsl(var(--primary))"
-        strokeWidth="4"
-        strokeLinecap="round"
-        fill="none"
-      />
+      {/* Front leg tucked */}
+      <path d="M 12,2 Q 13,8 12,14" strokeWidth="3" />
       
-      {/* Back leg - extended back (power) */}
-      <path
-        d="M20,0 Q24,6 28,12"
-        stroke="hsl(var(--primary))"
-        strokeWidth="4"
-        strokeLinecap="round"
-        fill="none"
-      />
+      {/* Back leg extended back (power) */}
+      <path d="M 28,2 Q 34,10 40,18" strokeWidth="3" />
       
-      {/* Back leg - tucked */}
-      <path
-        d="M24,0 Q25,2 24,6"
-        stroke="hsl(var(--primary))"
-        strokeWidth="4"
-        strokeLinecap="round"
-        fill="none"
-      />
+      {/* Back leg tucked */}
+      <path d="M 32,2 Q 33,6 32,12" strokeWidth="3" />
       
-      {/* Flowing tail - elegant curves */}
-      <path
-        d="M28,-10 Q34,-8 38,-4 Q40,0 42,6"
-        stroke="hsl(var(--primary))"
-        strokeWidth="2.5"
-        fill="none"
-        strokeLinecap="round"
-      />
-      <path
-        d="M28,-8 Q35,-4 38,2 Q40,6 42,10"
-        stroke="hsl(var(--primary))"
-        strokeWidth="2"
-        fill="none"
-        strokeLinecap="round"
-        opacity="0.5"
-      />
-      <path
-        d="M29,-6 Q36,-2 40,4"
-        stroke="hsl(var(--primary))"
-        strokeWidth="1.5"
-        fill="none"
-        strokeLinecap="round"
-        opacity="0.4"
-      />
+      {/* Hoof details - small curves at leg ends */}
+      <path d="M 5,22 L 7,22" strokeWidth="2" />
+      <path d="M 11,14 L 13,14" strokeWidth="2" />
+      <path d="M 39,18 L 41,18" strokeWidth="2" />
+      <path d="M 31,12 L 33,12" strokeWidth="2" />
+      
+      {/* Dust/movement lines */}
+      <path d="M 8,24 L 14,26" strokeWidth="1" opacity="0.4" />
+      <path d="M 12,26 L 18,28" strokeWidth="1" opacity="0.3" />
+      <path d="M 36,20 L 42,22" strokeWidth="1" opacity="0.4" />
     </g>
   </svg>
 );

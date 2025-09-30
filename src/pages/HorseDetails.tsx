@@ -543,12 +543,18 @@ const HorseDetails = () => {
   };
 
   const handleToggleGoalComplete = async (goalId: string, currentStatus: boolean) => {
+    console.log('Toggle goal complete:', { goalId, currentStatus });
+    
     try {
       const goal = goals.find((g) => g.id === goalId);
-      if (!goal || !horse) return;
+      if (!goal || !horse) {
+        console.error('Goal or horse not found', { goal, horse });
+        return;
+      }
 
       if (currentStatus) {
         // Mark as incomplete
+        console.log('Marking goal as incomplete');
         const { error } = await supabase
           .from('goals')
           .update({
@@ -558,16 +564,18 @@ const HorseDetails = () => {
           .eq('id', goalId);
 
         if (error) {
-          console.error('Error updating goal:', error);
+          console.error('Error updating goal to incomplete:', error);
           throw error;
         }
 
+        console.log('Goal marked as incomplete successfully');
         toast({
           title: "Uppdaterat",
           description: "Målet har markerats som ej klart",
         });
       } else {
         // Mark as completed
+        console.log('Marking goal as complete');
         const { error: goalError } = await supabase
           .from('goals')
           .update({
@@ -578,9 +586,11 @@ const HorseDetails = () => {
           .eq('id', goalId);
 
         if (goalError) {
-          console.error('Error updating goal:', goalError);
+          console.error('Error updating goal to complete:', goalError);
           throw goalError;
         }
+
+        console.log('Goal marked as complete successfully');
 
         // Create milestone (only if it doesn't exist)
         const { data: { user } } = await supabase.auth.getUser();
@@ -593,6 +603,7 @@ const HorseDetails = () => {
             .maybeSingle();
 
           if (!existingMilestone) {
+            console.log('Creating milestone for goal');
             const { error: milestoneError } = await supabase
               .from('milestones')
               .insert({
@@ -607,7 +618,11 @@ const HorseDetails = () => {
 
             if (milestoneError) {
               console.error('Error creating milestone:', milestoneError);
+            } else {
+              console.log('Milestone created successfully');
             }
+          } else {
+            console.log('Milestone already exists');
           }
         }
 
@@ -615,6 +630,19 @@ const HorseDetails = () => {
           title: "Grattis! 🎉",
           description: "Målet är klart och har lagts till som milstolpe",
         });
+      }
+      
+      // Force refresh the goals data
+      console.log('Refreshing goals data...');
+      const { data: goalsData } = await supabase
+        .from('goals')
+        .select('*')
+        .eq('horse_id', horse.id)
+        .order('created_at', { ascending: false });
+      
+      if (goalsData) {
+        console.log('Goals refreshed:', goalsData);
+        setGoals(goalsData);
       }
     } catch (error) {
       console.error('Error toggling goal completion:', error);
