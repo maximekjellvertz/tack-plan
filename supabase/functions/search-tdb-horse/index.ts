@@ -91,41 +91,103 @@ async function searchTDBHorses(email: string, password: string, horseName: strin
     const cookies = loginResponse.headers.get('set-cookie');
     console.log('TDB login successful');
 
-    // Search for horse in TDB
-    // Note: This endpoint might need adjustment based on actual TDB API
-    const searchResponse = await fetch(`https://tdb.ridsport.se/api/v1/horses/search?name=${encodeURIComponent(horseName)}`, {
+    // Try to fetch user's entries which contain horse information
+    const entriesResponse = await fetch('https://tdb.ridsport.se/api/v1/entries', {
       headers: {
         'Cookie': cookies || '',
         'Accept': 'application/json',
       },
     });
 
-    if (!searchResponse.ok) {
-      console.error('Horse search failed:', searchResponse.status);
-      return [];
+    if (!entriesResponse.ok) {
+      console.error('Failed to fetch entries:', entriesResponse.status);
+      // Try alternative endpoint - user profile/horses
+      const profileResponse = await fetch('https://tdb.ridsport.se/api/v1/user/horses', {
+        headers: {
+          'Cookie': cookies || '',
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!profileResponse.ok) {
+        console.error('Failed to fetch profile horses:', profileResponse.status);
+        return [];
+      }
+
+      const profileData = await profileResponse.json();
+      console.log('Profile data received:', JSON.stringify(profileData).substring(0, 300));
+      return parseHorsesFromProfile(profileData, horseName);
     }
 
-    const data = await searchResponse.json();
-    console.log('TDB search results:', JSON.stringify(data).substring(0, 200));
-
-    // Transform TDB data to our format
-    const horses = (data.horses || data.results || []).map((horse: any) => ({
-      name: horse.name || horse.horse_name,
-      breed: horse.breed || horse.race,
-      age: calculateAge(horse.birth_date || horse.born),
-      birthDate: horse.birth_date || horse.born,
-      color: horse.color || horse.colour,
-      microchip: horse.microchip || horse.chip_number,
-      registrationNumber: horse.registration_number || horse.reg_number,
-      gender: horse.gender || horse.sex,
-    }));
-
-    return horses;
+    const entriesData = await entriesResponse.json();
+    console.log('Entries data received:', JSON.stringify(entriesData).substring(0, 300));
+    
+    return parseHorsesFromEntries(entriesData, horseName);
 
   } catch (error) {
     console.error('Error searching TDB horses:', error);
     return [];
   }
+}
+
+function parseHorsesFromEntries(data: any, searchName: string): any[] {
+  const horses = new Map();
+  const lowerSearchName = searchName.toLowerCase();
+
+  // Extract horses from entries
+  const entries = data.entries || data.data || [];
+  
+  for (const entry of entries) {
+    const horse = entry.horse || entry.horse_data;
+    if (!horse || !horse.name) continue;
+    
+    const horseName = horse.name.toLowerCase();
+    if (!horseName.includes(lowerSearchName)) continue;
+    
+    // Use horse ID or name as unique key
+    const key = horse.id || horse.name;
+    if (horses.has(key)) continue;
+    
+    horses.set(key, {
+      name: horse.name,
+      breed: horse.breed || horse.race || 'Okänd',
+      age: calculateAge(horse.birth_date || horse.born),
+      birthDate: horse.birth_date || horse.born,
+      color: horse.color || horse.colour || 'Okänd',
+      microchip: horse.microchip || horse.chip_number,
+      registrationNumber: horse.registration_number || horse.reg_number || horse.fei_id,
+      gender: horse.gender || horse.sex,
+    });
+  }
+
+  return Array.from(horses.values());
+}
+
+function parseHorsesFromProfile(data: any, searchName: string): any[] {
+  const horses = [];
+  const lowerSearchName = searchName.toLowerCase();
+
+  const userHorses = data.horses || data.my_horses || [];
+  
+  for (const horse of userHorses) {
+    if (!horse.name) continue;
+    
+    const horseName = horse.name.toLowerCase();
+    if (!horseName.includes(lowerSearchName)) continue;
+    
+    horses.push({
+      name: horse.name,
+      breed: horse.breed || horse.race || 'Okänd',
+      age: calculateAge(horse.birth_date || horse.born),
+      birthDate: horse.birth_date || horse.born,
+      color: horse.color || horse.colour || 'Okänd',
+      microchip: horse.microchip || horse.chip_number,
+      registrationNumber: horse.registration_number || horse.reg_number || horse.fei_id,
+      gender: horse.gender || horse.sex,
+    });
+  }
+
+  return horses;
 }
 
 function calculateAge(birthDate: string): number {
