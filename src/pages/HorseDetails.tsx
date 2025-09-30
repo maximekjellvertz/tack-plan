@@ -143,33 +143,8 @@ const HorseDetails = () => {
   const upcomingCompetitions = competitions.filter(c => c.status === "upcoming");
   const completedCompetitions = competitions.filter(c => c.status === "completed");
 
-  // Mock training sessions - skulle hämtas från databas
-  const [trainingSessions, setTrainingSessions] = useState<TrainingSession[]>([
-    {
-      id: 1,
-      type: "Ridning",
-      date: "2025-09-29",
-      duration: "45 min",
-      intensity: "Medel",
-      notes: "Bra fokus idag, jobbade med övergångar",
-    },
-    {
-      id: 2,
-      type: "Hoppträning",
-      date: "2025-09-27",
-      duration: "1 timme",
-      intensity: "Hög",
-      notes: "Hoppade 100 cm, inga rivningar",
-    },
-    {
-      id: 3,
-      type: "Terrängriding",
-      date: "2025-09-25",
-      duration: "1.5 timme",
-      intensity: "Lätt",
-      notes: "Lugn tur i skogen, bra för återhämtning",
-    },
-  ]);
+  // Training sessions - empty by default, users add their own
+  const [trainingSessions, setTrainingSessions] = useState<TrainingSession[]>([]);
 
   const handleAddTrainingSession = (newSession: Omit<TrainingSession, 'id'>) => {
     const session: TrainingSession = {
