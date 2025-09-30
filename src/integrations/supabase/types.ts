@@ -133,37 +133,49 @@ export type Database = {
       horses: {
         Row: {
           age: number
+          birth_date: string | null
           breed: string
           color: string
           created_at: string
           discipline: string
+          gender: string | null
           id: string
           level: string
+          microchip: string | null
           name: string
+          registration_number: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           age: number
+          birth_date?: string | null
           breed: string
           color: string
           created_at?: string
           discipline: string
+          gender?: string | null
           id?: string
           level: string
+          microchip?: string | null
           name: string
+          registration_number?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           age?: number
+          birth_date?: string | null
           breed?: string
           color?: string
           created_at?: string
           discipline?: string
+          gender?: string | null
           id?: string
           level?: string
+          microchip?: string | null
           name?: string
+          registration_number?: string | null
           updated_at?: string
           user_id?: string
         }

@@ -10,6 +10,7 @@ import { AddTrainingSessionDialog } from "@/components/AddTrainingSessionDialog"
 import { AddHealthLogToHorseDialog } from "@/components/AddHealthLogToHorseDialog";
 import { HealthLogDetailsDialog } from "@/components/HealthLogDetailsDialog";
 import { UpdateHealthLogDialog } from "@/components/UpdateHealthLogDialog";
+import { EditHorseInfoDialog } from "@/components/EditHorseInfoDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
@@ -55,6 +56,10 @@ interface Horse {
   discipline: string;
   level: string;
   color: string;
+  registration_number?: string | null;
+  microchip?: string | null;
+  birth_date?: string | null;
+  gender?: string | null;
 }
 
 const HorseDetails = () => {
@@ -301,23 +306,42 @@ const HorseDetails = () => {
           <TabsContent value="overview" className="mt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card className="p-6">
-                <h3 className="text-xl font-semibold mb-4">Grundläggande information</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-semibold">Grundläggande information</h3>
+                  <EditHorseInfoDialog 
+                    horseId={horse.id}
+                    currentData={{
+                      registration_number: horse.registration_number,
+                      microchip: horse.microchip,
+                      birth_date: horse.birth_date,
+                      gender: horse.gender,
+                    }}
+                    onUpdate={async () => {
+                      const { data } = await supabase
+                        .from('horses')
+                        .select('*')
+                        .eq('id', id)
+                        .maybeSingle();
+                      if (data) setHorse(data);
+                    }}
+                  />
+                </div>
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Registreringsnummer:</span>
-                    <span className="font-medium">SE-{horse.id}2345</span>
+                    <span className="font-medium">{horse.registration_number || "Ej angivet"}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Mikrochip:</span>
-                    <span className="font-medium">752098{horse.id}00123</span>
+                    <span className="font-medium">{horse.microchip || "Ej angivet"}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Födelsedatum:</span>
-                    <span className="font-medium">2017-04-15</span>
+                    <span className="font-medium">{horse.birth_date || "Ej angivet"}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Kön:</span>
-                    <span className="font-medium">Valack</span>
+                    <span className="font-medium">{horse.gender || "Ej angivet"}</span>
                   </div>
                 </div>
               </Card>
