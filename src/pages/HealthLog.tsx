@@ -130,6 +130,30 @@ const HealthLog = () => {
     }
   };
 
+  const handleDeleteLog = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("health_logs")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      await fetchHealthLogs();
+      toast({
+        title: "Raderat",
+        description: "Hälsologg har raderats",
+      });
+    } catch (error) {
+      console.error("Error deleting health log:", error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte radera hälsologg",
+        variant: "destructive",
+      });
+    }
+  };
+
   const ongoingCount = healthLogs.filter(log => log.status === "Pågående").length;
   const completedCount = healthLogs.filter(log => log.status === "Klar").length;
   const attentionCount = healthLogs.filter(log => log.status === "Uppmärksamhet").length;
@@ -252,7 +276,7 @@ const HealthLog = () => {
                     </div>
                   </div>
                   <div className="flex flex-col gap-2 md:w-40">
-                    <HealthLogDetailsDialog log={log} />
+                    <HealthLogDetailsDialog log={log} onDelete={handleDeleteLog} />
                     {log.status === "Pågående" && (
                       <UpdateHealthLogDialog 
                         log={log} 

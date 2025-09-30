@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, AlertCircle, CheckCircle, Clock, Image as ImageIcon } from "lucide-react";
+import { Calendar, AlertCircle, CheckCircle, Clock, Image as ImageIcon, Trash2 } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 interface HealthLog {
   id: string;
@@ -18,6 +19,7 @@ interface HealthLog {
 
 interface HealthLogDetailsDialogProps {
   log: HealthLog;
+  onDelete?: (id: string) => void;
 }
 
 const getSeverityColor = (severity: string) => {
@@ -46,10 +48,17 @@ const getStatusIcon = (status: string) => {
   }
 };
 
-export const HealthLogDetailsDialog = ({ log }: HealthLogDetailsDialogProps) => {
+export const HealthLogDetailsDialog = ({ log, onDelete }: HealthLogDetailsDialogProps) => {
   const [open, setOpen] = useState(false);
   
   const images = Array.isArray(log.images) ? log.images : [];
+
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete(log.id);
+      setOpen(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -126,6 +135,34 @@ export const HealthLogDetailsDialog = ({ log }: HealthLogDetailsDialogProps) => 
                   />
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Delete button */}
+          {onDelete && (
+            <div className="pt-4 border-t">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" className="w-full">
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Radera hälsologg
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Är du säker?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Detta kommer permanent radera hälsologgen. Detta kan inte ångras.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                      Radera
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           )}
         </div>
