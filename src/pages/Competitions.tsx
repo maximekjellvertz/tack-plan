@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Trophy, Search, Filter } from "lucide-react";
 import { useState } from "react";
+import { CompetitionDetailsDialog } from "@/components/CompetitionDetailsDialog";
+import { useToast } from "@/hooks/use-toast";
 
 const competitions = [
   {
@@ -60,6 +62,14 @@ const competitions = [
 
 const Competitions = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const { toast } = useToast();
+
+  const handleAddToCalendar = (compName: string) => {
+    toast({
+      title: "Tillagd i kalender!",
+      description: `${compName} har lagts till i din kalender.`,
+    });
+  };
 
   const filteredCompetitions = competitions.filter((comp) =>
     comp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -132,12 +142,13 @@ const Competitions = () => {
                   </div>
                 </div>
                 <div className="flex flex-col gap-2 md:w-48">
-                  <Button className="bg-primary hover:bg-primary/90">
+                  <Button 
+                    className="bg-primary hover:bg-primary/90"
+                    onClick={() => handleAddToCalendar(comp.name)}
+                  >
                     Lägg till i kalender
                   </Button>
-                  <Button variant="outline">
-                    Mer information
-                  </Button>
+                  <CompetitionDetailsDialog competition={comp} />
                 </div>
               </div>
             </Card>
