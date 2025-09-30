@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Upload, X } from "lucide-react";
 import { toast } from "sonner";
+import { addTreatmentReminders } from "@/pages/Reminders";
 
 interface AddHealthLogToHorseDialogProps {
   horseName: string;
@@ -29,6 +30,7 @@ export const AddHealthLogToHorseDialog = ({ horseName, onAdd }: AddHealthLogToHo
     severity: "",
     treatment: "",
     notes: "",
+    treatmentDays: "",
   });
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,6 +71,18 @@ export const AddHealthLogToHorseDialog = ({ horseName, onAdd }: AddHealthLogToHo
       images: images.length > 0 ? images : undefined,
     });
     
+    // Create reminders if treatment days specified
+    if (formData.treatmentDays && parseInt(formData.treatmentDays) > 0) {
+      const days = parseInt(formData.treatmentDays);
+      const today = new Date().toISOString().split('T')[0];
+      addTreatmentReminders(
+        horseName,
+        formData.treatment || formData.event,
+        today,
+        days
+      );
+    }
+    
     toast.success("Hälsologg sparad!", {
       description: `${formData.event} för ${horseName} har dokumenterats`,
     });
@@ -78,6 +92,7 @@ export const AddHealthLogToHorseDialog = ({ horseName, onAdd }: AddHealthLogToHo
       severity: "",
       treatment: "",
       notes: "",
+      treatmentDays: "",
     });
     setImages([]);
     setOpen(false);
@@ -130,10 +145,26 @@ export const AddHealthLogToHorseDialog = ({ horseName, onAdd }: AddHealthLogToHo
             <Label htmlFor="treatment">Behandling</Label>
             <Input
               id="treatment"
-              placeholder="T.ex. Salva 2x/dag, Antibiotika..."
+              placeholder="T.ex. Salva 2x/dag, Antibiotika, Kortison..."
               value={formData.treatment}
               onChange={(e) => setFormData({ ...formData, treatment: e.target.value })}
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="treatmentDays">Antal dagar behandling (valfritt)</Label>
+            <Input
+              id="treatmentDays"
+              type="number"
+              min="1"
+              max="365"
+              placeholder="T.ex. 6 för 6 dagars behandling"
+              value={formData.treatmentDays}
+              onChange={(e) => setFormData({ ...formData, treatmentDays: e.target.value })}
+            />
+            <p className="text-xs text-muted-foreground">
+              Skapa automatiska dagliga påminnelser för behandlingen
+            </p>
           </div>
 
           <div className="space-y-2">

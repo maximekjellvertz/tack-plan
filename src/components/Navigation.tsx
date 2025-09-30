@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Heart, Calendar, FileText, Home } from "lucide-react";
+import { Heart, Calendar, FileText, Home, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -7,6 +7,7 @@ const navItems = [
   { name: "Hästar", path: "/horses", icon: Heart },
   { name: "Tävlingar", path: "/competitions", icon: Calendar },
   { name: "Hälsologg", path: "/health-log", icon: FileText },
+  { name: "Påminnelser", path: "/reminders", icon: Bell },
 ];
 
 const Navigation = () => {
