@@ -52,81 +52,102 @@ const HorseshoeIcon = ({ isCompleted }: { isCompleted: boolean }) => (
 
 const GallopingHorseIcon = () => (
   <svg
-    width="60"
+    width="70"
     height="60"
-    viewBox="0 0 60 60"
-    className="animate-bounce"
+    viewBox="0 0 70 60"
+    className="animate-bounce drop-shadow-lg"
   >
-    <g transform="translate(30, 30)">
-      {/* Horse head */}
-      <ellipse
-        cx="-8"
-        cy="-10"
-        rx="6"
-        ry="8"
+    <g transform="translate(35, 30)">
+      {/* Head */}
+      <path
+        d="M-15,-8 Q-18,-5 -18,-2 L-18,2 Q-18,4 -16,4 L-12,4 Q-10,4 -10,2 L-10,-2 Q-10,-5 -12,-8 Z"
         fill="hsl(var(--primary))"
-        className="drop-shadow-lg"
+        stroke="hsl(var(--primary))"
+        strokeWidth="1"
       />
       {/* Ear */}
       <path
-        d="M-10,-16 L-8,-20 L-6,-16 Z"
+        d="M-14,-8 L-13,-12 L-11,-8 Z"
         fill="hsl(var(--primary))"
       />
       {/* Eye */}
-      <circle
-        cx="-6"
-        cy="-12"
-        r="1.5"
-        fill="hsl(var(--primary-foreground))"
-      />
-      {/* Neck */}
+      <circle cx="-13" cy="-4" r="1" fill="hsl(var(--background))" />
+      
+      {/* Neck curved */}
       <path
-        d="M-2,-10 Q0,-8 0,-4 L0,4 Q0,6 2,6 L8,6 Q10,6 10,4 L10,-2 Q10,-6 8,-8 L2,-10 Z"
-        fill="hsl(var(--primary))"
+        d="M-10,-6 Q-8,-8 -4,-10 Q0,-11 2,-10"
+        stroke="hsl(var(--primary))"
+        strokeWidth="4"
+        fill="none"
+        strokeLinecap="round"
       />
+      
+      {/* Mane flowing */}
+      <path
+        d="M-8,-8 Q-10,-12 -12,-10 M-6,-9 Q-8,-13 -10,-11 M-4,-10 Q-6,-14 -8,-12"
+        stroke="hsl(var(--primary))"
+        strokeWidth="1.5"
+        fill="none"
+        strokeLinecap="round"
+        opacity="0.8"
+      />
+      
       {/* Body */}
       <ellipse
         cx="8"
-        cy="2"
-        rx="10"
-        ry="8"
+        cy="-4"
+        rx="12"
+        ry="7"
         fill="hsl(var(--primary))"
       />
-      {/* Front leg (raised) */}
-      <line
-        x1="2"
-        y1="8"
-        x2="0"
-        y2="4"
-        stroke="hsl(var(--primary))"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-      {/* Back leg (extended) */}
-      <line
-        x1="14"
-        y1="8"
-        x2="18"
-        y2="14"
-        stroke="hsl(var(--primary))"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-      {/* Tail */}
+      
+      {/* Front leg raised */}
       <path
-        d="M16,0 Q20,2 22,6"
+        d="M2,2 L0,8"
+        stroke="hsl(var(--primary))"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      
+      {/* Front leg extended */}
+      <path
+        d="M6,2 L10,10"
+        stroke="hsl(var(--primary))"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      
+      {/* Back leg extended back */}
+      <path
+        d="M12,2 L18,8"
+        stroke="hsl(var(--primary))"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      
+      {/* Back leg raised */}
+      <path
+        d="M16,2 L16,6"
+        stroke="hsl(var(--primary))"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      
+      {/* Tail flowing */}
+      <path
+        d="M18,-6 Q22,-4 24,-2 Q26,0 28,3"
         stroke="hsl(var(--primary))"
         strokeWidth="2"
         fill="none"
         strokeLinecap="round"
       />
-      {/* Mane */}
       <path
-        d="M-4,-14 Q-2,-16 0,-14 Q2,-16 4,-12"
+        d="M18,-5 Q23,-2 26,2"
         stroke="hsl(var(--primary))"
-        strokeWidth="2"
+        strokeWidth="1.5"
         fill="none"
         strokeLinecap="round"
+        opacity="0.6"
       />
     </g>
   </svg>
@@ -140,9 +161,10 @@ export const GoalJourneyPath = ({ goals, onGoalClick, onToggleComplete }: GoalJo
     return 0;
   });
 
-  // Calculate overall progress
-  const totalProgress = goals.length > 0
-    ? goals.reduce((sum, goal) => sum + goal.progress_percent, 0) / goals.length
+  // Calculate progress based on completed goals
+  const completedGoals = goals.filter(g => g.is_completed).length;
+  const horseProgress = goals.length > 0 
+    ? (completedGoals / goals.length) * 100 
     : 0;
 
   const getGoalTypeColor = (type: string) => {
@@ -188,7 +210,7 @@ export const GoalJourneyPath = ({ goals, onGoalClick, onToggleComplete }: GoalJo
           <div className="mb-6 text-center">
             <p className="text-sm text-muted-foreground mb-2">Din målresa</p>
             <div className="flex items-center justify-center gap-2">
-              <GallopingHorseIcon />
+              <span className="text-lg font-semibold">{completedGoals} / {goals.length} mål klara</span>
             </div>
           </div>
 
@@ -196,6 +218,25 @@ export const GoalJourneyPath = ({ goals, onGoalClick, onToggleComplete }: GoalJo
           <div className="relative">
             {/* Timeline line */}
             <div className="absolute top-1/2 left-12 right-12 h-1 bg-muted -translate-y-1/2" />
+            
+            {/* Progress line */}
+            <div 
+              className="absolute top-1/2 left-12 h-1 bg-primary -translate-y-1/2 transition-all duration-1000 ease-out"
+              style={{ 
+                width: `calc(${horseProgress}% * (100% - 96px) / 100)`,
+              }}
+            />
+
+            {/* Horse that moves along the path */}
+            <div 
+              className="absolute top-1/2 -translate-y-1/2 transition-all duration-1000 ease-out z-20"
+              style={{ 
+                left: `calc(48px + ${horseProgress}% * (100% - 96px) / 100)`,
+                transform: 'translate(-50%, -50%)',
+              }}
+            >
+              <GallopingHorseIcon />
+            </div>
 
             {/* Goals as checkpoints */}
             <div className="relative flex justify-between items-center py-8 px-4">

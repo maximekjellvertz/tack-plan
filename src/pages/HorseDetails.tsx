@@ -424,7 +424,11 @@ const HorseDetails = () => {
         .insert({
           user_id: user.id,
           horse_id: horse.id,
-          ...newGoal,
+          title: newGoal.title,
+          description: newGoal.description,
+          target_date: newGoal.target_date ? newGoal.target_date.toISOString().split('T')[0] : null,
+          goal_type: newGoal.goal_type,
+          auto_calculate: newGoal.auto_calculate,
         });
 
       if (error) throw error;
