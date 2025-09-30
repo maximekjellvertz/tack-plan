@@ -91,38 +91,45 @@ async function searchTDBHorses(email: string, password: string, horseName: strin
     const cookies = loginResponse.headers.get('set-cookie');
     console.log('TDB login successful');
 
-    // Try to fetch user's entries which contain horse information
-    const entriesResponse = await fetch('https://tdb.ridsport.se/api/v1/entries', {
-      headers: {
-        'Cookie': cookies || '',
-        'Accept': 'application/json',
-      },
-    });
+    // Try multiple possible endpoints to find horses
+    const possibleEndpoints = [
+      `/api/v1/search?q=${encodeURIComponent(horseName)}&type=horse`,
+      `/api/v1/horses?search=${encodeURIComponent(horseName)}`,
+      `/api/v1/horses?name=${encodeURIComponent(horseName)}`,
+      `/search?q=${encodeURIComponent(horseName)}`,
+      `/horses/search?name=${encodeURIComponent(horseName)}`,
+      '/api/v1/entries',
+      '/api/v1/user/horses',
+    ];
 
-    if (!entriesResponse.ok) {
-      console.error('Failed to fetch entries:', entriesResponse.status);
-      // Try alternative endpoint - user profile/horses
-      const profileResponse = await fetch('https://tdb.ridsport.se/api/v1/user/horses', {
-        headers: {
-          'Cookie': cookies || '',
-          'Accept': 'application/json',
-        },
-      });
+    for (const endpoint of possibleEndpoints) {
+      try {
+        console.log(`Trying endpoint: ${endpoint}`);
+        const response = await fetch(`https://tdb.ridsport.se${endpoint}`, {
+          headers: {
+            'Cookie': cookies || '',
+            'Accept': 'application/json',
+          },
+        });
 
-      if (!profileResponse.ok) {
-        console.error('Failed to fetch profile horses:', profileResponse.status);
-        return [];
+        if (response.ok) {
+          const data = await response.json();
+          console.log(`Success with ${endpoint}:`, JSON.stringify(data).substring(0, 300));
+          
+          // Try to parse the response
+          const horses = parseHorseData(data, horseName);
+          if (horses.length > 0) {
+            return horses;
+          }
+        } else {
+          console.log(`Failed ${endpoint}: ${response.status}`);
+        }
+      } catch (error) {
+        console.error(`Error with ${endpoint}:`, error);
       }
-
-      const profileData = await profileResponse.json();
-      console.log('Profile data received:', JSON.stringify(profileData).substring(0, 300));
-      return parseHorsesFromProfile(profileData, horseName);
     }
 
-    const entriesData = await entriesResponse.json();
-    console.log('Entries data received:', JSON.stringify(entriesData).substring(0, 300));
-    
-    return parseHorsesFromEntries(entriesData, horseName);
+    return [];
 
   } catch (error) {
     console.error('Error searching TDB horses:', error);
@@ -130,29 +137,41 @@ async function searchTDBHorses(email: string, password: string, horseName: strin
   }
 }
 
-function parseHorsesFromEntries(data: any, searchName: string): any[] {
+function parseHorseData(data: any, searchName: string): any[] {
   const horses = new Map();
   const lowerSearchName = searchName.toLowerCase();
 
-  // Extract horses from entries
-  const entries = data.entries || data.data || [];
+  // Try different possible data structures
+  let horseList = [];
   
-  for (const entry of entries) {
-    const horse = entry.horse || entry.horse_data;
+  if (data.horses) horseList = data.horses;
+  else if (data.results) horseList = data.results;
+  else if (data.data?.horses) horseList = data.data.horses;
+  else if (data.data) horseList = Array.isArray(data.data) ? data.data : [data.data];
+  else if (data.entries) {
+    // Extract horses from entries
+    for (const entry of data.entries) {
+      const horse = entry.horse || entry.horse_data;
+      if (horse) horseList.push(horse);
+    }
+  } else if (data.my_horses) horseList = data.my_horses;
+  else if (Array.isArray(data)) horseList = data;
+
+  for (const horse of horseList) {
     if (!horse || !horse.name) continue;
     
     const horseName = horse.name.toLowerCase();
     if (!horseName.includes(lowerSearchName)) continue;
     
-    // Use horse ID or name as unique key
+    // Use horse ID or name as unique key to avoid duplicates
     const key = horse.id || horse.name;
     if (horses.has(key)) continue;
     
     horses.set(key, {
-      name: horse.name,
+      name: horse.name || horse.horse_name,
       breed: horse.breed || horse.race || 'Okänd',
-      age: calculateAge(horse.birth_date || horse.born),
-      birthDate: horse.birth_date || horse.born,
+      age: calculateAge(horse.birth_date || horse.born || horse.birthDate),
+      birthDate: horse.birth_date || horse.born || horse.birthDate,
       color: horse.color || horse.colour || 'Okänd',
       microchip: horse.microchip || horse.chip_number,
       registrationNumber: horse.registration_number || horse.reg_number || horse.fei_id,
@@ -161,33 +180,6 @@ function parseHorsesFromEntries(data: any, searchName: string): any[] {
   }
 
   return Array.from(horses.values());
-}
-
-function parseHorsesFromProfile(data: any, searchName: string): any[] {
-  const horses = [];
-  const lowerSearchName = searchName.toLowerCase();
-
-  const userHorses = data.horses || data.my_horses || [];
-  
-  for (const horse of userHorses) {
-    if (!horse.name) continue;
-    
-    const horseName = horse.name.toLowerCase();
-    if (!horseName.includes(lowerSearchName)) continue;
-    
-    horses.push({
-      name: horse.name,
-      breed: horse.breed || horse.race || 'Okänd',
-      age: calculateAge(horse.birth_date || horse.born),
-      birthDate: horse.birth_date || horse.born,
-      color: horse.color || horse.colour || 'Okänd',
-      microchip: horse.microchip || horse.chip_number,
-      registrationNumber: horse.registration_number || horse.reg_number || horse.fei_id,
-      gender: horse.gender || horse.sex,
-    });
-  }
-
-  return horses;
 }
 
 function calculateAge(birthDate: string): number {
