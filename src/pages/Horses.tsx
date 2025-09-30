@@ -1,8 +1,9 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Plus } from "lucide-react";
+import { Heart } from "lucide-react";
 import { Link } from "react-router-dom";
+import { AddHorseDialog } from "@/components/AddHorseDialog";
 
 const horses = [
   {
@@ -45,10 +46,7 @@ const Horses = () => {
               Hantera dina hästars profiler och information
             </p>
           </div>
-          <Button className="bg-primary hover:bg-primary/90">
-            <Plus className="w-4 h-4 mr-2" />
-            Lägg till häst
-          </Button>
+          <AddHorseDialog />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
