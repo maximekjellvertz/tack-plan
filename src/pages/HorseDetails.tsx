@@ -534,7 +534,10 @@ const HorseDetails = () => {
           })
           .eq('id', goalId);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error updating goal:', error);
+          throw error;
+        }
 
         toast({
           title: "Uppdaterat",
@@ -551,28 +554,42 @@ const HorseDetails = () => {
           })
           .eq('id', goalId);
 
-        if (goalError) throw goalError;
+        if (goalError) {
+          console.error('Error updating goal:', goalError);
+          throw goalError;
+        }
 
-        // Create milestone
+        // Create milestone (only if it doesn't exist)
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        if (user) {
+          // Check if milestone already exists
+          const { data: existingMilestone } = await supabase
+            .from('milestones')
+            .select('id')
+            .eq('goal_id', goalId)
+            .maybeSingle();
 
-        const { error: milestoneError } = await supabase
-          .from('milestones')
-          .insert({
-            user_id: user.id,
-            horse_id: horse.id,
-            goal_id: goalId,
-            title: goal.title,
-            description: goal.description,
-            achieved_date: new Date().toISOString().split('T')[0],
-            milestone_type: 'goal_completed',
-          });
+          if (!existingMilestone) {
+            const { error: milestoneError } = await supabase
+              .from('milestones')
+              .insert({
+                user_id: user.id,
+                horse_id: horse.id,
+                goal_id: goalId,
+                title: goal.title,
+                description: goal.description,
+                achieved_date: new Date().toISOString().split('T')[0],
+                milestone_type: 'goal_completed',
+              });
 
-        if (milestoneError) throw milestoneError;
+            if (milestoneError) {
+              console.error('Error creating milestone:', milestoneError);
+            }
+          }
+        }
 
         toast({
-          title: "Grattis!",
+          title: "Grattis! 🎉",
           description: "Målet är klart och har lagts till som milstolpe",
         });
       }

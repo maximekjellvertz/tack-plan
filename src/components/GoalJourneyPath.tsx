@@ -52,102 +52,120 @@ const HorseshoeIcon = ({ isCompleted }: { isCompleted: boolean }) => (
 
 const GallopingHorseIcon = () => (
   <svg
-    width="70"
-    height="60"
-    viewBox="0 0 70 60"
-    className="animate-bounce drop-shadow-lg"
+    width="80"
+    height="70"
+    viewBox="0 0 100 100"
+    className="drop-shadow-xl"
+    style={{ animation: 'bounce 1s ease-in-out infinite' }}
   >
-    <g transform="translate(35, 30)">
-      {/* Head */}
+    <g transform="translate(50, 50)">
+      {/* Flowing mane */}
       <path
-        d="M-15,-8 Q-18,-5 -18,-2 L-18,2 Q-18,4 -16,4 L-12,4 Q-10,4 -10,2 L-10,-2 Q-10,-5 -12,-8 Z"
-        fill="hsl(var(--primary))"
-        stroke="hsl(var(--primary))"
-        strokeWidth="1"
-      />
-      {/* Ear */}
-      <path
-        d="M-14,-8 L-13,-12 L-11,-8 Z"
-        fill="hsl(var(--primary))"
-      />
-      {/* Eye */}
-      <circle cx="-13" cy="-4" r="1" fill="hsl(var(--background))" />
-      
-      {/* Neck curved */}
-      <path
-        d="M-10,-6 Q-8,-8 -4,-10 Q0,-11 2,-10"
-        stroke="hsl(var(--primary))"
-        strokeWidth="4"
-        fill="none"
-        strokeLinecap="round"
-      />
-      
-      {/* Mane flowing */}
-      <path
-        d="M-8,-8 Q-10,-12 -12,-10 M-6,-9 Q-8,-13 -10,-11 M-4,-10 Q-6,-14 -8,-12"
-        stroke="hsl(var(--primary))"
-        strokeWidth="1.5"
-        fill="none"
-        strokeLinecap="round"
-        opacity="0.8"
-      />
-      
-      {/* Body */}
-      <ellipse
-        cx="8"
-        cy="-4"
-        rx="12"
-        ry="7"
-        fill="hsl(var(--primary))"
-      />
-      
-      {/* Front leg raised */}
-      <path
-        d="M2,2 L0,8"
-        stroke="hsl(var(--primary))"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-      
-      {/* Front leg extended */}
-      <path
-        d="M6,2 L10,10"
-        stroke="hsl(var(--primary))"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-      
-      {/* Back leg extended back */}
-      <path
-        d="M12,2 L18,8"
-        stroke="hsl(var(--primary))"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-      
-      {/* Back leg raised */}
-      <path
-        d="M16,2 L16,6"
-        stroke="hsl(var(--primary))"
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-      
-      {/* Tail flowing */}
-      <path
-        d="M18,-6 Q22,-4 24,-2 Q26,0 28,3"
+        d="M-20,-15 Q-25,-18 -28,-15 Q-30,-20 -32,-18 Q-28,-22 -25,-20"
         stroke="hsl(var(--primary))"
         strokeWidth="2"
         fill="none"
         strokeLinecap="round"
+        opacity="0.7"
+      />
+      
+      {/* Head - elegant profile */}
+      <path
+        d="M-25,-12 Q-28,-10 -28,-6 L-28,-2 Q-28,2 -25,3 L-20,3 Q-18,3 -18,0 L-18,-8 Q-18,-12 -22,-14 Z"
+        fill="hsl(var(--primary))"
+        stroke="hsl(var(--primary))"
+        strokeWidth="1.5"
+      />
+      
+      {/* Ear pointed */}
+      <path
+        d="M-22,-14 L-21,-18 L-19,-14 Z"
+        fill="hsl(var(--primary))"
+      />
+      
+      {/* Eye */}
+      <circle cx="-23" cy="-8" r="1.5" fill="hsl(var(--background))" />
+      
+      {/* Nostril */}
+      <circle cx="-26" cy="-2" r="0.8" fill="hsl(var(--background))" opacity="0.5" />
+      
+      {/* Elegant curved neck */}
+      <path
+        d="M-18,-10 Q-12,-14 -4,-16 Q4,-18 10,-16"
+        stroke="hsl(var(--primary))"
+        strokeWidth="6"
+        fill="none"
+        strokeLinecap="round"
+      />
+      
+      {/* Body - dynamic shape */}
+      <ellipse
+        cx="15"
+        cy="-8"
+        rx="16"
+        ry="10"
+        fill="hsl(var(--primary))"
+      />
+      
+      {/* Front leg - extended forward (galloping) */}
+      <path
+        d="M5,0 Q3,8 5,16"
+        stroke="hsl(var(--primary))"
+        strokeWidth="4"
+        strokeLinecap="round"
+        fill="none"
+      />
+      
+      {/* Front leg - tucked under */}
+      <path
+        d="M10,0 Q11,4 10,8"
+        stroke="hsl(var(--primary))"
+        strokeWidth="4"
+        strokeLinecap="round"
+        fill="none"
+      />
+      
+      {/* Back leg - extended back (power) */}
+      <path
+        d="M20,0 Q24,6 28,12"
+        stroke="hsl(var(--primary))"
+        strokeWidth="4"
+        strokeLinecap="round"
+        fill="none"
+      />
+      
+      {/* Back leg - tucked */}
+      <path
+        d="M24,0 Q25,2 24,6"
+        stroke="hsl(var(--primary))"
+        strokeWidth="4"
+        strokeLinecap="round"
+        fill="none"
+      />
+      
+      {/* Flowing tail - elegant curves */}
+      <path
+        d="M28,-10 Q34,-8 38,-4 Q40,0 42,6"
+        stroke="hsl(var(--primary))"
+        strokeWidth="2.5"
+        fill="none"
+        strokeLinecap="round"
       />
       <path
-        d="M18,-5 Q23,-2 26,2"
+        d="M28,-8 Q35,-4 38,2 Q40,6 42,10"
+        stroke="hsl(var(--primary))"
+        strokeWidth="2"
+        fill="none"
+        strokeLinecap="round"
+        opacity="0.5"
+      />
+      <path
+        d="M29,-6 Q36,-2 40,4"
         stroke="hsl(var(--primary))"
         strokeWidth="1.5"
         fill="none"
         strokeLinecap="round"
-        opacity="0.6"
+        opacity="0.4"
       />
     </g>
   </svg>
