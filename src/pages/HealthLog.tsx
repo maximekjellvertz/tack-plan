@@ -1,7 +1,8 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Plus, AlertCircle, CheckCircle, Clock } from "lucide-react";
+import { FileText, AlertCircle, CheckCircle, Clock, Image as ImageIcon } from "lucide-react";
+import { AddHealthLogDialog } from "@/components/AddHealthLogDialog";
 
 const healthLogs = [
   {
@@ -13,6 +14,7 @@ const healthLogs = [
     status: "Pågående",
     treatment: "Salva 2x/dag",
     notes: "Märkte vid borstning, lätt rodnad",
+    images: ["https://images.unsplash.com/photo-1551415923-a2297c7fda79?w=400", "https://images.unsplash.com/photo-1534067783941-51c9c23ecefd?w=400"],
   },
   {
     id: 2,
@@ -83,10 +85,7 @@ const HealthLog = () => {
               Dokumentera och följ upp dina hästars hälsa
             </p>
           </div>
-          <Button className="bg-primary hover:bg-primary/90">
-            <Plus className="w-4 h-4 mr-2" />
-            Ny händelse
-          </Button>
+          <AddHealthLogDialog />
         </div>
 
         {/* Statistics */}
@@ -153,6 +152,24 @@ const HealthLog = () => {
                       <p className="text-sm font-medium text-foreground mb-1">Anteckningar:</p>
                       <p className="text-sm text-muted-foreground">{log.notes}</p>
                     </div>
+                    {log.images && log.images.length > 0 && (
+                      <div>
+                        <p className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
+                          <ImageIcon className="w-4 h-4" />
+                          Bilder ({log.images.length})
+                        </p>
+                        <div className="grid grid-cols-3 gap-2">
+                          {log.images.map((img, imgIndex) => (
+                            <img
+                              key={imgIndex}
+                              src={img}
+                              alt={`${log.event} bild ${imgIndex + 1}`}
+                              className="w-full h-24 object-cover rounded-lg border border-border hover:scale-105 transition-transform cursor-pointer"
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="flex flex-col gap-2 md:w-40">
