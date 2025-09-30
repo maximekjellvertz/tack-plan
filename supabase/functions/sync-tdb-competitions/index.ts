@@ -163,24 +163,7 @@ async function scrapeTDBCompetitions(email: string, password: string) {
 
   } catch (error) {
     console.error('Error scraping TDB:', error);
-    // Return mock data for testing purposes
-    return [
-      {
-        tdb_id: 'TDB001',
-        name: 'Test Tävling från TDB',
-        date: '2025-11-15',
-        time: '10:00',
-        location: 'Testplats',
-        discipline: 'Hoppning',
-        status: 'upcoming',
-        classes: [{ name: 'Klass A', height: '120cm', time: '10:00', price: '400 kr' }],
-        organizer: 'Test Arrangör',
-        phone: '070-123456',
-        email: 'test@test.se',
-        website: 'https://test.se',
-        registration_deadline: '2025-11-10',
-        registration_status: 'registered',
-      }
-    ];
+    // Return empty array if TDB fetch fails - no mock data
+    return [];
   }
 }
