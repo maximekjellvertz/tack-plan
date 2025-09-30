@@ -136,26 +136,115 @@ const HorseDetails = () => {
     new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 
-  // Health logs will be empty initially - would be fetched from database in full implementation
+  // Fetch health logs from database
   const [healthLogs, setHealthLogs] = useState<HealthLog[]>([]);
+  const [loadingHealthLogs, setLoadingHealthLogs] = useState(true);
 
-  const handleAddHealthLog = (newLog: Omit<HealthLog, 'id' | 'created_at' | 'status' | 'horse_name'>) => {
-    if (!horse) return;
-    const log: HealthLog = {
-      ...newLog,
-      id: Date.now().toString(),
-      horse_name: horse.name,
-      created_at: new Date().toISOString(),
-      status: "Pågående",
-      images: newLog.images || null,
+  useEffect(() => {
+    const fetchHealthLogs = async () => {
+      if (!id) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('health_logs')
+          .select('*')
+          .eq('horse_id', id)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        
+        setHealthLogs(data || []);
+      } catch (error) {
+        console.error('Error fetching health logs:', error);
+      } finally {
+        setLoadingHealthLogs(false);
+      }
     };
-    setHealthLogs([log, ...healthLogs]);
+
+    if (horse) {
+      fetchHealthLogs();
+    }
+
+    // Set up realtime subscription for health logs
+    const channel = supabase
+      .channel('horse-health-logs')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'health_logs',
+          filter: `horse_id=eq.${id}`
+        },
+        () => {
+          fetchHealthLogs();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [id, horse]);
+
+  const handleAddHealthLog = async (newLog: Omit<HealthLog, 'id' | 'created_at' | 'status' | 'horse_name'>) => {
+    if (!horse) return;
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('health_logs')
+        .insert({
+          user_id: user.id,
+          horse_id: horse.id,
+          horse_name: horse.name,
+          event: newLog.event,
+          severity: newLog.severity,
+          treatment: newLog.treatment,
+          notes: newLog.notes,
+          images: newLog.images || [],
+          status: 'Pågående',
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Hälsologg tillagd!",
+        description: `Hälsologg för ${horse.name} har skapats`,
+      });
+    } catch (error) {
+      console.error('Error adding health log:', error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte lägga till hälsologg",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleUpdateHealthLog = (id: string, updates: Partial<HealthLog>) => {
-    setHealthLogs(healthLogs.map(log => 
-      log.id === id ? { ...log, ...updates } : log
-    ));
+  const handleUpdateHealthLog = async (id: string, updates: Partial<HealthLog>) => {
+    try {
+      const { error } = await supabase
+        .from('health_logs')
+        .update(updates)
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Hälsologg uppdaterad!",
+        description: "Hälsologgen har uppdaterats",
+      });
+    } catch (error) {
+      console.error('Error updating health log:', error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte uppdatera hälsologg",
+        variant: "destructive",
+      });
+    }
   };
 
   const getSeverityColor = (severity: string) => {
