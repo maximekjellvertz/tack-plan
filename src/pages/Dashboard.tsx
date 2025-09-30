@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Calendar, Heart, FileText, Bell } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -8,7 +9,14 @@ import heroImage from "@/assets/hero-horse.jpg";
 
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
-  const [competitions, setCompetitions] = useState<any[]>([]);
+  const [stats, setStats] = useState({
+    horses: 0,
+    competitions: 0,
+    healthLogs: 0,
+    reminders: 0,
+  });
+  const [recentHealthLogs, setRecentHealthLogs] = useState<any[]>([]);
+  const [upcomingCompetitions, setUpcomingCompetitions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -18,34 +26,52 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (user) {
-      fetchCompetitions();
+      fetchDashboardData();
     }
   }, [user]);
 
   const checkUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
       navigate("/auth");
       return;
     }
-    setUser(user);
+    setUser(session.user);
   };
 
-  const fetchCompetitions = async () => {
+  const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from("competitions")
-        .select("*")
-        .gte("date", new Date().toISOString().split("T")[0])
-        .order("date", { ascending: true })
-        .limit(3);
 
-      if (error) throw error;
+      // Fetch all data in parallel
+      const [horsesRes, competitionsRes, healthLogsRes, remindersRes, recentLogsRes] = await Promise.all([
+        supabase.from("horses").select("id", { count: "exact", head: true }),
+        supabase.from("competitions")
+          .select("*", { count: "exact" })
+          .gte("date", new Date().toISOString().split("T")[0])
+          .order("date", { ascending: true })
+          .limit(3),
+        supabase.from("health_logs").select("id", { count: "exact", head: true }),
+        supabase.from("reminders")
+          .select("id", { count: "exact", head: true })
+          .eq("completed", false),
+        supabase.from("health_logs")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(3),
+      ]);
 
-      setCompetitions(data || []);
+      setStats({
+        horses: horsesRes.count || 0,
+        competitions: competitionsRes.count || 0,
+        healthLogs: healthLogsRes.count || 0,
+        reminders: remindersRes.count || 0,
+      });
+
+      setUpcomingCompetitions(competitionsRes.data || []);
+      setRecentHealthLogs(recentLogsRes.data || []);
     } catch (error) {
-      console.error("Error fetching competitions:", error);
+      console.error("Error fetching dashboard data:", error);
     } finally {
       setLoading(false);
     }
@@ -69,25 +95,17 @@ const Dashboard = () => {
         </div>
         <div className="relative h-full flex items-center justify-center text-center px-4">
           <div className="max-w-3xl">
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
+            <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">
               Hoofprints
             </h1>
-            <p className="text-xl text-white/90 mb-8">
+            <p className="text-xl text-white/90 mb-8 drop-shadow-md">
               Every horse writes a story, we're here to keep it
             </p>
-            {user ? (
-              <Link to="/horses">
-                <Button size="lg" className="bg-primary hover:bg-primary/90">
-                  Gå till mina hästar
-                </Button>
-              </Link>
-            ) : (
-              <Link to="/auth">
-                <Button size="lg" className="bg-primary hover:bg-primary/90">
-                  Kom igång
-                </Button>
-              </Link>
-            )}
+            <Link to="/horses">
+              <Button size="lg" className="bg-primary hover:bg-primary/90">
+                Gå till mina hästar
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -97,25 +115,31 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-shadow">
             <Heart className="w-8 h-8 text-primary mb-3" />
-            <h3 className="text-2xl font-bold text-foreground">3</h3>
+            <h3 className="text-2xl font-bold text-foreground">
+              {loading ? "..." : stats.horses}
+            </h3>
             <p className="text-muted-foreground">Hästar</p>
           </Card>
           <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-shadow">
             <Calendar className="w-8 h-8 text-secondary mb-3" />
             <h3 className="text-2xl font-bold text-foreground">
-              {loading ? "..." : competitions.length}
+              {loading ? "..." : stats.competitions}
             </h3>
             <p className="text-muted-foreground">Kommande tävlingar</p>
           </Card>
           <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-shadow">
             <FileText className="w-8 h-8 text-accent mb-3" />
-            <h3 className="text-2xl font-bold text-foreground">12</h3>
+            <h3 className="text-2xl font-bold text-foreground">
+              {loading ? "..." : stats.healthLogs}
+            </h3>
             <p className="text-muted-foreground">Loggade händelser</p>
           </Card>
           <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-shadow">
             <Bell className="w-8 h-8 text-primary mb-3" />
-            <h3 className="text-2xl font-bold text-foreground">2</h3>
-            <p className="text-muted-foreground">Påminnelser</p>
+            <h3 className="text-2xl font-bold text-foreground">
+              {loading ? "..." : stats.reminders}
+            </h3>
+            <p className="text-muted-foreground">Aktiva påminnelser</p>
           </Card>
         </div>
       </section>
@@ -136,7 +160,7 @@ const Dashboard = () => {
                 <div className="p-4 bg-background rounded-lg border border-border text-center">
                   <p className="text-muted-foreground">Laddar tävlingar...</p>
                 </div>
-              ) : competitions.length === 0 ? (
+              ) : upcomingCompetitions.length === 0 ? (
                 <div className="p-4 bg-background rounded-lg border border-border text-center">
                   <p className="text-muted-foreground">Inga kommande tävlingar</p>
                   <Link to="/competitions">
@@ -146,7 +170,7 @@ const Dashboard = () => {
                   </Link>
                 </div>
               ) : (
-                competitions.map((comp) => (
+                upcomingCompetitions.map((comp) => (
                   <div key={comp.id} className="p-4 bg-background rounded-lg border border-border hover:border-primary transition-colors">
                     <div className="flex justify-between items-start">
                       <div>
@@ -170,24 +194,37 @@ const Dashboard = () => {
               </Link>
             </div>
             <div className="space-y-4">
-              {[
-                { horse: "Thunder", event: "Munsår", date: "2025-09-28", severity: "Lätt" },
-                { horse: "Storm", event: "Vaccination", date: "2025-09-25", severity: "Normal" },
-                { horse: "Luna", event: "Hovbesiktning", date: "2025-09-20", severity: "Normal" },
-              ].map((log, i) => (
-                <div key={i} className="p-4 bg-background rounded-lg border border-border hover:border-secondary transition-colors">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="font-semibold text-foreground">{log.horse}</p>
-                      <p className="text-sm text-muted-foreground">{log.event}</p>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-sm text-secondary font-medium">{log.date}</span>
-                      <p className="text-xs text-muted-foreground">{log.severity}</p>
+              {loading ? (
+                <div className="p-4 bg-background rounded-lg border border-border text-center">
+                  <p className="text-muted-foreground">Laddar loggar...</p>
+                </div>
+              ) : recentHealthLogs.length === 0 ? (
+                <div className="p-4 bg-background rounded-lg border border-border text-center">
+                  <p className="text-muted-foreground">Inga hälsologgar än</p>
+                  <Link to="/health-log">
+                    <Button variant="link" size="sm" className="mt-2">
+                      Skapa din första logg
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                recentHealthLogs.map((log) => (
+                  <div key={log.id} className="p-4 bg-background rounded-lg border border-border hover:border-secondary transition-colors">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-semibold text-foreground">{log.horse_name}</p>
+                        <p className="text-sm text-muted-foreground">{log.event}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-sm text-secondary font-medium">
+                          {new Date(log.created_at).toLocaleDateString('sv-SE')}
+                        </span>
+                        <p className="text-xs text-muted-foreground">{log.severity}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </Card>
         </div>
