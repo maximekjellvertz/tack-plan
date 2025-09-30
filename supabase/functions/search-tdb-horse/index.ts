@@ -71,7 +71,7 @@ serve(async (req) => {
 
 async function searchTDBHorses(email: string, password: string, horseName: string) {
   try {
-    // Login to TDB
+    // Login to TDB (same as sync-tdb-competitions)
     const loginResponse = await fetch('https://tdb.ridsport.se/session', {
       method: 'POST',
       headers: {
@@ -88,129 +88,67 @@ async function searchTDBHorses(email: string, password: string, horseName: strin
       throw new Error('Failed to login to TDB');
     }
 
-    // Get all cookies from the response
-    const setCookieHeaders = loginResponse.headers.get('set-cookie');
-    console.log('TDB login successful, cookies received');
+    const cookies = loginResponse.headers.get('set-cookie');
+    console.log('TDB login successful');
 
-    // Parse cookies properly
-    let cookieString = '';
-    if (setCookieHeaders) {
-      // Extract just the cookie values without attributes
-      const cookies = setCookieHeaders.split(',').map(cookie => {
-        const parts = cookie.trim().split(';');
-        return parts[0];
-      });
-      cookieString = cookies.join('; ');
-      console.log('Parsed cookies for requests');
+    // Fetch user's entries (same endpoint as competitions sync)
+    const entriesResponse = await fetch('https://tdb.ridsport.se/api/v1/entries', {
+      headers: {
+        'Cookie': cookies || '',
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!entriesResponse.ok) {
+      console.error('Failed to fetch entries:', entriesResponse.status);
+      return [];
     }
 
-    // Try the horses search endpoint (gave 401 before, meaning it exists but needs proper auth)
-    try {
-      console.log('Trying /horses/search endpoint with proper cookies');
-      const searchResponse = await fetch(
-        `https://tdb.ridsport.se/horses/search?name=${encodeURIComponent(horseName)}`,
-        {
-          headers: {
-            'Cookie': cookieString,
-            'Accept': 'application/json, text/html',
-            'User-Agent': 'Mozilla/5.0',
-          },
-        }
-      );
+    const data = await entriesResponse.json();
+    console.log('Entries data received:', JSON.stringify(data).substring(0, 300));
+    
+    // Extract horses from entries
+    const horses = new Map();
+    const lowerSearchName = horseName.toLowerCase();
+    const entries = data.entries || [];
 
-      console.log(`Search response status: ${searchResponse.status}`);
+    for (const entry of entries) {
+      // Extract horse data from entry
+      const horse = entry.horse || entry.horse_data || entry.horse_name;
+      if (!horse) continue;
       
-      if (searchResponse.ok) {
-        const contentType = searchResponse.headers.get('content-type');
-        console.log(`Response content-type: ${contentType}`);
-        
-        if (contentType?.includes('application/json')) {
-          const data = await searchResponse.json();
-          console.log('Search data received:', JSON.stringify(data).substring(0, 500));
-          const horses = parseHorseData(data, horseName);
-          if (horses.length > 0) {
-            return horses;
-          }
-        } else {
-          // HTML response - try to extract data
-          const html = await searchResponse.text();
-          console.log('HTML response received, length:', html.length);
-        }
-      }
-    } catch (error) {
-      console.error('Error with horses search:', error);
-    }
-
-    // Fallback: try to get user's entries
-    try {
-      console.log('Trying /api/v1/entries as fallback');
-      const entriesResponse = await fetch('https://tdb.ridsport.se/api/v1/entries', {
-        headers: {
-          'Cookie': cookieString,
-          'Accept': 'application/json',
-        },
+      // Handle both object and string formats
+      const horseName = typeof horse === 'string' ? horse : horse.name;
+      if (!horseName) continue;
+      
+      // Filter by search term
+      if (!horseName.toLowerCase().includes(lowerSearchName)) continue;
+      
+      // Use horse name as key to avoid duplicates
+      const key = horseName;
+      if (horses.has(key)) continue;
+      
+      // Build horse object
+      const horseData = typeof horse === 'object' ? horse : { name: horse };
+      
+      horses.set(key, {
+        name: horseName,
+        breed: horseData.breed || horseData.race || entry.breed || 'Okänd',
+        age: calculateAge(horseData.birth_date || horseData.born || entry.horse_birth_date),
+        birthDate: horseData.birth_date || horseData.born || entry.horse_birth_date,
+        color: horseData.color || horseData.colour || entry.horse_color || 'Okänd',
+        microchip: horseData.microchip || horseData.chip_number || entry.horse_microchip,
+        registrationNumber: horseData.registration_number || horseData.reg_number || entry.horse_reg_number,
+        gender: horseData.gender || horseData.sex || entry.horse_gender,
       });
-
-      if (entriesResponse.ok) {
-        const data = await entriesResponse.json();
-        console.log('Entries data received:', JSON.stringify(data).substring(0, 300));
-        return parseHorseData(data, horseName);
-      }
-    } catch (error) {
-      console.error('Error with entries:', error);
     }
 
-    return [];
+    return Array.from(horses.values());
 
   } catch (error) {
     console.error('Error searching TDB horses:', error);
     return [];
   }
-}
-
-function parseHorseData(data: any, searchName: string): any[] {
-  const horses = new Map();
-  const lowerSearchName = searchName.toLowerCase();
-
-  // Try different possible data structures
-  let horseList = [];
-  
-  if (data.horses) horseList = data.horses;
-  else if (data.results) horseList = data.results;
-  else if (data.data?.horses) horseList = data.data.horses;
-  else if (data.data) horseList = Array.isArray(data.data) ? data.data : [data.data];
-  else if (data.entries) {
-    // Extract horses from entries
-    for (const entry of data.entries) {
-      const horse = entry.horse || entry.horse_data;
-      if (horse) horseList.push(horse);
-    }
-  } else if (data.my_horses) horseList = data.my_horses;
-  else if (Array.isArray(data)) horseList = data;
-
-  for (const horse of horseList) {
-    if (!horse || !horse.name) continue;
-    
-    const horseName = horse.name.toLowerCase();
-    if (!horseName.includes(lowerSearchName)) continue;
-    
-    // Use horse ID or name as unique key to avoid duplicates
-    const key = horse.id || horse.name;
-    if (horses.has(key)) continue;
-    
-    horses.set(key, {
-      name: horse.name || horse.horse_name,
-      breed: horse.breed || horse.race || 'Okänd',
-      age: calculateAge(horse.birth_date || horse.born || horse.birthDate),
-      birthDate: horse.birth_date || horse.born || horse.birthDate,
-      color: horse.color || horse.colour || 'Okänd',
-      microchip: horse.microchip || horse.chip_number,
-      registrationNumber: horse.registration_number || horse.reg_number || horse.fei_id,
-      gender: horse.gender || horse.sex,
-    });
-  }
-
-  return Array.from(horses.values());
 }
 
 function calculateAge(birthDate: string): number {
