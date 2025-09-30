@@ -9,6 +9,7 @@ import HorseDetails from "./pages/HorseDetails";
 import Competitions from "./pages/Competitions";
 import HealthLog from "./pages/HealthLog";
 import Reminders from "./pages/Reminders";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import Navigation from "./components/Navigation";
 
@@ -23,6 +24,7 @@ const App = () => (
         <Navigation />
         <Routes>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="/horses" element={<Horses />} />
           <Route path="/horses/:id" element={<HorseDetails />} />
           <Route path="/competitions" element={<Competitions />} />

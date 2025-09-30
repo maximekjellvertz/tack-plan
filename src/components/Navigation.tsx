@@ -1,6 +1,10 @@
-import { Link, useLocation } from "react-router-dom";
-import { Heart, Calendar, FileText, Home, Bell } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Heart, Calendar, FileText, Home, Bell, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useState, useEffect } from "react";
 
 const navItems = [
   { name: "Hem", path: "/", icon: Home },
@@ -12,6 +16,37 @@ const navItems = [
 
 const Navigation = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    // Check initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast({
+      title: "Utloggad",
+      description: "Du har loggats ut",
+    });
+    navigate("/auth");
+  };
+
+  // Don't show navigation on auth page
+  if (location.pathname === "/auth") {
+    return null;
+  }
 
   return (
     <nav className="bg-card border-b border-border sticky top-0 z-50 shadow-sm">
@@ -43,6 +78,17 @@ const Navigation = () => {
                 </Link>
               );
             })}
+            {user && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLogout}
+                className="ml-2 text-muted-foreground hover:text-foreground"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Logga ut
+              </Button>
+            )}
           </div>
         </div>
       </div>

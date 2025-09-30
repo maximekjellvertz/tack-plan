@@ -2,10 +2,21 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Trophy, Search, Filter } from "lucide-react";
-import { useState } from "react";
+import { Calendar, MapPin, Trophy, Search, Filter, Settings } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { CompetitionDetailsDialog } from "@/components/CompetitionDetailsDialog";
+import { TDBSettings } from "@/components/TDBSettings";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 const competitions = [
   {
@@ -62,7 +73,53 @@ const competitions = [
 
 const Competitions = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [competitions, setCompetitions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchCompetitions();
+    }
+  }, [user]);
+
+  const checkUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+    setUser(user);
+  };
+
+  const fetchCompetitions = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from("competitions")
+        .select("*")
+        .order("date", { ascending: true });
+
+      if (error) throw error;
+
+      setCompetitions(data || []);
+    } catch (error) {
+      console.error("Error fetching competitions:", error);
+      toast({
+        title: "Kunde inte hämta tävlingar",
+        description: "Försök igen senare",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAddToCalendar = (compName: string) => {
     toast({
@@ -72,10 +129,14 @@ const Competitions = () => {
   };
 
   const filteredCompetitions = competitions.filter((comp) =>
-    comp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    comp.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    comp.discipline.toLowerCase().includes(searchTerm.toLowerCase())
+    comp.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    comp.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    comp.discipline?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -99,16 +160,65 @@ const Competitions = () => {
                 className="pl-10"
               />
             </div>
-            <Button variant="outline" className="md:w-auto">
-              <Filter className="w-4 h-4 mr-2" />
-              Filtrera
-            </Button>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="outline" className="md:w-auto">
+                  <Settings className="w-4 h-4 mr-2" />
+                  TDB-inställningar
+                </Button>
+              </SheetTrigger>
+              <SheetContent>
+                <SheetHeader>
+                  <SheetTitle>TDB-integration</SheetTitle>
+                  <SheetDescription>
+                    Anslut ditt TDB-konto för att automatiskt visa dina anmälda tävlingar
+                  </SheetDescription>
+                </SheetHeader>
+                <div className="mt-6">
+                  <TDBSettings />
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </Card>
 
         {/* Competition List */}
-        <div className="space-y-4">
-          {filteredCompetitions.map((comp) => (
+        {loading ? (
+          <Card className="p-12 text-center">
+            <p className="text-muted-foreground">Laddar tävlingar...</p>
+          </Card>
+        ) : competitions.length === 0 ? (
+          <Card className="p-12 text-center">
+            <Trophy className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-foreground mb-2">
+              Inga tävlingar ännu
+            </h3>
+            <p className="text-muted-foreground mb-4">
+              Anslut ditt TDB-konto för att visa dina anmälda tävlingar
+            </p>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button>
+                  <Settings className="w-4 h-4 mr-2" />
+                  Anslut TDB
+                </Button>
+              </SheetTrigger>
+              <SheetContent>
+                <SheetHeader>
+                  <SheetTitle>TDB-integration</SheetTitle>
+                  <SheetDescription>
+                    Anslut ditt TDB-konto för att automatiskt visa dina anmälda tävlingar
+                  </SheetDescription>
+                </SheetHeader>
+                <div className="mt-6">
+                  <TDBSettings />
+                </div>
+              </SheetContent>
+            </Sheet>
+          </Card>
+        ) : (
+          <div className="space-y-4">
+            {filteredCompetitions.map((comp) => (
             <Card key={comp.id} className="p-6 hover:shadow-elevated transition-shadow">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div className="flex-1">
@@ -120,9 +230,11 @@ const Competitions = () => {
                       <h3 className="text-xl font-bold text-foreground mb-1">{comp.name}</h3>
                       <div className="flex flex-wrap gap-2">
                         <Badge variant="secondary">{comp.discipline}</Badge>
-                        <Badge variant="outline">{comp.height}</Badge>
-                        <Badge className={comp.status === "Öppen" ? "bg-secondary" : "bg-primary"}>
-                          {comp.status}
+                        {comp.registration_status && (
+                          <Badge variant="outline">{comp.registration_status}</Badge>
+                        )}
+                        <Badge className={comp.status === "upcoming" ? "bg-secondary" : "bg-primary"}>
+                          {comp.status === "upcoming" ? "Kommande" : comp.status}
                         </Badge>
                       </div>
                     </div>
@@ -136,9 +248,11 @@ const Competitions = () => {
                       <MapPin className="w-4 h-4" />
                       <span>{comp.location}</span>
                     </div>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <span className="font-medium">{comp.district}</span>
-                    </div>
+                    {comp.time && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <span className="font-medium">Starttid: {comp.time}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="flex flex-col gap-2 md:w-48">
@@ -153,9 +267,10 @@ const Competitions = () => {
               </div>
             </Card>
           ))}
-        </div>
+          </div>
+        )}
 
-        {filteredCompetitions.length === 0 && (
+        {!loading && competitions.length > 0 && filteredCompetitions.length === 0 && (
           <Card className="p-12 text-center">
             <Trophy className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-foreground mb-2">

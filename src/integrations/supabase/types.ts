@@ -14,7 +14,99 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      competitions: {
+        Row: {
+          classes: Json | null
+          created_at: string
+          date: string
+          discipline: string
+          email: string | null
+          id: string
+          location: string
+          name: string
+          organizer: string | null
+          phone: string | null
+          registration_deadline: string | null
+          registration_status: string | null
+          status: string | null
+          tdb_id: string | null
+          time: string | null
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          classes?: Json | null
+          created_at?: string
+          date: string
+          discipline: string
+          email?: string | null
+          id?: string
+          location: string
+          name: string
+          organizer?: string | null
+          phone?: string | null
+          registration_deadline?: string | null
+          registration_status?: string | null
+          status?: string | null
+          tdb_id?: string | null
+          time?: string | null
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          classes?: Json | null
+          created_at?: string
+          date?: string
+          discipline?: string
+          email?: string | null
+          id?: string
+          location?: string
+          name?: string
+          organizer?: string | null
+          phone?: string | null
+          registration_deadline?: string | null
+          registration_status?: string | null
+          status?: string | null
+          tdb_id?: string | null
+          time?: string | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      tdb_credentials: {
+        Row: {
+          created_at: string
+          id: string
+          last_synced_at: string | null
+          tdb_email: string
+          tdb_password_encrypted: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_synced_at?: string | null
+          tdb_email: string
+          tdb_password_encrypted: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_synced_at?: string | null
+          tdb_email?: string
+          tdb_password_encrypted?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
