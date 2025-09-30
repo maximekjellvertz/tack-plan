@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FileText, AlertCircle, CheckCircle, Clock, Image as ImageIcon } from "lucide-react";
 import { AddHealthLogDialog } from "@/components/AddHealthLogDialog";
+import { HealthLogDetailsDialog } from "@/components/HealthLogDetailsDialog";
+import { UpdateHealthLogDialog } from "@/components/UpdateHealthLogDialog";
 
 interface HealthLog {
   id: number;
@@ -98,6 +100,12 @@ const HealthLog = () => {
       status: "Pågående",
     };
     setHealthLogs([log, ...healthLogs]);
+  };
+
+  const handleUpdateLog = (id: number, updates: Partial<HealthLog>) => {
+    setHealthLogs(healthLogs.map(log => 
+      log.id === id ? { ...log, ...updates } : log
+    ));
   };
 
   const ongoingCount = healthLogs.filter(log => log.status === "Pågående").length;
@@ -202,13 +210,9 @@ const HealthLog = () => {
                   </div>
                 </div>
                 <div className="flex flex-col gap-2 md:w-40">
-                  <Button variant="outline" size="sm">
-                    Visa detaljer
-                  </Button>
+                  <HealthLogDetailsDialog log={log} />
                   {log.status === "Pågående" && (
-                    <Button variant="outline" size="sm" className="text-secondary">
-                      Uppdatera
-                    </Button>
+                    <UpdateHealthLogDialog log={log} onUpdate={handleUpdateLog} />
                   )}
                 </div>
               </div>
