@@ -47,8 +47,8 @@ export const AddHealthLogDialog = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.horse || !formData.event || !formData.severity) {
-      toast.error("Fyll i alla obligatoriska fält");
+    if (!formData.horse || !formData.event) {
+      toast.error("Fyll i häst och händelse");
       return;
     }
 
@@ -118,7 +118,7 @@ export const AddHealthLogDialog = () => {
 
           {/* Severity */}
           <div className="space-y-2">
-            <Label htmlFor="severity">Svårighetsgrad *</Label>
+            <Label htmlFor="severity">Svårighetsgrad</Label>
             <Select value={formData.severity} onValueChange={(value) => setFormData({ ...formData, severity: value })}>
               <SelectTrigger>
                 <SelectValue placeholder="Välj svårighetsgrad" />
