@@ -4,8 +4,9 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Heart, Calendar, Activity, FileText, Trophy, MapPin } from "lucide-react";
+import { ArrowLeft, Heart, Calendar, Activity, FileText, Trophy, MapPin, Clock } from "lucide-react";
 import { AddCompetitionToHorseDialog } from "@/components/AddCompetitionToHorseDialog";
+import { AddTrainingSessionDialog } from "@/components/AddTrainingSessionDialog";
 
 interface Competition {
   id: number;
@@ -17,6 +18,15 @@ interface Competition {
   notes: string;
   status: "upcoming" | "completed";
   result?: string;
+}
+
+interface TrainingSession {
+  id: number;
+  type: string;
+  date: string;
+  duration: string;
+  intensity: string;
+  notes: string;
 }
 
 // Mock data - skulle hämtas från databas
@@ -92,6 +102,46 @@ const HorseDetails = () => {
 
   const upcomingCompetitions = competitions.filter(c => c.status === "upcoming");
   const completedCompetitions = competitions.filter(c => c.status === "completed");
+
+  // Mock training sessions - skulle hämtas från databas
+  const [trainingSessions, setTrainingSessions] = useState<TrainingSession[]>([
+    {
+      id: 1,
+      type: "Ridning",
+      date: "2025-09-29",
+      duration: "45 min",
+      intensity: "Medel",
+      notes: "Bra fokus idag, jobbade med övergångar",
+    },
+    {
+      id: 2,
+      type: "Hoppträning",
+      date: "2025-09-27",
+      duration: "1 timme",
+      intensity: "Hög",
+      notes: "Hoppade 100 cm, inga rivningar",
+    },
+    {
+      id: 3,
+      type: "Terrängriding",
+      date: "2025-09-25",
+      duration: "1.5 timme",
+      intensity: "Lätt",
+      notes: "Lugn tur i skogen, bra för återhämtning",
+    },
+  ]);
+
+  const handleAddTrainingSession = (newSession: Omit<TrainingSession, 'id'>) => {
+    const session: TrainingSession = {
+      ...newSession,
+      id: Date.now(),
+    };
+    setTrainingSessions([session, ...trainingSessions]);
+  };
+
+  const sortedTrainingSessions = [...trainingSessions].sort((a, b) => 
+    new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
 
   if (!horse) {
     return (
@@ -207,15 +257,90 @@ const HorseDetails = () => {
           </TabsContent>
 
           <TabsContent value="training" className="mt-6">
-            <Card className="p-6">
-              <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
                 <Activity className="w-6 h-6 text-primary" />
                 <h3 className="text-xl font-semibold">Träningshistorik</h3>
               </div>
-              <p className="text-muted-foreground">
-                Träningsschema och historik kommer visas här. Koppla till kalendern för att planera träning inför kommande tävlingar.
-              </p>
-            </Card>
+              <AddTrainingSessionDialog horseName={horse.name} onAdd={handleAddTrainingSession} />
+            </div>
+
+            {/* Training Statistics */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <Card className="p-4">
+                <p className="text-sm text-muted-foreground mb-1">Pass denna vecka</p>
+                <p className="text-2xl font-bold">{trainingSessions.filter(s => {
+                  const weekAgo = new Date();
+                  weekAgo.setDate(weekAgo.getDate() - 7);
+                  return new Date(s.date) >= weekAgo;
+                }).length}</p>
+              </Card>
+              <Card className="p-4">
+                <p className="text-sm text-muted-foreground mb-1">Pass denna månad</p>
+                <p className="text-2xl font-bold">{trainingSessions.filter(s => {
+                  const monthAgo = new Date();
+                  monthAgo.setMonth(monthAgo.getMonth() - 1);
+                  return new Date(s.date) >= monthAgo;
+                }).length}</p>
+              </Card>
+              <Card className="p-4">
+                <p className="text-sm text-muted-foreground mb-1">Totalt pass</p>
+                <p className="text-2xl font-bold">{trainingSessions.length}</p>
+              </Card>
+            </div>
+
+            {/* Training Sessions List */}
+            {sortedTrainingSessions.length > 0 ? (
+              <div className="space-y-4">
+                {sortedTrainingSessions.map((session) => (
+                  <Card key={session.id} className="p-5 hover:shadow-elevated transition-shadow">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Activity className="w-6 h-6 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h5 className="font-semibold text-lg">{session.type}</h5>
+                          {session.intensity && (
+                            <Badge variant={
+                              session.intensity === "Hög" ? "default" : 
+                              session.intensity === "Medel" ? "secondary" : 
+                              "outline"
+                            }>
+                              {session.intensity}
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="space-y-1 text-sm">
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                            <Calendar className="w-4 h-4" />
+                            <span>{session.date}</span>
+                          </div>
+                          {session.duration && (
+                            <div className="flex items-center gap-2 text-muted-foreground">
+                              <Clock className="w-4 h-4" />
+                              <span>{session.duration}</span>
+                            </div>
+                          )}
+                          {session.notes && (
+                            <p className="text-muted-foreground mt-2">{session.notes}</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card className="p-12 text-center">
+                <Activity className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                <h4 className="text-xl font-semibold mb-2">Inga träningspass än</h4>
+                <p className="text-muted-foreground mb-6">
+                  Börja logga träningspass för {horse.name} för att följa utveckling och planera träning.
+                </p>
+                <AddTrainingSessionDialog horseName={horse.name} onAdd={handleAddTrainingSession} />
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="competitions" className="mt-6">
