@@ -45,7 +45,7 @@ const Navigation = () => {
       title: "Utloggad",
       description: "Du har loggats ut",
     });
-    navigate("/auth");
+    navigate("/");
   };
 
   // Don't show navigation on auth page
