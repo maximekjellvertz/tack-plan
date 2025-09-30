@@ -11,7 +11,18 @@ import { toast } from "sonner";
 const horses = ["Thunder", "Storm", "Luna"];
 const severities = ["Lätt", "Medel", "Allvarlig"];
 
-export const AddHealthLogDialog = () => {
+interface AddHealthLogDialogProps {
+  onAdd: (log: {
+    horse: string;
+    event: string;
+    severity: string;
+    treatment: string;
+    notes: string;
+    images?: string[];
+  }) => void;
+}
+
+export const AddHealthLogDialog = ({ onAdd }: AddHealthLogDialogProps) => {
   const [open, setOpen] = useState(false);
   const [images, setImages] = useState<string[]>([]);
   const [formData, setFormData] = useState({
@@ -52,8 +63,15 @@ export const AddHealthLogDialog = () => {
       return;
     }
 
-    // Här skulle vi spara till databas med Lovable Cloud
-    console.log("Sparar hälsologg:", { ...formData, images });
+    // Anropa onAdd callback för att lägga till i listan
+    onAdd({
+      horse: formData.horse,
+      event: formData.event,
+      severity: formData.severity || "Lätt",
+      treatment: formData.treatment,
+      notes: formData.notes,
+      images: images.length > 0 ? images : undefined,
+    });
     
     toast.success("Hälsologg sparad!", {
       description: `${formData.event} för ${formData.horse} har dokumenterats`,

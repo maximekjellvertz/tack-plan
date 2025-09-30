@@ -1,10 +1,23 @@
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FileText, AlertCircle, CheckCircle, Clock, Image as ImageIcon } from "lucide-react";
 import { AddHealthLogDialog } from "@/components/AddHealthLogDialog";
 
-const healthLogs = [
+interface HealthLog {
+  id: number;
+  horse: string;
+  event: string;
+  date: string;
+  severity: string;
+  status: string;
+  treatment: string;
+  notes: string;
+  images?: string[];
+}
+
+const initialHealthLogs: HealthLog[] = [
   {
     id: 1,
     horse: "Thunder",
@@ -75,6 +88,22 @@ const getStatusIcon = (status: string) => {
 };
 
 const HealthLog = () => {
+  const [healthLogs, setHealthLogs] = useState<HealthLog[]>(initialHealthLogs);
+
+  const handleAddLog = (newLog: Omit<HealthLog, 'id' | 'date' | 'status'>) => {
+    const log: HealthLog = {
+      ...newLog,
+      id: Date.now(),
+      date: new Date().toISOString().split('T')[0],
+      status: "Pågående",
+    };
+    setHealthLogs([log, ...healthLogs]);
+  };
+
+  const ongoingCount = healthLogs.filter(log => log.status === "Pågående").length;
+  const completedCount = healthLogs.filter(log => log.status === "Klar").length;
+  const attentionCount = healthLogs.filter(log => log.status === "Uppmärksamhet").length;
+
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 py-8">
@@ -85,7 +114,7 @@ const HealthLog = () => {
               Dokumentera och följ upp dina hästars hälsa
             </p>
           </div>
-          <AddHealthLogDialog />
+          <AddHealthLogDialog onAdd={handleAddLog} />
         </div>
 
         {/* Statistics */}
@@ -94,7 +123,7 @@ const HealthLog = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Pågående</p>
-                <p className="text-3xl font-bold text-foreground">1</p>
+                <p className="text-3xl font-bold text-foreground">{ongoingCount}</p>
               </div>
               <Clock className="w-8 h-8 text-primary" />
             </div>
@@ -103,7 +132,7 @@ const HealthLog = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Avslutade</p>
-                <p className="text-3xl font-bold text-foreground">3</p>
+                <p className="text-3xl font-bold text-foreground">{completedCount}</p>
               </div>
               <CheckCircle className="w-8 h-8 text-secondary" />
             </div>
@@ -112,7 +141,7 @@ const HealthLog = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Uppföljning</p>
-                <p className="text-3xl font-bold text-foreground">0</p>
+                <p className="text-3xl font-bold text-foreground">{attentionCount}</p>
               </div>
               <AlertCircle className="w-8 h-8 text-destructive" />
             </div>
