@@ -106,30 +106,8 @@ const HorseDetails = () => {
     fetchHorse();
   }, [id, toast]);
 
-  // Mock initial competitions - skulle hämtas från databas
-  const [competitions, setCompetitions] = useState<Competition[]>([
-    {
-      id: 1,
-      name: "Hopptävling Strömsholm",
-      date: "2025-11-15",
-      location: "Strömsholm",
-      discipline: "Hoppning",
-      class: "Medel A, 110 cm",
-      notes: "Anmälan stänger 2025-11-10",
-      status: "upcoming",
-    },
-    {
-      id: 2,
-      name: "Lokaltävling Uppsala",
-      date: "2025-09-20",
-      location: "Uppsala Ridcenter",
-      discipline: "Hoppning",
-      class: "Lätt B, 90 cm",
-      notes: "",
-      status: "completed",
-      result: "2:a plats",
-    },
-  ]);
+  // Competitions - empty by default, users add their own or sync from TDB
+  const [competitions, setCompetitions] = useState<Competition[]>([]);
 
   const handleAddCompetition = (newComp: Omit<Competition, 'id' | 'status' | 'result'>) => {
     const competition: Competition = {
