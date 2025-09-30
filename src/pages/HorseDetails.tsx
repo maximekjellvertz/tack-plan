@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,9 @@ import { AddTrainingSessionDialog } from "@/components/AddTrainingSessionDialog"
 import { AddHealthLogToHorseDialog } from "@/components/AddHealthLogToHorseDialog";
 import { HealthLogDetailsDialog } from "@/components/HealthLogDetailsDialog";
 import { UpdateHealthLogDialog } from "@/components/UpdateHealthLogDialog";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
 interface Competition {
   id: number;
@@ -44,42 +47,54 @@ interface HealthLog {
   images: any;
 }
 
-// Mock data - skulle hämtas från databas
-const horsesData = [
-  {
-    id: 1,
-    name: "Thunder",
-    breed: "Svensk Varmblod",
-    age: 8,
-    discipline: "Hoppning",
-    level: "Medel",
-    color: "Brun",
-  },
-  {
-    id: 2,
-    name: "Storm",
-    breed: "Hannoveraner",
-    age: 6,
-    discipline: "Dressyr",
-    level: "Lätt",
-    color: "Svart",
-  },
-  {
-    id: 3,
-    name: "Luna",
-    breed: "Islandshäst",
-    age: 10,
-    discipline: "Fälttävlan",
-    level: "Avancerad",
-    color: "Grå",
-  },
-];
+interface Horse {
+  id: string;
+  name: string;
+  breed: string;
+  age: number;
+  discipline: string;
+  level: string;
+  color: string;
+}
 
 const HorseDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
   
-  const horse = horsesData.find((h) => h.id === Number(id));
+  const [horse, setHorse] = useState<Horse | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchHorse = async () => {
+      if (!id) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('horses')
+          .select('*')
+          .eq('id', id)
+          .maybeSingle();
+
+        if (error) throw error;
+        
+        if (data) {
+          setHorse(data);
+        }
+      } catch (error) {
+        console.error('Error fetching horse:', error);
+        toast({
+          title: "Fel",
+          description: "Kunde inte hämta häst",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHorse();
+  }, [id, toast]);
 
   // Mock initial competitions - skulle hämtas från databas
   const [competitions, setCompetitions] = useState<Competition[]>([
@@ -162,6 +177,7 @@ const HorseDetails = () => {
   const [healthLogs, setHealthLogs] = useState<HealthLog[]>([]);
 
   const handleAddHealthLog = (newLog: Omit<HealthLog, 'id' | 'created_at' | 'status' | 'horse_name'>) => {
+    if (!horse) return;
     const log: HealthLog = {
       ...newLog,
       id: Date.now().toString(),
@@ -208,6 +224,14 @@ const HorseDetails = () => {
   const sortedHealthLogs = [...healthLogs].sort((a, b) => 
     new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (!horse) {
     return (
