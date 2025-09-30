@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
-import { Trophy, Calendar } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Trophy, Calendar, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 
@@ -14,9 +15,10 @@ interface Milestone {
 
 interface MilestoneTimelineProps {
   milestones: Milestone[];
+  onDelete?: (milestoneId: string) => void;
 }
 
-export const MilestoneTimeline = ({ milestones }: MilestoneTimelineProps) => {
+export const MilestoneTimeline = ({ milestones, onDelete }: MilestoneTimelineProps) => {
   if (milestones.length === 0) {
     return (
       <Card className="p-8 text-center">
@@ -42,7 +44,7 @@ export const MilestoneTimeline = ({ milestones }: MilestoneTimelineProps) => {
             )}
           </div>
           <Card className="flex-1 p-4 mb-4">
-            <div className="flex items-start justify-between">
+            <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
                 <h4 className="font-semibold mb-1">{milestone.title}</h4>
                 {milestone.description && (
@@ -55,6 +57,16 @@ export const MilestoneTimeline = ({ milestones }: MilestoneTimelineProps) => {
                   {format(new Date(milestone.achieved_date), "PPP", { locale: sv })}
                 </div>
               </div>
+              {onDelete && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onDelete(milestone.id)}
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              )}
             </div>
           </Card>
         </div>

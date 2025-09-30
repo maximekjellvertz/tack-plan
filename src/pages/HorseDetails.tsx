@@ -677,6 +677,29 @@ const HorseDetails = () => {
     }
   };
 
+  const handleDeleteMilestone = async (milestoneId: string) => {
+    try {
+      const { error } = await supabase
+        .from('milestones')
+        .delete()
+        .eq('id', milestoneId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Milstolpe raderad!",
+        description: "Milstolpen har tagits bort",
+      });
+    } catch (error) {
+      console.error('Error deleting milestone:', error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte radera milstolpe",
+        variant: "destructive",
+      });
+    }
+  };
+
   const activeGoals = goals.filter((g) => !g.is_completed);
 
   if (loading) {
@@ -1195,7 +1218,7 @@ const HorseDetails = () => {
                   <Trophy className="w-6 h-6 text-primary" />
                   <h3 className="text-xl font-semibold">Milstolpar</h3>
                 </div>
-                <MilestoneTimeline milestones={milestones} />
+                <MilestoneTimeline milestones={milestones} onDelete={handleDeleteMilestone} />
               </TabsContent>
 
               <TabsContent value="badges" className="mt-6">
