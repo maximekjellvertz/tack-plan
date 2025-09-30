@@ -40,17 +40,17 @@ const Index = () => {
           <div className="grid md:grid-cols-3 gap-6 mt-12">
             <div className="bg-white/10 backdrop-blur-md p-6 rounded-lg border border-white/20">
               <h3 className="text-xl font-semibold text-white mb-3">Följ din hästs resa</h3>
-              <p className="text-white/90">Dokumentera träning, tävlingar och milstolpar på ett och samma ställe</p>
+              <p className="text-white/90">Varje steg lämnar ett avtryck – samla hela din hästs resa på ett ställe.</p>
             </div>
             
             <div className="bg-white/10 backdrop-blur-md p-6 rounded-lg border border-white/20">
               <h3 className="text-xl font-semibold text-white mb-3">Hälsa & utveckling</h3>
-              <p className="text-white/90">Håll koll på veterinärbesök, vaccinationer och din hästs välmående</p>
+              <p className="text-white/90">Ge din häst bästa förutsättningar – följ utvecklingen och fånga signalerna i tid.</p>
             </div>
             
             <div className="bg-white/10 backdrop-blur-md p-6 rounded-lg border border-white/20">
               <h3 className="text-xl font-semibold text-white mb-3">Sätt mål & fira framsteg</h3>
-              <p className="text-white/90">Planera framtiden och följ hur ni når era mål tillsammans</p>
+              <p className="text-white/90">Från första tävlingen till stora drömmar – fira varje milstolpe på vägen.</p>
             </div>
           </div>
           
