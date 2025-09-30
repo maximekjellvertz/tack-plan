@@ -88,45 +88,76 @@ async function searchTDBHorses(email: string, password: string, horseName: strin
       throw new Error('Failed to login to TDB');
     }
 
-    const cookies = loginResponse.headers.get('set-cookie');
-    console.log('TDB login successful');
+    // Get all cookies from the response
+    const setCookieHeaders = loginResponse.headers.get('set-cookie');
+    console.log('TDB login successful, cookies received');
 
-    // Try multiple possible endpoints to find horses
-    const possibleEndpoints = [
-      `/api/v1/search?q=${encodeURIComponent(horseName)}&type=horse`,
-      `/api/v1/horses?search=${encodeURIComponent(horseName)}`,
-      `/api/v1/horses?name=${encodeURIComponent(horseName)}`,
-      `/search?q=${encodeURIComponent(horseName)}`,
-      `/horses/search?name=${encodeURIComponent(horseName)}`,
-      '/api/v1/entries',
-      '/api/v1/user/horses',
-    ];
+    // Parse cookies properly
+    let cookieString = '';
+    if (setCookieHeaders) {
+      // Extract just the cookie values without attributes
+      const cookies = setCookieHeaders.split(',').map(cookie => {
+        const parts = cookie.trim().split(';');
+        return parts[0];
+      });
+      cookieString = cookies.join('; ');
+      console.log('Parsed cookies for requests');
+    }
 
-    for (const endpoint of possibleEndpoints) {
-      try {
-        console.log(`Trying endpoint: ${endpoint}`);
-        const response = await fetch(`https://tdb.ridsport.se${endpoint}`, {
+    // Try the horses search endpoint (gave 401 before, meaning it exists but needs proper auth)
+    try {
+      console.log('Trying /horses/search endpoint with proper cookies');
+      const searchResponse = await fetch(
+        `https://tdb.ridsport.se/horses/search?name=${encodeURIComponent(horseName)}`,
+        {
           headers: {
-            'Cookie': cookies || '',
-            'Accept': 'application/json',
+            'Cookie': cookieString,
+            'Accept': 'application/json, text/html',
+            'User-Agent': 'Mozilla/5.0',
           },
-        });
+        }
+      );
 
-        if (response.ok) {
-          const data = await response.json();
-          console.log(`Success with ${endpoint}:`, JSON.stringify(data).substring(0, 300));
-          
-          // Try to parse the response
+      console.log(`Search response status: ${searchResponse.status}`);
+      
+      if (searchResponse.ok) {
+        const contentType = searchResponse.headers.get('content-type');
+        console.log(`Response content-type: ${contentType}`);
+        
+        if (contentType?.includes('application/json')) {
+          const data = await searchResponse.json();
+          console.log('Search data received:', JSON.stringify(data).substring(0, 500));
           const horses = parseHorseData(data, horseName);
           if (horses.length > 0) {
             return horses;
           }
         } else {
-          console.log(`Failed ${endpoint}: ${response.status}`);
+          // HTML response - try to extract data
+          const html = await searchResponse.text();
+          console.log('HTML response received, length:', html.length);
         }
-      } catch (error) {
-        console.error(`Error with ${endpoint}:`, error);
       }
+    } catch (error) {
+      console.error('Error with horses search:', error);
+    }
+
+    // Fallback: try to get user's entries
+    try {
+      console.log('Trying /api/v1/entries as fallback');
+      const entriesResponse = await fetch('https://tdb.ridsport.se/api/v1/entries', {
+        headers: {
+          'Cookie': cookieString,
+          'Accept': 'application/json',
+        },
+      });
+
+      if (entriesResponse.ok) {
+        const data = await entriesResponse.json();
+        console.log('Entries data received:', JSON.stringify(data).substring(0, 300));
+        return parseHorseData(data, horseName);
+      }
+    } catch (error) {
+      console.error('Error with entries:', error);
     }
 
     return [];
