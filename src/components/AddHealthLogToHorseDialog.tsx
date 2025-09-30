@@ -8,12 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 
-const horses = ["Thunder", "Storm", "Luna"];
-const severities = ["Lätt", "Medel", "Allvarlig", "Normal"];
-
-interface AddHealthLogDialogProps {
+interface AddHealthLogToHorseDialogProps {
+  horseName: string;
   onAdd: (log: {
-    horse: string;
     event: string;
     severity: string;
     treatment: string;
@@ -22,11 +19,12 @@ interface AddHealthLogDialogProps {
   }) => void;
 }
 
-export const AddHealthLogDialog = ({ onAdd }: AddHealthLogDialogProps) => {
+const severities = ["Lätt", "Medel", "Allvarlig", "Normal"];
+
+export const AddHealthLogToHorseDialog = ({ horseName, onAdd }: AddHealthLogToHorseDialogProps) => {
   const [open, setOpen] = useState(false);
   const [images, setImages] = useState<string[]>([]);
   const [formData, setFormData] = useState({
-    horse: "",
     event: "",
     severity: "",
     treatment: "",
@@ -58,14 +56,12 @@ export const AddHealthLogDialog = ({ onAdd }: AddHealthLogDialogProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.horse || !formData.event) {
-      toast.error("Fyll i häst och händelse");
+    if (!formData.event) {
+      toast.error("Fyll i händelse");
       return;
     }
 
-    // Anropa onAdd callback för att lägga till i listan
     onAdd({
-      horse: formData.horse,
       event: formData.event,
       severity: formData.severity || "Lätt",
       treatment: formData.treatment,
@@ -74,12 +70,10 @@ export const AddHealthLogDialog = ({ onAdd }: AddHealthLogDialogProps) => {
     });
     
     toast.success("Hälsologg sparad!", {
-      description: `${formData.event} för ${formData.horse} har dokumenterats`,
+      description: `${formData.event} för ${horseName} har dokumenterats`,
     });
 
-    // Reset form
     setFormData({
-      horse: "",
       event: "",
       severity: "",
       treatment: "",
@@ -99,31 +93,13 @@ export const AddHealthLogDialog = ({ onAdd }: AddHealthLogDialogProps) => {
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Lägg till hälsohändelse</DialogTitle>
+          <DialogTitle>Lägg till hälsohändelse för {horseName}</DialogTitle>
           <DialogDescription>
             Dokumentera symptom, behandling och bifoga bilder
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Horse Selection */}
-          <div className="space-y-2">
-            <Label htmlFor="horse">Häst *</Label>
-            <Select value={formData.horse} onValueChange={(value) => setFormData({ ...formData, horse: value })}>
-              <SelectTrigger>
-                <SelectValue placeholder="Välj häst" />
-              </SelectTrigger>
-              <SelectContent>
-                {horses.map((horse) => (
-                  <SelectItem key={horse} value={horse}>
-                    {horse}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Event Name */}
           <div className="space-y-2">
             <Label htmlFor="event">Händelse *</Label>
             <Input
@@ -134,7 +110,6 @@ export const AddHealthLogDialog = ({ onAdd }: AddHealthLogDialogProps) => {
             />
           </div>
 
-          {/* Severity */}
           <div className="space-y-2">
             <Label htmlFor="severity">Svårighetsgrad</Label>
             <Select value={formData.severity} onValueChange={(value) => setFormData({ ...formData, severity: value })}>
@@ -151,7 +126,6 @@ export const AddHealthLogDialog = ({ onAdd }: AddHealthLogDialogProps) => {
             </Select>
           </div>
 
-          {/* Treatment */}
           <div className="space-y-2">
             <Label htmlFor="treatment">Behandling</Label>
             <Input
@@ -162,7 +136,6 @@ export const AddHealthLogDialog = ({ onAdd }: AddHealthLogDialogProps) => {
             />
           </div>
 
-          {/* Notes */}
           <div className="space-y-2">
             <Label htmlFor="notes">Anteckningar</Label>
             <Textarea
@@ -174,7 +147,6 @@ export const AddHealthLogDialog = ({ onAdd }: AddHealthLogDialogProps) => {
             />
           </div>
 
-          {/* Image Upload */}
           <div className="space-y-2">
             <Label>Bilder</Label>
             <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors">
@@ -197,7 +169,6 @@ export const AddHealthLogDialog = ({ onAdd }: AddHealthLogDialogProps) => {
               </label>
             </div>
 
-            {/* Image Preview Grid */}
             {images.length > 0 && (
               <div className="grid grid-cols-3 gap-4 mt-4">
                 {images.map((image, index) => (
@@ -220,13 +191,6 @@ export const AddHealthLogDialog = ({ onAdd }: AddHealthLogDialogProps) => {
             )}
           </div>
 
-          {/* Info Message */}
-          <div className="bg-muted/50 border border-border rounded-lg p-4 text-sm text-muted-foreground">
-            <p className="font-medium text-foreground mb-1">💡 Tips</p>
-            <p>För att spara bilder permanent, anslut till Lovable Cloud. Just nu sparas endast i webbläsarens minne.</p>
-          </div>
-
-          {/* Action Buttons */}
           <div className="flex gap-3 justify-end">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Avbryt
