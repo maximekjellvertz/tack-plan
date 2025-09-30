@@ -50,68 +50,6 @@ const HorseshoeIcon = ({ isCompleted }: { isCompleted: boolean }) => (
   </svg>
 );
 
-const GallopingHorseIcon = () => (
-  <svg
-    width="90"
-    height="80"
-    viewBox="0 0 120 100"
-    className="drop-shadow-xl"
-  >
-    <g transform="translate(60, 50)" stroke="hsl(var(--primary))" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      {/* Flowing mane on tail */}
-      <path d="M 48,-8 Q 52,-6 54,-2 Q 56,2 58,8" strokeWidth="2.5" />
-      <path d="M 49,-6 Q 54,-2 56,4" strokeWidth="2" opacity="0.6" />
-      <path d="M 50,-4 Q 55,0 57,6" strokeWidth="1.5" opacity="0.4" />
-      
-      {/* Body - elegant curve */}
-      <ellipse cx="18" cy="-8" rx="18" ry="11" stroke="hsl(var(--primary))" strokeWidth="2.5" />
-      
-      {/* Neck - flowing line */}
-      <path d="M 0,-12 Q -8,-16 -18,-16" strokeWidth="3" />
-      
-      {/* Head - elegant profile */}
-      <path d="M -18,-16 Q -24,-16 -26,-12 L -26,-4 Q -26,-2 -24,0" strokeWidth="2.5" />
-      
-      {/* Ear */}
-      <path d="M -20,-16 L -19,-20 L -17,-16" strokeWidth="2" />
-      
-      {/* Nostril */}
-      <circle cx="-25" cy="-2" r="1" fill="hsl(var(--primary))" />
-      
-      {/* Eye */}
-      <circle cx="-22" cy="-10" r="1.5" fill="hsl(var(--primary))" />
-      
-      {/* Mane flowing back */}
-      <path d="M -16,-14 Q -18,-18 -20,-16" strokeWidth="1.5" opacity="0.7" />
-      <path d="M -12,-13 Q -14,-17 -16,-15" strokeWidth="1.5" opacity="0.7" />
-      <path d="M -8,-14 Q -10,-18 -12,-16" strokeWidth="1.5" opacity="0.7" />
-      
-      {/* Front leg extended forward (galloping) */}
-      <path d="M 6,2 Q 4,12 6,22" strokeWidth="3" />
-      
-      {/* Front leg tucked */}
-      <path d="M 12,2 Q 13,8 12,14" strokeWidth="3" />
-      
-      {/* Back leg extended back (power) */}
-      <path d="M 28,2 Q 34,10 40,18" strokeWidth="3" />
-      
-      {/* Back leg tucked */}
-      <path d="M 32,2 Q 33,6 32,12" strokeWidth="3" />
-      
-      {/* Hoof details - small curves at leg ends */}
-      <path d="M 5,22 L 7,22" strokeWidth="2" />
-      <path d="M 11,14 L 13,14" strokeWidth="2" />
-      <path d="M 39,18 L 41,18" strokeWidth="2" />
-      <path d="M 31,12 L 33,12" strokeWidth="2" />
-      
-      {/* Dust/movement lines */}
-      <path d="M 8,24 L 14,26" strokeWidth="1" opacity="0.4" />
-      <path d="M 12,26 L 18,28" strokeWidth="1" opacity="0.3" />
-      <path d="M 36,20 L 42,22" strokeWidth="1" opacity="0.4" />
-    </g>
-  </svg>
-);
-
 export const GoalJourneyPath = ({ goals, onGoalClick, onToggleComplete }: GoalJourneyPathProps) => {
   const sortedGoals = [...goals].sort((a, b) => {
     if (a.target_date && b.target_date) {
@@ -185,17 +123,6 @@ export const GoalJourneyPath = ({ goals, onGoalClick, onToggleComplete }: GoalJo
                 width: `calc(${horseProgress}% * (100% - 96px) / 100)`,
               }}
             />
-
-            {/* Horse that moves along the path */}
-            <div 
-              className="absolute top-1/2 -translate-y-1/2 transition-all duration-1000 ease-out z-20"
-              style={{ 
-                left: `calc(48px + ${horseProgress}% * (100% - 96px) / 100)`,
-                transform: 'translate(-50%, -50%)',
-              }}
-            >
-              <GallopingHorseIcon />
-            </div>
 
             {/* Goals as checkpoints */}
             <div className="relative flex justify-between items-center py-8 px-4">
