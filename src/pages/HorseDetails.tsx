@@ -11,6 +11,7 @@ import { AddHealthLogToHorseDialog } from "@/components/AddHealthLogToHorseDialo
 import { HealthLogDetailsDialog } from "@/components/HealthLogDetailsDialog";
 import { UpdateHealthLogDialog } from "@/components/UpdateHealthLogDialog";
 import { EditHorseInfoDialog } from "@/components/EditHorseInfoDialog";
+import { EditHorseStatsDialog } from "@/components/EditHorseStatsDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
@@ -60,6 +61,10 @@ interface Horse {
   microchip?: string | null;
   birth_date?: string | null;
   gender?: string | null;
+  competitions_this_year?: number | null;
+  placements?: number | null;
+  training_sessions?: number | null;
+  vet_visits?: number | null;
 }
 
 const HorseDetails = () => {
@@ -347,23 +352,42 @@ const HorseDetails = () => {
               </Card>
 
               <Card className="p-6">
-                <h3 className="text-xl font-semibold mb-4">Statistik</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-semibold">Statistik</h3>
+                  <EditHorseStatsDialog 
+                    horseId={horse.id}
+                    currentData={{
+                      competitions_this_year: horse.competitions_this_year,
+                      placements: horse.placements,
+                      training_sessions: horse.training_sessions,
+                      vet_visits: horse.vet_visits,
+                    }}
+                    onUpdate={async () => {
+                      const { data } = await supabase
+                        .from('horses')
+                        .select('*')
+                        .eq('id', id)
+                        .maybeSingle();
+                      if (data) setHorse(data);
+                    }}
+                  />
+                </div>
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Tävlingar i år:</span>
-                    <span className="font-medium">12</span>
+                    <span className="font-medium">{horse.competitions_this_year || 0}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Placeringar:</span>
-                    <span className="font-medium">5 priser</span>
+                    <span className="font-medium">{horse.placements || 0}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Träningspass:</span>
-                    <span className="font-medium">143</span>
+                    <span className="font-medium">{horse.training_sessions || 0}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Veterinärbesök:</span>
-                    <span className="font-medium">3</span>
+                    <span className="font-medium">{horse.vet_visits || 0}</span>
                   </div>
                 </div>
               </Card>

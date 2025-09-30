@@ -136,6 +136,7 @@ export type Database = {
           birth_date: string | null
           breed: string
           color: string
+          competitions_this_year: number | null
           created_at: string
           discipline: string
           gender: string | null
@@ -143,15 +144,19 @@ export type Database = {
           level: string
           microchip: string | null
           name: string
+          placements: number | null
           registration_number: string | null
+          training_sessions: number | null
           updated_at: string
           user_id: string
+          vet_visits: number | null
         }
         Insert: {
           age: number
           birth_date?: string | null
           breed: string
           color: string
+          competitions_this_year?: number | null
           created_at?: string
           discipline: string
           gender?: string | null
@@ -159,15 +164,19 @@ export type Database = {
           level: string
           microchip?: string | null
           name: string
+          placements?: number | null
           registration_number?: string | null
+          training_sessions?: number | null
           updated_at?: string
           user_id: string
+          vet_visits?: number | null
         }
         Update: {
           age?: number
           birth_date?: string | null
           breed?: string
           color?: string
+          competitions_this_year?: number | null
           created_at?: string
           discipline?: string
           gender?: string | null
@@ -175,9 +184,12 @@ export type Database = {
           level?: string
           microchip?: string | null
           name?: string
+          placements?: number | null
           registration_number?: string | null
+          training_sessions?: number | null
           updated_at?: string
           user_id?: string
+          vet_visits?: number | null
         }
         Relationships: []
       }
