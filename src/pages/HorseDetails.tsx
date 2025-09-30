@@ -14,6 +14,7 @@ import { EditHorseInfoDialog } from "@/components/EditHorseInfoDialog";
 import { EditHorseStatsDialog } from "@/components/EditHorseStatsDialog";
 import { AddGoalDialog } from "@/components/AddGoalDialog";
 import { GoalCard } from "@/components/GoalCard";
+import { GoalJourneyPath } from "@/components/GoalJourneyPath";
 import { MilestoneTimeline } from "@/components/MilestoneTimeline";
 import { BadgesGrid } from "@/components/BadgesGrid";
 import { supabase } from "@/integrations/supabase/client";
@@ -1043,17 +1044,7 @@ const HorseDetails = () => {
                     </p>
                   </Card>
                 ) : (
-                  <div className="space-y-4">
-                    {activeGoals.map((goal) => (
-                      <GoalCard
-                        key={goal.id}
-                        goal={goal}
-                        onUpdate={handleUpdateGoalProgress}
-                        onDelete={handleDeleteGoal}
-                        onComplete={handleCompleteGoal}
-                      />
-                    ))}
-                  </div>
+                  <GoalJourneyPath goals={activeGoals} />
                 )}
               </TabsContent>
 
