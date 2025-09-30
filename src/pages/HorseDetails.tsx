@@ -41,7 +41,7 @@ interface HealthLog {
   status: string;
   treatment: string;
   notes: string | null;
-  images?: any;
+  images: any;
 }
 
 // Mock data - skulle hämtas från databas
@@ -158,37 +158,17 @@ const HorseDetails = () => {
     new Date(b.date).getTime() - new Date(a.date).getTime()
   );
 
-  // Mock health logs - skulle hämtas från databas
-  const [healthLogs, setHealthLogs] = useState<HealthLog[]>([
-    {
-      id: 1,
-      horse: horse.name,
-      event: "Munsår",
-      date: "2025-09-28",
-      severity: "Lätt",
-      status: "Pågående",
-      treatment: "Salva 2x/dag",
-      notes: "Märkte vid borstning, lätt rodnad",
-    },
-    {
-      id: 2,
-      horse: horse.name,
-      event: "Vaccination",
-      date: "2025-09-15",
-      severity: "Normal",
-      status: "Klar",
-      treatment: "Influensa + Stelkramp",
-      notes: "Årlig vaccination utförd av veterinär",
-    },
-  ]);
+  // Health logs will be empty initially - would be fetched from database in full implementation
+  const [healthLogs, setHealthLogs] = useState<HealthLog[]>([]);
 
-  const handleAddHealthLog = (newLog: Omit<HealthLog, 'id' | 'date' | 'status' | 'horse'>) => {
+  const handleAddHealthLog = (newLog: Omit<HealthLog, 'id' | 'created_at' | 'status' | 'horse_name'>) => {
     const log: HealthLog = {
       ...newLog,
       id: Date.now().toString(),
       horse_name: horse.name,
       created_at: new Date().toISOString(),
       status: "Pågående",
+      images: newLog.images || null,
     };
     setHealthLogs([log, ...healthLogs]);
   };
@@ -226,7 +206,7 @@ const HorseDetails = () => {
   };
 
   const sortedHealthLogs = [...healthLogs].sort((a, b) => 
-    new Date(b.date).getTime() - new Date(a.date).getTime()
+    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
 
   if (!horse) {
@@ -600,7 +580,7 @@ const HorseDetails = () => {
                               </Badge>
                             </div>
                             <p className="text-sm text-muted-foreground">
-                              {log.date}
+                              {new Date(log.created_at).toLocaleDateString('sv-SE')}
                             </p>
                           </div>
                           <div className="flex items-center gap-2">
