@@ -57,7 +57,7 @@ const Auth = () => {
           title: "Inloggad!",
           description: "Välkommen tillbaka!",
         });
-        navigate("/");
+        navigate("/dashboard");
       } else {
         const { error } = await supabase.auth.signUp({
           email,
@@ -88,7 +88,7 @@ const Auth = () => {
           title: "Konto skapat!",
           description: "Välkommen till Hoofprints!",
         });
-        navigate("/");
+        navigate("/dashboard");
       }
     } catch (error) {
       console.error("Auth error:", error);
