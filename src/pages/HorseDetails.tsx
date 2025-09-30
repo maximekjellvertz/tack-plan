@@ -941,8 +941,11 @@ const HorseDetails = () => {
               <Card className="p-12 text-center">
                 <Activity className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                 <h4 className="text-xl font-semibold mb-2">Inga träningspass än</h4>
-                <p className="text-muted-foreground mb-6">
-                  Börja logga träningspass för {horse.name} för att följa utveckling och planera träning.
+                <p className="text-muted-foreground mb-2">
+                  Det du skriver idag blir värdefull kunskap i morgon.
+                </p>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Börja logga träningspass för {horse.name} för att följa utveckling och planera framåt.
                 </p>
                 <AddTrainingSessionDialog horseName={horse.name} onAdd={handleAddTrainingSession} />
               </Card>
