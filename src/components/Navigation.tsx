@@ -54,7 +54,7 @@ const Navigation = () => {
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2">
             <Heart className="w-8 h-8 text-primary" />
-            <span className="text-xl font-bold text-foreground">Tävlingsplaneraren</span>
+            <span className="text-xl font-bold text-foreground">Hoofprints</span>
           </Link>
 
           <div className="flex items-center gap-1">
