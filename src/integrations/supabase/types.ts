@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      badges: {
+        Row: {
+          badge_type: string
+          created_at: string
+          description: string | null
+          earned_date: string
+          horse_id: string | null
+          icon: string | null
+          id: string
+          is_manual: boolean
+          title: string
+          user_id: string
+        }
+        Insert: {
+          badge_type: string
+          created_at?: string
+          description?: string | null
+          earned_date?: string
+          horse_id?: string | null
+          icon?: string | null
+          id?: string
+          is_manual?: boolean
+          title: string
+          user_id: string
+        }
+        Update: {
+          badge_type?: string
+          created_at?: string
+          description?: string | null
+          earned_date?: string
+          horse_id?: string | null
+          icon?: string | null
+          id?: string
+          is_manual?: boolean
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "badges_horse_id_fkey"
+            columns: ["horse_id"]
+            isOneToOne: false
+            referencedRelation: "horses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       competitions: {
         Row: {
           classes: Json | null
@@ -76,6 +123,62 @@ export type Database = {
           website?: string | null
         }
         Relationships: []
+      }
+      goals: {
+        Row: {
+          auto_calculate: boolean
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          goal_type: string
+          horse_id: string | null
+          id: string
+          is_completed: boolean
+          progress_percent: number
+          target_date: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_calculate?: boolean
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          goal_type?: string
+          horse_id?: string | null
+          id?: string
+          is_completed?: boolean
+          progress_percent?: number
+          target_date?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_calculate?: boolean
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          goal_type?: string
+          horse_id?: string | null
+          id?: string
+          is_completed?: boolean
+          progress_percent?: number
+          target_date?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goals_horse_id_fkey"
+            columns: ["horse_id"]
+            isOneToOne: false
+            referencedRelation: "horses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       health_logs: {
         Row: {
@@ -192,6 +295,60 @@ export type Database = {
           vet_visits?: number | null
         }
         Relationships: []
+      }
+      milestones: {
+        Row: {
+          achieved_date: string
+          created_at: string
+          description: string | null
+          goal_id: string | null
+          horse_id: string | null
+          icon: string | null
+          id: string
+          milestone_type: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          achieved_date: string
+          created_at?: string
+          description?: string | null
+          goal_id?: string | null
+          horse_id?: string | null
+          icon?: string | null
+          id?: string
+          milestone_type?: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          achieved_date?: string
+          created_at?: string
+          description?: string | null
+          goal_id?: string | null
+          horse_id?: string | null
+          icon?: string | null
+          id?: string
+          milestone_type?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "milestones_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "goals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "milestones_horse_id_fkey"
+            columns: ["horse_id"]
+            isOneToOne: false
+            referencedRelation: "horses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reminders: {
         Row: {

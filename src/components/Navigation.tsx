@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Heart, Calendar, FileText, Home, Bell, LogOut, Menu } from "lucide-react";
+import { Heart, Calendar, FileText, Home, Bell, LogOut, Menu, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +13,7 @@ const navItems = [
   { name: "Hästar", path: "/horses", icon: Heart },
   { name: "Tävlingar", path: "/competitions", icon: Calendar },
   { name: "Hälsologg", path: "/health-log", icon: FileText },
+  { name: "Mål", path: "/goals", icon: Target },
   { name: "Påminnelser", path: "/reminders", icon: Bell },
 ];
 

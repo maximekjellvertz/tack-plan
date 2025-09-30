@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Heart, Calendar, Activity, FileText, Trophy, MapPin, Clock, AlertCircle, CheckCircle, Image as ImageIcon } from "lucide-react";
+import { ArrowLeft, Heart, Calendar, Activity, FileText, Trophy, MapPin, Clock, AlertCircle, CheckCircle, Image as ImageIcon, Target } from "lucide-react";
 import { AddCompetitionToHorseDialog } from "@/components/AddCompetitionToHorseDialog";
 import { AddTrainingSessionDialog } from "@/components/AddTrainingSessionDialog";
 import { AddHealthLogToHorseDialog } from "@/components/AddHealthLogToHorseDialog";
@@ -12,6 +12,10 @@ import { HealthLogDetailsDialog } from "@/components/HealthLogDetailsDialog";
 import { UpdateHealthLogDialog } from "@/components/UpdateHealthLogDialog";
 import { EditHorseInfoDialog } from "@/components/EditHorseInfoDialog";
 import { EditHorseStatsDialog } from "@/components/EditHorseStatsDialog";
+import { AddGoalDialog } from "@/components/AddGoalDialog";
+import { GoalCard } from "@/components/GoalCard";
+import { MilestoneTimeline } from "@/components/MilestoneTimeline";
+import { BadgesGrid } from "@/components/BadgesGrid";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
@@ -300,6 +304,241 @@ const HorseDetails = () => {
     new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
 
+  // Goals, milestones and badges state
+  const [goals, setGoals] = useState<any[]>([]);
+  const [milestones, setMilestones] = useState<any[]>([]);
+  const [badges, setBadges] = useState<any[]>([]);
+  const [loadingJourney, setLoadingJourney] = useState(true);
+
+  useEffect(() => {
+    const fetchJourneyData = async () => {
+      if (!id) return;
+
+      try {
+        // Fetch goals
+        const { data: goalsData, error: goalsError } = await supabase
+          .from('goals')
+          .select('*')
+          .eq('horse_id', id)
+          .order('created_at', { ascending: false });
+
+        if (goalsError) throw goalsError;
+        setGoals(goalsData || []);
+
+        // Fetch milestones
+        const { data: milestonesData, error: milestonesError } = await supabase
+          .from('milestones')
+          .select('*')
+          .eq('horse_id', id)
+          .order('achieved_date', { ascending: false });
+
+        if (milestonesError) throw milestonesError;
+        setMilestones(milestonesData || []);
+
+        // Fetch badges
+        const { data: badgesData, error: badgesError } = await supabase
+          .from('badges')
+          .select('*')
+          .eq('horse_id', id)
+          .order('earned_date', { ascending: false });
+
+        if (badgesError) throw badgesError;
+        setBadges(badgesData || []);
+      } catch (error) {
+        console.error('Error fetching journey data:', error);
+      } finally {
+        setLoadingJourney(false);
+      }
+    };
+
+    if (horse) {
+      fetchJourneyData();
+    }
+
+    // Set up realtime subscriptions
+    const goalsChannel = supabase
+      .channel('horse-goals')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'goals',
+          filter: `horse_id=eq.${id}`
+        },
+        () => {
+          fetchJourneyData();
+        }
+      )
+      .subscribe();
+
+    const milestonesChannel = supabase
+      .channel('horse-milestones')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'milestones',
+          filter: `horse_id=eq.${id}`
+        },
+        () => {
+          fetchJourneyData();
+        }
+      )
+      .subscribe();
+
+    const badgesChannel = supabase
+      .channel('horse-badges')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'badges',
+          filter: `horse_id=eq.${id}`
+        },
+        () => {
+          fetchJourneyData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(goalsChannel);
+      supabase.removeChannel(milestonesChannel);
+      supabase.removeChannel(badgesChannel);
+    };
+  }, [id, horse]);
+
+  const handleAddGoal = async (newGoal: any) => {
+    if (!horse) return;
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('goals')
+        .insert({
+          user_id: user.id,
+          horse_id: horse.id,
+          ...newGoal,
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Mål tillagt!",
+        description: `Mål för ${horse.name} har skapats`,
+      });
+    } catch (error) {
+      console.error('Error adding goal:', error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte lägga till mål",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUpdateGoalProgress = async (id: string, progress: number) => {
+    try {
+      const { error } = await supabase
+        .from('goals')
+        .update({ progress_percent: progress })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Framsteg uppdaterat!",
+        description: `Framsteg satt till ${progress}%`,
+      });
+    } catch (error) {
+      console.error('Error updating progress:', error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte uppdatera framsteg",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCompleteGoal = async (goalId: string) => {
+    try {
+      const goal = goals.find((g) => g.id === goalId);
+      if (!goal || !horse) return;
+
+      // Mark goal as completed
+      const { error: goalError } = await supabase
+        .from('goals')
+        .update({
+          is_completed: true,
+          completed_at: new Date().toISOString(),
+          progress_percent: 100,
+        })
+        .eq('id', goalId);
+
+      if (goalError) throw goalError;
+
+      // Create milestone
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error: milestoneError } = await supabase
+        .from('milestones')
+        .insert({
+          user_id: user.id,
+          horse_id: horse.id,
+          goal_id: goalId,
+          title: goal.title,
+          description: goal.description,
+          achieved_date: new Date().toISOString().split('T')[0],
+          milestone_type: 'goal_completed',
+        });
+
+      if (milestoneError) throw milestoneError;
+
+      toast({
+        title: "Grattis!",
+        description: "Målet är klart och har lagts till som milstolpe",
+      });
+    } catch (error) {
+      console.error('Error completing goal:', error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte markera mål som klart",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteGoal = async (goalId: string) => {
+    try {
+      const { error } = await supabase
+        .from('goals')
+        .delete()
+        .eq('id', goalId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Mål raderat!",
+        description: "Målet har tagits bort",
+      });
+    } catch (error) {
+      console.error('Error deleting goal:', error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte radera mål",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const activeGoals = goals.filter((g) => !g.is_completed);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -366,11 +605,12 @@ const HorseDetails = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview">Översikt</TabsTrigger>
             <TabsTrigger value="training">Träning</TabsTrigger>
             <TabsTrigger value="competitions">Tävlingar</TabsTrigger>
             <TabsTrigger value="health">Hälsa</TabsTrigger>
+            <TabsTrigger value="journey">Resa & Mål</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="mt-6">
@@ -775,6 +1015,64 @@ const HorseDetails = () => {
                 <AddHealthLogToHorseDialog horseName={horse.name} onAdd={handleAddHealthLog} />
               </Card>
             )}
+          </TabsContent>
+
+          <TabsContent value="journey" className="mt-6">
+            <Tabs defaultValue="goals" className="w-full">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="goals">Aktiva mål</TabsTrigger>
+                <TabsTrigger value="milestones">Milstolpar</TabsTrigger>
+                <TabsTrigger value="badges">Badges</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="goals" className="mt-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <Target className="w-6 h-6 text-primary" />
+                    <h3 className="text-xl font-semibold">Aktiva mål</h3>
+                  </div>
+                  <AddGoalDialog onAdd={handleAddGoal} />
+                </div>
+
+                {activeGoals.length === 0 ? (
+                  <Card className="p-8 text-center">
+                    <Target className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                    <p className="text-muted-foreground">Inga aktiva mål</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Lägg till ett mål för att komma igång!
+                    </p>
+                  </Card>
+                ) : (
+                  <div className="space-y-4">
+                    {activeGoals.map((goal) => (
+                      <GoalCard
+                        key={goal.id}
+                        goal={goal}
+                        onUpdate={handleUpdateGoalProgress}
+                        onDelete={handleDeleteGoal}
+                        onComplete={handleCompleteGoal}
+                      />
+                    ))}
+                  </div>
+                )}
+              </TabsContent>
+
+              <TabsContent value="milestones" className="mt-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <Trophy className="w-6 h-6 text-primary" />
+                  <h3 className="text-xl font-semibold">Milstolpar</h3>
+                </div>
+                <MilestoneTimeline milestones={milestones} />
+              </TabsContent>
+
+              <TabsContent value="badges" className="mt-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <Trophy className="w-6 h-6 text-primary" />
+                  <h3 className="text-xl font-semibold">Badges</h3>
+                </div>
+                <BadgesGrid badges={badges} />
+              </TabsContent>
+            </Tabs>
           </TabsContent>
         </Tabs>
       </div>

@@ -9,6 +9,7 @@ import HorseDetails from "./pages/HorseDetails";
 import Competitions from "./pages/Competitions";
 import HealthLog from "./pages/HealthLog";
 import Reminders from "./pages/Reminders";
+import Goals from "./pages/Goals";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import Navigation from "./components/Navigation";
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/competitions" element={<Competitions />} />
           <Route path="/health-log" element={<HealthLog />} />
           <Route path="/reminders" element={<Reminders />} />
+          <Route path="/goals" element={<Goals />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
