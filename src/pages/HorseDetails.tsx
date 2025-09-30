@@ -413,25 +413,48 @@ const HorseDetails = () => {
   }, [id, horse]);
 
   const handleAddGoal = async (newGoal: any) => {
-    if (!horse) return;
+    if (!horse) {
+      console.error('No horse found');
+      return;
+    }
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { error } = await supabase
-        .from('goals')
-        .insert({
-          user_id: user.id,
-          horse_id: horse.id,
-          title: newGoal.title,
-          description: newGoal.description,
-          target_date: newGoal.target_date ? newGoal.target_date.toISOString().split('T')[0] : null,
-          goal_type: newGoal.goal_type,
-          auto_calculate: newGoal.auto_calculate,
+      if (!user) {
+        console.error('No user found');
+        toast({
+          title: "Fel",
+          description: "Du måste vara inloggad",
+          variant: "destructive",
         });
+        return;
+      }
 
-      if (error) throw error;
+      console.log('Adding goal:', newGoal);
+
+      const goalData = {
+        user_id: user.id,
+        horse_id: horse.id,
+        title: newGoal.title,
+        description: newGoal.description || null,
+        target_date: newGoal.target_date ? newGoal.target_date.toISOString().split('T')[0] : null,
+        goal_type: newGoal.goal_type || 'custom',
+        auto_calculate: newGoal.auto_calculate !== undefined ? newGoal.auto_calculate : true,
+      };
+
+      console.log('Goal data to insert:', goalData);
+
+      const { data, error } = await supabase
+        .from('goals')
+        .insert(goalData)
+        .select();
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+
+      console.log('Goal created:', data);
 
       toast({
         title: "Mål tillagt!",
@@ -441,7 +464,7 @@ const HorseDetails = () => {
       console.error('Error adding goal:', error);
       toast({
         title: "Fel",
-        description: "Kunde inte lägga till mål",
+        description: error instanceof Error ? error.message : "Kunde inte lägga till mål",
         variant: "destructive",
       });
     }
