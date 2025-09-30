@@ -9,7 +9,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const navItems = [
-  { name: "Hem", path: "/", icon: Home },
+  { name: "Hem", path: "/dashboard", icon: Home },
   { name: "Hästar", path: "/horses", icon: Heart },
   { name: "Tävlingar", path: "/competitions", icon: Calendar },
   { name: "Hälsologg", path: "/health-log", icon: FileText },
