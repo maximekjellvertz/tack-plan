@@ -57,13 +57,13 @@ const Auth = () => {
           title: "Inloggad!",
           description: "Välkommen tillbaka!",
         });
-        navigate("/");
+        navigate("/horses");
       } else {
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/`,
+            emailRedirectTo: `${window.location.origin}/horses`,
           },
         });
 
@@ -86,9 +86,9 @@ const Auth = () => {
 
         toast({
           title: "Konto skapat!",
-          description: "Välkommen till Tävlingsplaneraren!",
+          description: "Välkommen till Hoofprints!",
         });
-        navigate("/");
+        navigate("/horses");
       }
     } catch (error) {
       console.error("Auth error:", error);

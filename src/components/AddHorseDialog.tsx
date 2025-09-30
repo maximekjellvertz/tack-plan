@@ -6,8 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
-export const AddHorseDialog = () => {
+interface AddHorseDialogProps {
+  onHorseAdded?: () => void;
+}
+
+export const AddHorseDialog = ({ onHorseAdded }: AddHorseDialogProps) => {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   const [formData, setFormData] = useState({
@@ -19,26 +24,59 @@ export const AddHorseDialog = () => {
     color: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Här skulle du spara till databas med Lovable Cloud
-    console.log("Ny häst:", formData);
-    
-    toast({
-      title: "Häst tillagd!",
-      description: `${formData.name} har lagts till i dina hästar.`,
-    });
-    
-    setOpen(false);
-    setFormData({
-      name: "",
-      breed: "",
-      age: "",
-      discipline: "",
-      level: "Lätt",
-      color: "",
-    });
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Fel",
+          description: "Du måste vara inloggad för att lägga till en häst",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { error } = await supabase.from("horses").insert({
+        user_id: user.id,
+        name: formData.name,
+        breed: formData.breed,
+        age: parseInt(formData.age),
+        discipline: formData.discipline,
+        level: formData.level,
+        color: formData.color,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Häst tillagd!",
+        description: `${formData.name} har lagts till i dina hästar.`,
+      });
+      
+      setOpen(false);
+      setFormData({
+        name: "",
+        breed: "",
+        age: "",
+        discipline: "",
+        level: "Lätt",
+        color: "",
+      });
+      
+      if (onHorseAdded) {
+        onHorseAdded();
+      }
+    } catch (error) {
+      console.error("Error adding horse:", error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte lägga till hästen",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

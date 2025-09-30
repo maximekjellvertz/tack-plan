@@ -75,11 +75,19 @@ const Dashboard = () => {
             <p className="text-xl text-white/90 mb-8">
               Every horse writes a story, we're here to keep it
             </p>
-            <Link to="/horses">
-              <Button size="lg" className="bg-primary hover:bg-primary/90">
-                Kom igång
-              </Button>
-            </Link>
+            {user ? (
+              <Link to="/horses">
+                <Button size="lg" className="bg-primary hover:bg-primary/90">
+                  Gå till mina hästar
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/auth">
+                <Button size="lg" className="bg-primary hover:bg-primary/90">
+                  Kom igång
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </section>

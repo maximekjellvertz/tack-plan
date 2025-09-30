@@ -77,6 +77,45 @@ export type Database = {
         }
         Relationships: []
       }
+      horses: {
+        Row: {
+          age: number
+          breed: string
+          color: string
+          created_at: string
+          discipline: string
+          id: string
+          level: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          age: number
+          breed: string
+          color: string
+          created_at?: string
+          discipline: string
+          id?: string
+          level: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          age?: number
+          breed?: string
+          color?: string
+          created_at?: string
+          discipline?: string
+          id?: string
+          level?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       tdb_credentials: {
         Row: {
           created_at: string
