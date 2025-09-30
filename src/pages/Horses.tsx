@@ -1,10 +1,22 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart } from "lucide-react";
+import { Heart, Trash2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { AddHorseDialog } from "@/components/AddHorseDialog";
+import { EditHorseDialog } from "@/components/EditHorseDialog";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -76,6 +88,31 @@ const Horses = () => {
     }
   };
 
+  const handleDeleteHorse = async (horseId: string, horseName: string) => {
+    try {
+      const { error } = await supabase
+        .from("horses")
+        .delete()
+        .eq("id", horseId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Hästen borttagen",
+        description: `${horseName} har tagits bort`,
+      });
+
+      fetchHorses();
+    } catch (error) {
+      console.error("Error deleting horse:", error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte ta bort hästen",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -115,8 +152,37 @@ const Horses = () => {
                 </div>
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-3">
-                    <h3 className="text-2xl font-bold text-foreground">{horse.name}</h3>
-                    <Badge variant="secondary">{horse.level}</Badge>
+                    <div className="flex-1">
+                      <h3 className="text-2xl font-bold text-foreground">{horse.name}</h3>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary">{horse.level}</Badge>
+                      <EditHorseDialog horse={horse} onHorseUpdated={fetchHorses} />
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="outline" size="icon">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Ta bort häst?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Är du säker på att du vill ta bort {horse.name}? Detta går inte att ångra.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                            <AlertDialogAction 
+                              onClick={() => handleDeleteHorse(horse.id, horse.name)}
+                              className="bg-destructive hover:bg-destructive/90"
+                            >
+                              Ta bort
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </div>
                   <div className="space-y-2 text-sm mb-4">
                     <div className="flex justify-between">
