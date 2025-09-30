@@ -1,9 +1,23 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Heart, Calendar, Activity, FileText } from "lucide-react";
+import { ArrowLeft, Heart, Calendar, Activity, FileText, Trophy, MapPin } from "lucide-react";
+import { AddCompetitionToHorseDialog } from "@/components/AddCompetitionToHorseDialog";
+
+interface Competition {
+  id: number;
+  name: string;
+  date: string;
+  location: string;
+  discipline: string;
+  class: string;
+  notes: string;
+  status: "upcoming" | "completed";
+  result?: string;
+}
 
 // Mock data - skulle hämtas från databas
 const horsesData = [
@@ -41,6 +55,43 @@ const HorseDetails = () => {
   const navigate = useNavigate();
   
   const horse = horsesData.find((h) => h.id === Number(id));
+
+  // Mock initial competitions - skulle hämtas från databas
+  const [competitions, setCompetitions] = useState<Competition[]>([
+    {
+      id: 1,
+      name: "Hopptävling Strömsholm",
+      date: "2025-11-15",
+      location: "Strömsholm",
+      discipline: "Hoppning",
+      class: "Medel A, 110 cm",
+      notes: "Anmälan stänger 2025-11-10",
+      status: "upcoming",
+    },
+    {
+      id: 2,
+      name: "Lokaltävling Uppsala",
+      date: "2025-09-20",
+      location: "Uppsala Ridcenter",
+      discipline: "Hoppning",
+      class: "Lätt B, 90 cm",
+      notes: "",
+      status: "completed",
+      result: "2:a plats",
+    },
+  ]);
+
+  const handleAddCompetition = (newComp: Omit<Competition, 'id' | 'status' | 'result'>) => {
+    const competition: Competition = {
+      ...newComp,
+      id: Date.now(),
+      status: new Date(newComp.date) > new Date() ? "upcoming" : "completed",
+    };
+    setCompetitions([competition, ...competitions]);
+  };
+
+  const upcomingCompetitions = competitions.filter(c => c.status === "upcoming");
+  const completedCompetitions = competitions.filter(c => c.status === "completed");
 
   if (!horse) {
     return (
@@ -168,15 +219,114 @@ const HorseDetails = () => {
           </TabsContent>
 
           <TabsContent value="competitions" className="mt-6">
-            <Card className="p-6">
-              <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
                 <Calendar className="w-6 h-6 text-primary" />
-                <h3 className="text-xl font-semibold">Tävlingshistorik</h3>
+                <h3 className="text-xl font-semibold">Tävlingsschema</h3>
               </div>
-              <p className="text-muted-foreground">
-                Tidigare och kommande tävlingar för {horse.name} kommer visas här.
-              </p>
-            </Card>
+              <AddCompetitionToHorseDialog horseName={horse.name} onAdd={handleAddCompetition} />
+            </div>
+
+            {/* Upcoming Competitions */}
+            {upcomingCompetitions.length > 0 && (
+              <div className="mb-8">
+                <h4 className="text-lg font-semibold mb-4">Kommande tävlingar ({upcomingCompetitions.length})</h4>
+                <div className="space-y-4">
+                  {upcomingCompetitions.map((comp) => (
+                    <Card key={comp.id} className="p-5 hover:shadow-elevated transition-shadow">
+                      <div className="flex items-start justify-between">
+                        <div className="flex gap-4 flex-1">
+                          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <Trophy className="w-6 h-6 text-primary" />
+                          </div>
+                          <div className="flex-1">
+                            <h5 className="font-semibold text-lg mb-1">{comp.name}</h5>
+                            <div className="space-y-1 text-sm">
+                              <div className="flex items-center gap-2 text-muted-foreground">
+                                <Calendar className="w-4 h-4" />
+                                <span>{comp.date}</span>
+                              </div>
+                              {comp.location && (
+                                <div className="flex items-center gap-2 text-muted-foreground">
+                                  <MapPin className="w-4 h-4" />
+                                  <span>{comp.location}</span>
+                                </div>
+                              )}
+                              {comp.class && (
+                                <div className="flex items-center gap-2">
+                                  <Badge variant="secondary">{comp.class}</Badge>
+                                  {comp.discipline && <Badge variant="outline">{comp.discipline}</Badge>}
+                                </div>
+                              )}
+                              {comp.notes && (
+                                <p className="text-muted-foreground mt-2">{comp.notes}</p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Completed Competitions */}
+            {completedCompetitions.length > 0 && (
+              <div>
+                <h4 className="text-lg font-semibold mb-4">Tidigare tävlingar ({completedCompetitions.length})</h4>
+                <div className="space-y-4">
+                  {completedCompetitions.map((comp) => (
+                    <Card key={comp.id} className="p-5 hover:shadow-elevated transition-shadow border-muted">
+                      <div className="flex items-start justify-between">
+                        <div className="flex gap-4 flex-1">
+                          <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
+                            <Trophy className="w-6 h-6 text-muted-foreground" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-1">
+                              <h5 className="font-semibold text-lg">{comp.name}</h5>
+                              {comp.result && (
+                                <Badge className="bg-secondary">{comp.result}</Badge>
+                              )}
+                            </div>
+                            <div className="space-y-1 text-sm">
+                              <div className="flex items-center gap-2 text-muted-foreground">
+                                <Calendar className="w-4 h-4" />
+                                <span>{comp.date}</span>
+                              </div>
+                              {comp.location && (
+                                <div className="flex items-center gap-2 text-muted-foreground">
+                                  <MapPin className="w-4 h-4" />
+                                  <span>{comp.location}</span>
+                                </div>
+                              )}
+                              {comp.class && (
+                                <div className="flex items-center gap-2">
+                                  <Badge variant="secondary">{comp.class}</Badge>
+                                  {comp.discipline && <Badge variant="outline">{comp.discipline}</Badge>}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {competitions.length === 0 && (
+              <Card className="p-12 text-center">
+                <Trophy className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                <h4 className="text-xl font-semibold mb-2">Inga tävlingar än</h4>
+                <p className="text-muted-foreground mb-6">
+                  Lägg till kommande tävlingar för {horse.name} för att planera träning och hålla koll på scheman.
+                </p>
+                <AddCompetitionToHorseDialog horseName={horse.name} onAdd={handleAddCompetition} />
+              </Card>
+            )}
           </TabsContent>
 
           <TabsContent value="health" className="mt-6">
