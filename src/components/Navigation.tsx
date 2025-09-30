@@ -1,10 +1,12 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Heart, Calendar, FileText, Home, Bell, LogOut } from "lucide-react";
+import { Heart, Calendar, FileText, Home, Bell, LogOut, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const navItems = [
   { name: "Hem", path: "/", icon: Home },
@@ -19,6 +21,8 @@ const Navigation = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [user, setUser] = useState<any>(null);
+  const [open, setOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     // Check initial session
@@ -52,12 +56,59 @@ const Navigation = () => {
     <nav className="bg-card border-b border-border sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center gap-2">
-            <Heart className="w-8 h-8 text-primary" />
-            <span className="text-xl font-bold text-foreground">Hoofprints</span>
-          </Link>
+          <div className="flex items-center gap-2">
+            {isMobile && user && (
+              <Sheet open={open} onOpenChange={setOpen}>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Menu className="w-6 h-6" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-64">
+                  <div className="flex flex-col gap-4 mt-8">
+                    {navItems.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = location.pathname === item.path;
+                      
+                      return (
+                        <Link
+                          key={item.path}
+                          to={item.path}
+                          onClick={() => setOpen(false)}
+                          className={cn(
+                            "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
+                            isActive
+                              ? "bg-primary text-primary-foreground"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                          )}
+                        >
+                          <Icon className="w-5 h-5" />
+                          <span className="font-medium">{item.name}</span>
+                        </Link>
+                      );
+                    })}
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        handleLogout();
+                        setOpen(false);
+                      }}
+                      className="justify-start gap-3 px-4 py-3 text-muted-foreground hover:text-foreground"
+                    >
+                      <LogOut className="w-5 h-5" />
+                      <span className="font-medium">Logga ut</span>
+                    </Button>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            )}
+            <Link to="/" className="flex items-center gap-2">
+              <Heart className="w-8 h-8 text-primary" />
+              <span className="text-xl font-bold text-foreground">Hoofprints</span>
+            </Link>
+          </div>
 
-          <div className="flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
@@ -67,14 +118,14 @@ const Navigation = () => {
                   key={item.path}
                   to={item.path}
                   className={cn(
-                    "flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg transition-colors",
+                    "flex items-center gap-2 px-4 py-2 rounded-lg transition-colors",
                     isActive
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   )}
                 >
-                  <Icon className="w-5 h-5" />
-                  <span className="hidden md:inline font-medium">{item.name}</span>
+                  <Icon className="w-4 h-4" />
+                  <span className="font-medium">{item.name}</span>
                 </Link>
               );
             })}
@@ -85,8 +136,8 @@ const Navigation = () => {
                 onClick={handleLogout}
                 className="ml-2 text-muted-foreground hover:text-foreground"
               >
-                <LogOut className="w-5 h-5 md:mr-2" />
-                <span className="hidden md:inline">Logga ut</span>
+                <LogOut className="w-4 h-4 mr-2" />
+                Logga ut
               </Button>
             )}
           </div>
