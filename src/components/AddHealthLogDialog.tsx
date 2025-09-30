@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,24 +8,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { addTreatmentReminders } from "@/pages/Reminders";
+import { supabase } from "@/integrations/supabase/client";
 
-const horses = ["Thunder", "Storm", "Luna"];
 const severities = ["Lätt", "Medel", "Allvarlig", "Normal"];
 
 interface AddHealthLogDialogProps {
-  onAdd: (log: {
-    horse: string;
-    event: string;
-    severity: string;
-    treatment: string;
-    notes: string;
-    images?: string[];
-  }) => void;
+  onLogAdded?: () => void;
 }
 
-export const AddHealthLogDialog = ({ onAdd }: AddHealthLogDialogProps) => {
+export const AddHealthLogDialog = ({ onLogAdded }: AddHealthLogDialogProps) => {
   const [open, setOpen] = useState(false);
   const [images, setImages] = useState<string[]>([]);
+  const [horses, setHorses] = useState<any[]>([]);
   const [formData, setFormData] = useState({
     horse: "",
     event: "",
@@ -34,6 +28,26 @@ export const AddHealthLogDialog = ({ onAdd }: AddHealthLogDialogProps) => {
     notes: "",
     treatmentDays: "",
   });
+
+  useEffect(() => {
+    if (open) {
+      fetchHorses();
+    }
+  }, [open]);
+
+  const fetchHorses = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("horses")
+        .select("id, name")
+        .order("name");
+
+      if (error) throw error;
+      setHorses(data || []);
+    } catch (error) {
+      console.error("Error fetching horses:", error);
+    }
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -57,7 +71,7 @@ export const AddHealthLogDialog = ({ onAdd }: AddHealthLogDialogProps) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.horse || !formData.event) {
@@ -65,43 +79,62 @@ export const AddHealthLogDialog = ({ onAdd }: AddHealthLogDialogProps) => {
       return;
     }
 
-    // Anropa onAdd callback för att lägga till i listan
-    onAdd({
-      horse: formData.horse,
-      event: formData.event,
-      severity: formData.severity || "Lätt",
-      treatment: formData.treatment,
-      notes: formData.notes,
-      images: images.length > 0 ? images : undefined,
-    });
-    
-    // Create reminders if treatment days specified
-    if (formData.treatmentDays && parseInt(formData.treatmentDays) > 0) {
-      const days = parseInt(formData.treatmentDays);
-      const today = new Date().toISOString().split('T')[0];
-      addTreatmentReminders(
-        formData.horse,
-        formData.treatment || formData.event,
-        today,
-        days
-      );
-    }
-    
-    toast.success("Hälsologg sparad!", {
-      description: `${formData.event} för ${formData.horse} har dokumenterats`,
-    });
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    // Reset form
-    setFormData({
-      horse: "",
-      event: "",
-      severity: "",
-      treatment: "",
-      notes: "",
-      treatmentDays: "",
-    });
-    setImages([]);
-    setOpen(false);
+      const selectedHorse = horses.find(h => h.id === formData.horse);
+      if (!selectedHorse) return;
+
+      const { error } = await supabase.from("health_logs").insert({
+        user_id: user.id,
+        horse_id: formData.horse,
+        horse_name: selectedHorse.name,
+        event: formData.event,
+        severity: formData.severity || "Lätt",
+        treatment: formData.treatment,
+        notes: formData.notes,
+        images: images.length > 0 ? images : [],
+        status: "Pågående",
+      });
+
+      if (error) throw error;
+
+      // Create reminders if treatment days specified
+      if (formData.treatmentDays && parseInt(formData.treatmentDays) > 0) {
+        const days = parseInt(formData.treatmentDays);
+        const today = new Date().toISOString().split('T')[0];
+        await addTreatmentReminders(
+          selectedHorse.name,
+          formData.treatment || formData.event,
+          today,
+          days
+        );
+      }
+      
+      toast.success("Hälsologg sparad!", {
+        description: `${formData.event} för ${selectedHorse.name} har dokumenterats`,
+      });
+
+      // Reset form
+      setFormData({
+        horse: "",
+        event: "",
+        severity: "",
+        treatment: "",
+        notes: "",
+        treatmentDays: "",
+      });
+      setImages([]);
+      setOpen(false);
+
+      if (onLogAdded) {
+        onLogAdded();
+      }
+    } catch (error) {
+      console.error("Error adding health log:", error);
+      toast.error("Kunde inte spara hälsologg");
+    }
   };
 
   return (
@@ -130,8 +163,8 @@ export const AddHealthLogDialog = ({ onAdd }: AddHealthLogDialogProps) => {
               </SelectTrigger>
               <SelectContent>
                 {horses.map((horse) => (
-                  <SelectItem key={horse} value={horse}>
-                    {horse}
+                  <SelectItem key={horse.id} value={horse.id}>
+                    {horse.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -250,12 +283,6 @@ export const AddHealthLogDialog = ({ onAdd }: AddHealthLogDialogProps) => {
                 ))}
               </div>
             )}
-          </div>
-
-          {/* Info Message */}
-          <div className="bg-muted/50 border border-border rounded-lg p-4 text-sm text-muted-foreground">
-            <p className="font-medium text-foreground mb-1">💡 Tips</p>
-            <p>För att spara bilder permanent, anslut till Lovable Cloud. Just nu sparas endast i webbläsarens minne.</p>
           </div>
 
           {/* Action Buttons */}

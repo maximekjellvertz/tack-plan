@@ -77,6 +77,59 @@ export type Database = {
         }
         Relationships: []
       }
+      health_logs: {
+        Row: {
+          created_at: string
+          event: string
+          horse_id: string | null
+          horse_name: string
+          id: string
+          images: Json | null
+          notes: string | null
+          severity: string
+          status: string
+          treatment: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event: string
+          horse_id?: string | null
+          horse_name: string
+          id?: string
+          images?: Json | null
+          notes?: string | null
+          severity: string
+          status?: string
+          treatment: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event?: string
+          horse_id?: string | null
+          horse_name?: string
+          id?: string
+          images?: Json | null
+          notes?: string | null
+          severity?: string
+          status?: string
+          treatment?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "health_logs_horse_id_fkey"
+            columns: ["horse_id"]
+            isOneToOne: false
+            referencedRelation: "horses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       horses: {
         Row: {
           age: number
@@ -115,6 +168,59 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      reminders: {
+        Row: {
+          completed: boolean
+          created_at: string
+          date: string
+          description: string | null
+          horse_id: string | null
+          horse_name: string | null
+          id: string
+          recurring: boolean | null
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          date: string
+          description?: string | null
+          horse_id?: string | null
+          horse_name?: string | null
+          id?: string
+          recurring?: boolean | null
+          title: string
+          type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          date?: string
+          description?: string | null
+          horse_id?: string | null
+          horse_name?: string | null
+          id?: string
+          recurring?: boolean | null
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reminders_horse_id_fkey"
+            columns: ["horse_id"]
+            isOneToOne: false
+            referencedRelation: "horses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tdb_credentials: {
         Row: {

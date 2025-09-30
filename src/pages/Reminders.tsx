@@ -10,33 +10,26 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { format, isPast, isToday, isTomorrow } from "date-fns";
 import { sv } from "date-fns/locale";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 export interface Reminder {
-  id: number;
+  id: string;
   title: string;
-  description: string;
+  description: string | null;
   date: string;
-  horse?: string;
-  type: "treatment" | "custom" | "vaccination" | "checkup";
+  horse_name: string | null;
+  type: string;
   completed: boolean;
-  recurring?: boolean;
+  recurring: boolean | null;
 }
 
-// Store reminders in localStorage
-const REMINDERS_KEY = "horse-app-reminders";
-
-const loadReminders = (): Reminder[] => {
-  const stored = localStorage.getItem(REMINDERS_KEY);
-  return stored ? JSON.parse(stored) : [];
-};
-
-const saveReminders = (reminders: Reminder[]) => {
-  localStorage.setItem(REMINDERS_KEY, JSON.stringify(reminders));
-};
-
 const Reminders = () => {
-  const [reminders, setReminders] = useState<Reminder[]>(loadReminders());
+  const [reminders, setReminders] = useState<Reminder[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -45,10 +38,52 @@ const Reminders = () => {
   });
 
   useEffect(() => {
-    saveReminders(reminders);
-  }, [reminders]);
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate("/auth");
+        return;
+      }
+      setUser(session.user);
+    };
 
-  const handleAddReminder = (e: React.FormEvent) => {
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!session) {
+        navigate("/auth");
+      } else {
+        setUser(session.user);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  useEffect(() => {
+    if (user) {
+      fetchReminders();
+    }
+  }, [user]);
+
+  const fetchReminders = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("reminders")
+        .select("*")
+        .order("date", { ascending: true });
+
+      if (error) throw error;
+
+      setReminders(data || []);
+    } catch (error) {
+      console.error("Error fetching reminders:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddReminder = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.title || !formData.date) {
@@ -56,32 +91,64 @@ const Reminders = () => {
       return;
     }
 
-    const newReminder: Reminder = {
-      id: Date.now(),
-      title: formData.title,
-      description: formData.description,
-      date: formData.date,
-      horse: formData.horse,
-      type: "custom",
-      completed: false,
-    };
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    setReminders([...reminders, newReminder]);
-    toast.success("Påminnelse skapad!");
-    
-    setFormData({ title: "", description: "", date: "", horse: "" });
-    setOpen(false);
+      const { error } = await supabase.from("reminders").insert({
+        user_id: user.id,
+        title: formData.title,
+        description: formData.description,
+        date: formData.date,
+        horse_name: formData.horse || null,
+        type: "custom",
+        completed: false,
+      });
+
+      if (error) throw error;
+
+      await fetchReminders();
+      toast.success("Påminnelse skapad!");
+      
+      setFormData({ title: "", description: "", date: "", horse: "" });
+      setOpen(false);
+    } catch (error) {
+      console.error("Error adding reminder:", error);
+      toast.error("Kunde inte skapa påminnelse");
+    }
   };
 
-  const toggleComplete = (id: number) => {
-    setReminders(reminders.map(r => 
-      r.id === id ? { ...r, completed: !r.completed } : r
-    ));
+  const toggleComplete = async (id: string, completed: boolean) => {
+    try {
+      const { error } = await supabase
+        .from("reminders")
+        .update({ completed: !completed })
+        .eq("id", id);
+
+      if (error) throw error;
+
+      await fetchReminders();
+    } catch (error) {
+      console.error("Error updating reminder:", error);
+      toast.error("Kunde inte uppdatera påminnelse");
+    }
   };
 
-  const deleteReminder = (id: number) => {
-    setReminders(reminders.filter(r => r.id !== id));
-    toast.success("Påminnelse borttagen");
+  const deleteReminder = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from("reminders")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      await fetchReminders();
+      toast.success("Påminnelse borttagen");
+    } catch (error) {
+      console.error("Error deleting reminder:", error);
+      toast.error("Kunde inte ta bort påminnelse");
+    }
   };
 
   const getDateLabel = (dateStr: string) => {
@@ -111,6 +178,14 @@ const Reminders = () => {
   const activeCount = reminders.filter(r => !r.completed).length;
   const overdueCount = reminders.filter(r => !r.completed && isPast(new Date(r.date))).length;
   const todayCount = reminders.filter(r => !r.completed && isToday(new Date(r.date))).length;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Laddar...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -252,7 +327,7 @@ const Reminders = () => {
                   <Button
                     size="icon"
                     variant="outline"
-                    onClick={() => toggleComplete(reminder.id)}
+                    onClick={() => toggleComplete(reminder.id, reminder.completed)}
                     className={reminder.completed ? 'bg-secondary text-secondary-foreground' : ''}
                   >
                     {reminder.completed ? <Check className="w-4 h-4" /> : getTypeIcon(reminder.type)}
@@ -264,8 +339,8 @@ const Reminders = () => {
                         <h3 className={`text-lg font-semibold ${reminder.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
                           {reminder.title}
                         </h3>
-                        {reminder.horse && (
-                          <p className="text-sm text-muted-foreground">{reminder.horse}</p>
+                        {reminder.horse_name && (
+                          <p className="text-sm text-muted-foreground">{reminder.horse_name}</p>
                         )}
                         {reminder.description && (
                           <p className="text-sm text-muted-foreground mt-1">{reminder.description}</p>
@@ -320,33 +395,41 @@ const Reminders = () => {
 export default Reminders;
 
 // Export function to add reminders from other components
-export const addTreatmentReminders = (
+export const addTreatmentReminders = async (
   horse: string,
   treatment: string,
   startDate: string,
   durationDays: number
 ) => {
-  const reminders = loadReminders();
-  const newReminders: Reminder[] = [];
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
 
-  for (let i = 0; i < durationDays; i++) {
-    const date = new Date(startDate);
-    date.setDate(date.getDate() + i);
+    const reminders = [];
+    for (let i = 0; i < durationDays; i++) {
+      const date = new Date(startDate);
+      date.setDate(date.getDate() + i);
+      
+      reminders.push({
+        user_id: user.id,
+        title: treatment,
+        description: `Dag ${i + 1} av ${durationDays}`,
+        date: date.toISOString().split('T')[0],
+        horse_name: horse,
+        type: "treatment",
+        completed: false,
+      });
+    }
+
+    const { error } = await supabase.from("reminders").insert(reminders);
+
+    if (error) throw error;
     
-    newReminders.push({
-      id: Date.now() + i,
-      title: treatment,
-      description: `Dag ${i + 1} av ${durationDays}`,
-      date: date.toISOString().split('T')[0],
-      horse: horse,
-      type: "treatment",
-      completed: false,
+    toast.success(`${durationDays} påminnelser skapade!`, {
+      description: `Dagliga påminnelser för ${treatment}`,
     });
+  } catch (error) {
+    console.error("Error creating reminders:", error);
+    toast.error("Kunde inte skapa påminnelser");
   }
-
-  saveReminders([...reminders, ...newReminders]);
-  
-  toast.success(`${durationDays} påminnelser skapade!`, {
-    description: `Dagliga påminnelser för ${treatment}`,
-  });
 };

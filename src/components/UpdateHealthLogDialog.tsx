@@ -8,20 +8,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 
 interface HealthLog {
-  id: number;
-  horse: string;
+  id: string;
+  horse_name: string;
   event: string;
-  date: string;
   severity: string;
   status: string;
   treatment: string;
-  notes: string;
-  images?: string[];
+  notes: string | null;
+  created_at: string;
 }
 
 interface UpdateHealthLogDialogProps {
   log: HealthLog;
-  onUpdate: (id: number, updates: Partial<HealthLog>) => void;
+  onUpdate: (id: string, updates: Partial<HealthLog>) => void;
 }
 
 const statuses = ["Pågående", "Klar", "Uppmärksamhet"];
@@ -33,7 +32,7 @@ export const UpdateHealthLogDialog = ({ log, onUpdate }: UpdateHealthLogDialogPr
     severity: log.severity,
     status: log.status,
     treatment: log.treatment,
-    notes: log.notes,
+    notes: log.notes || "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -42,7 +41,7 @@ export const UpdateHealthLogDialog = ({ log, onUpdate }: UpdateHealthLogDialogPr
     onUpdate(log.id, formData);
     
     toast.success("Hälsologg uppdaterad!", {
-      description: `${log.event} för ${log.horse} har uppdaterats`,
+      description: `${log.event} för ${log.horse_name} har uppdaterats`,
     });
 
     setOpen(false);
@@ -59,7 +58,7 @@ export const UpdateHealthLogDialog = ({ log, onUpdate }: UpdateHealthLogDialogPr
         <DialogHeader>
           <DialogTitle>Uppdatera hälsohändelse</DialogTitle>
           <p className="text-sm text-muted-foreground mt-2">
-            {log.event} - {log.horse}
+            {log.event} - {log.horse_name}
           </p>
         </DialogHeader>
 

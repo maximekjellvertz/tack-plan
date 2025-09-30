@@ -5,15 +5,15 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, AlertCircle, CheckCircle, Clock, Image as ImageIcon } from "lucide-react";
 
 interface HealthLog {
-  id: number;
-  horse: string;
+  id: string;
+  horse_name: string;
   event: string;
-  date: string;
   severity: string;
   status: string;
   treatment: string;
-  notes: string;
-  images?: string[];
+  notes: string | null;
+  images: any;
+  created_at: string;
 }
 
 interface HealthLogDetailsDialogProps {
@@ -48,6 +48,8 @@ const getStatusIcon = (status: string) => {
 
 export const HealthLogDetailsDialog = ({ log }: HealthLogDetailsDialogProps) => {
   const [open, setOpen] = useState(false);
+  
+  const images = Array.isArray(log.images) ? log.images : [];
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -81,12 +83,12 @@ export const HealthLogDetailsDialog = ({ log }: HealthLogDetailsDialogProps) => 
                 <Calendar className="w-5 h-5 text-primary" />
                 <div>
                   <p className="text-sm text-muted-foreground">Datum</p>
-                  <p className="font-medium">{log.date}</p>
+                  <p className="font-medium">{new Date(log.created_at).toLocaleDateString('sv-SE')}</p>
                 </div>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Häst</p>
-                <p className="font-medium">{log.horse}</p>
+                <p className="font-medium">{log.horse_name}</p>
               </div>
             </div>
           </div>
@@ -108,14 +110,14 @@ export const HealthLogDetailsDialog = ({ log }: HealthLogDetailsDialogProps) => 
           </div>
 
           {/* Bilder */}
-          {log.images && log.images.length > 0 && (
+          {images.length > 0 && (
             <div className="space-y-3">
               <h3 className="font-semibold text-lg flex items-center gap-2">
                 <ImageIcon className="w-5 h-5" />
-                Bilder ({log.images.length})
+                Bilder ({images.length})
               </h3>
               <div className="grid grid-cols-2 gap-4">
-                {log.images.map((img, index) => (
+                {images.map((img: string, index: number) => (
                   <img
                     key={index}
                     src={img}
@@ -126,14 +128,6 @@ export const HealthLogDetailsDialog = ({ log }: HealthLogDetailsDialogProps) => 
               </div>
             </div>
           )}
-
-          {/* Historik */}
-          <div className="space-y-2">
-            <h3 className="font-semibold text-lg">Liknande händelser</h3>
-            <div className="p-4 bg-muted/50 rounded-lg text-sm text-muted-foreground">
-              <p>Funktionalitet för att visa tidigare liknande händelser kommer här. Detta hjälper dig att se vad som funkade förra gången.</p>
-            </div>
-          </div>
         </div>
       </DialogContent>
     </Dialog>

@@ -33,15 +33,15 @@ interface TrainingSession {
 }
 
 interface HealthLog {
-  id: number;
-  horse: string;
+  id: string;
+  horse_name: string;
   event: string;
-  date: string;
+  created_at: string;
   severity: string;
   status: string;
   treatment: string;
-  notes: string;
-  images?: string[];
+  notes: string | null;
+  images?: any;
 }
 
 // Mock data - skulle hämtas från databas
@@ -185,15 +185,15 @@ const HorseDetails = () => {
   const handleAddHealthLog = (newLog: Omit<HealthLog, 'id' | 'date' | 'status' | 'horse'>) => {
     const log: HealthLog = {
       ...newLog,
-      id: Date.now(),
-      horse: horse.name,
-      date: new Date().toISOString().split('T')[0],
+      id: Date.now().toString(),
+      horse_name: horse.name,
+      created_at: new Date().toISOString(),
       status: "Pågående",
     };
     setHealthLogs([log, ...healthLogs]);
   };
 
-  const handleUpdateHealthLog = (id: number, updates: Partial<HealthLog>) => {
+  const handleUpdateHealthLog = (id: string, updates: Partial<HealthLog>) => {
     setHealthLogs(healthLogs.map(log => 
       log.id === id ? { ...log, ...updates } : log
     ));
