@@ -67,14 +67,14 @@ const Navigation = () => {
                   key={item.path}
                   to={item.path}
                   className={cn(
-                    "flex items-center gap-2 px-4 py-2 rounded-lg transition-colors",
+                    "flex items-center gap-2 px-3 md:px-4 py-2 rounded-lg transition-colors",
                     isActive
                       ? "bg-primary text-primary-foreground"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   )}
                 >
-                  <Icon className="w-4 h-4" />
-                  <span className="font-medium">{item.name}</span>
+                  <Icon className="w-5 h-5" />
+                  <span className="hidden md:inline font-medium">{item.name}</span>
                 </Link>
               );
             })}
@@ -85,8 +85,8 @@ const Navigation = () => {
                 onClick={handleLogout}
                 className="ml-2 text-muted-foreground hover:text-foreground"
               >
-                <LogOut className="w-4 h-4 mr-2" />
-                Logga ut
+                <LogOut className="w-5 h-5 md:mr-2" />
+                <span className="hidden md:inline">Logga ut</span>
               </Button>
             )}
           </div>
