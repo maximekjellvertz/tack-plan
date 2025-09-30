@@ -16,81 +16,123 @@ interface Goal {
 interface GoalJourneyPathProps {
   goals: Goal[];
   onGoalClick?: (goal: Goal) => void;
+  onToggleComplete?: (goalId: string, currentStatus: boolean) => void;
 }
 
-const HoofPrint = ({ isCompleted, isActive }: { isCompleted: boolean; isActive: boolean }) => (
-  <svg
-    width="40"
-    height="40"
-    viewBox="0 0 40 40"
-    className={`transition-all duration-500 ${
-      isCompleted
-        ? "drop-shadow-[0_0_12px_hsl(var(--primary))]"
-        : isActive
-        ? "opacity-60"
-        : "opacity-30"
-    }`}
-  >
-    <g transform="translate(20, 20)">
-      {/* Main hoof shape */}
-      <ellipse
-        cx="0"
-        cy="2"
-        rx="8"
-        ry="10"
-        fill={isCompleted ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))"}
-        className="transition-all duration-500"
-      />
-      {/* Frog (center part) */}
-      <ellipse
-        cx="0"
-        cy="4"
-        rx="4"
-        ry="6"
-        fill={isCompleted ? "hsl(var(--primary-foreground))" : "hsl(var(--background))"}
-        opacity="0.6"
-      />
-    </g>
-  </svg>
-);
-
-const HorseIcon = () => (
+const HorseshoeIcon = ({ isCompleted }: { isCompleted: boolean }) => (
   <svg
     width="50"
     height="50"
     viewBox="0 0 50 50"
-    className="animate-pulse"
+    className={`transition-all duration-500 cursor-pointer hover:scale-110 ${
+      isCompleted
+        ? "drop-shadow-[0_0_20px_rgba(255,215,0,0.8)]"
+        : "opacity-80"
+    }`}
   >
     <g transform="translate(25, 25)">
-      {/* Horse head silhouette */}
+      {/* Horseshoe shape */}
       <path
-        d="M-8,-12 Q-10,-8 -10,-4 L-10,8 Q-10,12 -6,12 L6,12 Q10,12 10,8 L10,-4 Q10,-8 8,-12 Q6,-14 2,-14 L-2,-14 Q-6,-14 -8,-12 Z"
+        d="M-15,-5 Q-15,-15 -5,-18 Q0,-19 5,-18 Q15,-15 15,-5 L15,10 Q15,12 13,12 L10,12 Q8,12 8,10 L8,-3 Q8,-10 3,-12 Q0,-13 -3,-12 Q-8,-10 -8,-3 L-8,10 Q-8,12 -10,12 L-13,12 Q-15,12 -15,10 Z"
+        fill={isCompleted ? "#FFD700" : "#C0C0C0"}
+        stroke={isCompleted ? "#FFA500" : "#808080"}
+        strokeWidth="1.5"
+        className="transition-all duration-500"
+      />
+      {/* Nail holes */}
+      <circle cx="-10" cy="-8" r="1.5" fill={isCompleted ? "#B8860B" : "#606060"} />
+      <circle cx="-10" cy="0" r="1.5" fill={isCompleted ? "#B8860B" : "#606060"} />
+      <circle cx="-10" cy="8" r="1.5" fill={isCompleted ? "#B8860B" : "#606060"} />
+      <circle cx="10" cy="-8" r="1.5" fill={isCompleted ? "#B8860B" : "#606060"} />
+      <circle cx="10" cy="0" r="1.5" fill={isCompleted ? "#B8860B" : "#606060"} />
+      <circle cx="10" cy="8" r="1.5" fill={isCompleted ? "#B8860B" : "#606060"} />
+    </g>
+  </svg>
+);
+
+const GallopingHorseIcon = () => (
+  <svg
+    width="60"
+    height="60"
+    viewBox="0 0 60 60"
+    className="animate-bounce"
+  >
+    <g transform="translate(30, 30)">
+      {/* Horse head */}
+      <ellipse
+        cx="-8"
+        cy="-10"
+        rx="6"
+        ry="8"
         fill="hsl(var(--primary))"
-        className="drop-shadow-md"
+        className="drop-shadow-lg"
       />
       {/* Ear */}
       <path
-        d="M-4,-14 L-2,-18 L0,-14 Z"
+        d="M-10,-16 L-8,-20 L-6,-16 Z"
         fill="hsl(var(--primary))"
       />
       {/* Eye */}
       <circle
-        cx="2"
-        cy="-6"
-        r="2"
+        cx="-6"
+        cy="-12"
+        r="1.5"
         fill="hsl(var(--primary-foreground))"
+      />
+      {/* Neck */}
+      <path
+        d="M-2,-10 Q0,-8 0,-4 L0,4 Q0,6 2,6 L8,6 Q10,6 10,4 L10,-2 Q10,-6 8,-8 L2,-10 Z"
+        fill="hsl(var(--primary))"
+      />
+      {/* Body */}
+      <ellipse
+        cx="8"
+        cy="2"
+        rx="10"
+        ry="8"
+        fill="hsl(var(--primary))"
+      />
+      {/* Front leg (raised) */}
+      <line
+        x1="2"
+        y1="8"
+        x2="0"
+        y2="4"
+        stroke="hsl(var(--primary))"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      {/* Back leg (extended) */}
+      <line
+        x1="14"
+        y1="8"
+        x2="18"
+        y2="14"
+        stroke="hsl(var(--primary))"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      {/* Tail */}
+      <path
+        d="M16,0 Q20,2 22,6"
+        stroke="hsl(var(--primary))"
+        strokeWidth="2"
+        fill="none"
+        strokeLinecap="round"
       />
       {/* Mane */}
       <path
-        d="M-8,-10 Q-12,-8 -12,-4 L-10,-4 Q-10,-8 -8,-10 Z"
-        fill="hsl(var(--primary))"
-        opacity="0.7"
+        d="M-4,-14 Q-2,-16 0,-14 Q2,-16 4,-12"
+        stroke="hsl(var(--primary))"
+        strokeWidth="2"
+        fill="none"
+        strokeLinecap="round"
       />
     </g>
   </svg>
 );
 
-export const GoalJourneyPath = ({ goals, onGoalClick }: GoalJourneyPathProps) => {
+export const GoalJourneyPath = ({ goals, onGoalClick, onToggleComplete }: GoalJourneyPathProps) => {
   const sortedGoals = [...goals].sort((a, b) => {
     if (a.target_date && b.target_date) {
       return new Date(a.target_date).getTime() - new Date(b.target_date).getTime();
@@ -144,56 +186,53 @@ export const GoalJourneyPath = ({ goals, onGoalClick }: GoalJourneyPathProps) =>
         <div className="min-w-[600px]">
           {/* Progress indicator */}
           <div className="mb-6 text-center">
-            <p className="text-sm text-muted-foreground mb-2">Din resa</p>
+            <p className="text-sm text-muted-foreground mb-2">Din målresa</p>
             <div className="flex items-center justify-center gap-2">
-              <span className="text-2xl font-bold">{Math.round(totalProgress)}%</span>
-              <span className="text-sm text-muted-foreground">genomfört</span>
+              <GallopingHorseIcon />
             </div>
           </div>
 
           {/* Path container */}
           <div className="relative">
-            {/* Trail line */}
-            <div className="absolute top-1/2 left-0 right-0 h-1 bg-muted -translate-y-1/2" />
-            <div
-              className="absolute top-1/2 left-0 h-1 bg-primary -translate-y-1/2 transition-all duration-1000"
-              style={{ width: `${totalProgress}%` }}
-            />
+            {/* Timeline line */}
+            <div className="absolute top-1/2 left-12 right-12 h-1 bg-muted -translate-y-1/2" />
 
             {/* Goals as checkpoints */}
-            <div className="relative flex justify-between items-center py-8">
-              {sortedGoals.map((goal, index) => {
-                const position = (index / (sortedGoals.length - 1 || 1)) * 100;
-                const isActive = totalProgress >= position;
-
-                return (
+            <div className="relative flex justify-between items-center py-8 px-4">
+              {sortedGoals.map((goal) => (
+                <div
+                  key={goal.id}
+                  className="flex flex-col items-center group z-10"
+                >
                   <div
-                    key={goal.id}
-                    className="flex flex-col items-center cursor-pointer group"
-                    onClick={() => onGoalClick?.(goal)}
+                    className="cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onToggleComplete?.(goal.id, goal.is_completed);
+                    }}
+                    title={goal.is_completed ? "Markera som ej klar" : "Markera som klar"}
                   >
-                    <HoofPrint isCompleted={goal.is_completed} isActive={isActive} />
-                    <div className="mt-2 text-center max-w-[120px]">
-                      <p className="text-xs font-medium truncate group-hover:text-primary transition-colors">
-                        {goal.title}
-                      </p>
-                      {goal.target_date && (
-                        <p className="text-xs text-muted-foreground">
-                          {format(new Date(goal.target_date), "d MMM", { locale: sv })}
-                        </p>
-                      )}
-                    </div>
+                    <HorseshoeIcon isCompleted={goal.is_completed} />
                   </div>
-                );
-              })}
-            </div>
-
-            {/* Horse position */}
-            <div
-              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 transition-all duration-1000 ease-out"
-              style={{ left: `${totalProgress}%` }}
-            >
-              <HorseIcon />
+                  <div className="mt-2 text-center max-w-[120px]">
+                    <p 
+                      className={`text-xs font-medium truncate transition-colors cursor-pointer ${
+                        goal.is_completed 
+                          ? "text-yellow-600 dark:text-yellow-400" 
+                          : "group-hover:text-primary"
+                      }`}
+                      onClick={() => onGoalClick?.(goal)}
+                    >
+                      {goal.title}
+                    </p>
+                    {goal.target_date && (
+                      <p className="text-xs text-muted-foreground">
+                        {format(new Date(goal.target_date), "d MMM", { locale: sv })}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

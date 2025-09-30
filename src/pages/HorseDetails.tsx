@@ -515,6 +515,73 @@ const HorseDetails = () => {
     }
   };
 
+  const handleToggleGoalComplete = async (goalId: string, currentStatus: boolean) => {
+    try {
+      const goal = goals.find((g) => g.id === goalId);
+      if (!goal || !horse) return;
+
+      if (currentStatus) {
+        // Mark as incomplete
+        const { error } = await supabase
+          .from('goals')
+          .update({
+            is_completed: false,
+            completed_at: null,
+          })
+          .eq('id', goalId);
+
+        if (error) throw error;
+
+        toast({
+          title: "Uppdaterat",
+          description: "Målet har markerats som ej klart",
+        });
+      } else {
+        // Mark as completed
+        const { error: goalError } = await supabase
+          .from('goals')
+          .update({
+            is_completed: true,
+            completed_at: new Date().toISOString(),
+            progress_percent: 100,
+          })
+          .eq('id', goalId);
+
+        if (goalError) throw goalError;
+
+        // Create milestone
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { error: milestoneError } = await supabase
+          .from('milestones')
+          .insert({
+            user_id: user.id,
+            horse_id: horse.id,
+            goal_id: goalId,
+            title: goal.title,
+            description: goal.description,
+            achieved_date: new Date().toISOString().split('T')[0],
+            milestone_type: 'goal_completed',
+          });
+
+        if (milestoneError) throw milestoneError;
+
+        toast({
+          title: "Grattis!",
+          description: "Målet är klart och har lagts till som milstolpe",
+        });
+      }
+    } catch (error) {
+      console.error('Error toggling goal completion:', error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte uppdatera målets status",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleDeleteGoal = async (goalId: string) => {
     try {
       const { error } = await supabase
@@ -1044,7 +1111,10 @@ const HorseDetails = () => {
                     </p>
                   </Card>
                 ) : (
-                  <GoalJourneyPath goals={activeGoals} />
+                  <GoalJourneyPath 
+                    goals={activeGoals} 
+                    onToggleComplete={handleToggleGoalComplete}
+                  />
                 )}
               </TabsContent>
 
