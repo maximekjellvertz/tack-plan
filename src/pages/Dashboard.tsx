@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-horse.jpg";
 import { DailyTipCard } from "@/components/DailyTipCard";
+import { WeeklySummary } from "@/components/WeeklySummary";
 
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
@@ -162,6 +163,11 @@ const Dashboard = () => {
         {/* Daily Tip */}
         <div className="mb-8">
           <DailyTipCard />
+        </div>
+
+        {/* Weekly Summary */}
+        <div className="mb-8">
+          <WeeklySummary />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

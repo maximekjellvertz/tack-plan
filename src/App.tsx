@@ -14,6 +14,7 @@ import Goals from "./pages/Goals";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import Navigation from "./components/Navigation";
+import Calendar from "./pages/Calendar";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/dashboard" element={<><Navigation /><Dashboard /></>} />
           <Route path="/horses" element={<><Navigation /><Horses /></>} />
           <Route path="/horses/:id" element={<><Navigation /><HorseDetails /></>} />
+          <Route path="/calendar" element={<><Navigation /><Calendar /></>} />
           <Route path="/competitions" element={<><Navigation /><Competitions /></>} />
           <Route path="/health-log" element={<><Navigation /><HealthLog /></>} />
           <Route path="/reminders" element={<><Navigation /><Reminders /></>} />

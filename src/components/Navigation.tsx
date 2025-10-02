@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Heart, Calendar, FileText, Home, Bell, LogOut, Menu, Target } from "lucide-react";
+import { Heart, Calendar, FileText, Home, Bell, LogOut, Menu, Target, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,7 +11,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 const navItems = [
   { name: "Hem", path: "/dashboard", icon: Home },
   { name: "Hästar", path: "/horses", icon: Heart },
-  { name: "Tävlingar", path: "/competitions", icon: Calendar },
+  { name: "Kalender", path: "/calendar", icon: Calendar },
+  { name: "Tävlingar", path: "/competitions", icon: Trophy },
   { name: "Hälsologg", path: "/health-log", icon: FileText },
   { name: "Mål", path: "/goals", icon: Target },
   { name: "Påminnelser", path: "/reminders", icon: Bell },
