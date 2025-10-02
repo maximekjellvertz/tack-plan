@@ -200,7 +200,7 @@ export const AddTrainingSessionDialog = ({ horseName, onAdd }: AddTrainingSessio
               rows={3}
               className="resize-none"
             />
-            <p className="text-xs text-muted-foreground">💡 Dessa anteckningar blir värdefulla minnen</p>
+            <p className="text-xs text-muted-foreground">💡 Det du skriver idag kan hjälpa dig att förstå din häst bättre imorgon</p>
           </div>
 
           <div className="flex gap-3 justify-end pt-2">
