@@ -373,6 +373,29 @@ const HorseDetails = () => {
     }
   };
 
+  const handleDeleteTrainingSession = async (sessionId: string) => {
+    try {
+      const { error } = await supabase
+        .from('training_sessions')
+        .delete()
+        .eq('id', sessionId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Träningspass raderat!",
+        description: "Träningspasset har tagits bort",
+      });
+    } catch (error) {
+      console.error('Error deleting training session:', error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte radera träningspass",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Handlers for health logs
   const handleAddHealthLog = async (newLog: Omit<HealthLog, 'id' | 'created_at' | 'status' | 'horse_name'>) => {
     if (!horse) return;
@@ -856,6 +879,7 @@ const HorseDetails = () => {
               trainingSessions={trainingSessions}
               sortedTrainingSessions={sortedTrainingSessions}
               onAddTrainingSession={handleAddTrainingSession}
+              onDeleteTrainingSession={handleDeleteTrainingSession}
             />
           </TabsContent>
 

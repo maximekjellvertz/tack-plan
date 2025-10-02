@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Activity, Calendar, Clock } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Activity, Calendar, Clock, Trash2 } from "lucide-react";
 import { AddTrainingSessionDialog } from "@/components/AddTrainingSessionDialog";
 import { EmptyStateCard } from "@/components/EmptyStateCard";
 import { StatsCard } from "@/components/StatsCard";
@@ -19,6 +20,7 @@ interface HorseTrainingTabProps {
   trainingSessions: TrainingSession[];
   sortedTrainingSessions: TrainingSession[];
   onAddTrainingSession: (session: any) => void;
+  onDeleteTrainingSession: (id: string) => void;
 }
 
 export const HorseTrainingTab = ({
@@ -26,6 +28,7 @@ export const HorseTrainingTab = ({
   trainingSessions,
   sortedTrainingSessions,
   onAddTrainingSession,
+  onDeleteTrainingSession,
 }: HorseTrainingTabProps) => {
   const getIntensityColor = (intensity: string) => {
     switch (intensity) {
@@ -117,6 +120,14 @@ export const HorseTrainingTab = ({
                     </div>
                   </div>
                 </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onDeleteTrainingSession(session.id)}
+                  className="text-muted-foreground hover:text-destructive"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
               </div>
             </Card>
           ))}
