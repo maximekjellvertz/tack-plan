@@ -242,11 +242,13 @@ export type Database = {
           competitions_this_year: number | null
           created_at: string
           discipline: string
+          fun_fact: string | null
           gender: string | null
           id: string
           level: string
           microchip: string | null
           name: string
+          personality_trait: string | null
           placements: number | null
           registration_number: string | null
           training_sessions: number | null
@@ -262,11 +264,13 @@ export type Database = {
           competitions_this_year?: number | null
           created_at?: string
           discipline: string
+          fun_fact?: string | null
           gender?: string | null
           id?: string
           level: string
           microchip?: string | null
           name: string
+          personality_trait?: string | null
           placements?: number | null
           registration_number?: string | null
           training_sessions?: number | null
@@ -282,11 +286,13 @@ export type Database = {
           competitions_this_year?: number | null
           created_at?: string
           discipline?: string
+          fun_fact?: string | null
           gender?: string | null
           id?: string
           level?: string
           microchip?: string | null
           name?: string
+          personality_trait?: string | null
           placements?: number | null
           registration_number?: string | null
           training_sessions?: number | null

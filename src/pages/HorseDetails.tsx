@@ -64,6 +64,8 @@ interface Horse {
   placements?: number | null;
   training_sessions?: number | null;
   vet_visits?: number | null;
+  personality_trait?: string | null;
+  fun_fact?: string | null;
 }
 
 const HorseDetails = () => {
@@ -96,34 +98,34 @@ const HorseDetails = () => {
   const [loadingJourney, setLoadingJourney] = useState(true);
 
   // Fetch horse data
-  useEffect(() => {
-    const fetchHorse = async () => {
-      if (!id) return;
+  const fetchHorse = async () => {
+    if (!id) return;
 
-      try {
-        const { data, error } = await supabase
-          .from('horses')
-          .select('*')
-          .eq('id', id)
-          .maybeSingle();
+    try {
+      const { data, error } = await supabase
+        .from('horses')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
 
-        if (error) throw error;
-        
-        if (data) {
-          setHorse(data);
-        }
-      } catch (error) {
-        console.error('Error fetching horse:', error);
-        toast({
-          title: "Fel",
-          description: "Kunde inte hämta häst",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
+      if (error) throw error;
+      
+      if (data) {
+        setHorse(data);
       }
-    };
+    } catch (error) {
+      console.error('Error fetching horse:', error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte hämta häst",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchHorse();
   }, [id, toast]);
 
@@ -750,9 +752,13 @@ const HorseDetails = () => {
 
         <div className="mb-6 animate-fade-in" style={{ animationDelay: "200ms" }}>
           <HorsePersonalityCard 
+            horseId={horse.id}
             horseName={horse.name}
             breed={horse.breed}
             level={horse.level}
+            personalityTrait={horse.personality_trait}
+            funFact={horse.fun_fact}
+            onUpdate={fetchHorse}
           />
         </div>
 
