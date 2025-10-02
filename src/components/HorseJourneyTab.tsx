@@ -7,6 +7,7 @@ import { EditGoalDialog } from "@/components/EditGoalDialog";
 import { GoalJourneyPath } from "@/components/GoalJourneyPath";
 import { MilestoneTimeline } from "@/components/MilestoneTimeline";
 import { BadgesGrid } from "@/components/BadgesGrid";
+import { EmptyStateCard } from "@/components/EmptyStateCard";
 
 interface Goal {
   id: string;
@@ -83,13 +84,13 @@ export const HorseJourneyTab = ({
           </div>
 
           {activeGoals.length === 0 ? (
-            <Card className="p-8 text-center animate-fade-in">
-              <Target className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-              <p className="text-muted-foreground">Inga aktiva mål</p>
-              <p className="text-sm text-muted-foreground mt-1">
-                Lägg till ett mål för att komma igång!
-              </p>
-            </Card>
+            <EmptyStateCard
+              icon={Target}
+              title="Inga aktiva mål"
+              motivationalText="Drömmar blir verklighet när de blir mål"
+              description="Lägg till ett mål för att komma igång med din resa!"
+              action={<AddGoalDialog onAdd={onAddGoal} />}
+            />
           ) : (
             <div className="animate-fade-in">
               <GoalJourneyPath

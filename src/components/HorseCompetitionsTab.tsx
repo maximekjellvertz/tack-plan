@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Calendar, MapPin } from "lucide-react";
 import { AddCompetitionToHorseDialog } from "@/components/AddCompetitionToHorseDialog";
+import { EmptyStateCard } from "@/components/EmptyStateCard";
 
 interface Competition {
   id: number;
@@ -139,14 +140,13 @@ export const HorseCompetitionsTab = ({
       )}
 
       {competitions.length === 0 && (
-        <Card className="p-12 text-center animate-fade-in">
-          <Trophy className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-          <h4 className="text-xl font-semibold mb-2">Inga tävlingar än</h4>
-          <p className="text-muted-foreground mb-6">
-            Lägg till kommande tävlingar för {horseName} för att planera träning och hålla koll på scheman.
-          </p>
-          <AddCompetitionToHorseDialog horseName={horseName} onAdd={onAddCompetition} />
-        </Card>
+        <EmptyStateCard
+          icon={Trophy}
+          title="Inga tävlingar än"
+          motivationalText="Varje resa börjar med ett första steg"
+          description={`Lägg till kommande tävlingar för ${horseName} för att planera träning och hålla koll på scheman.`}
+          action={<AddCompetitionToHorseDialog horseName={horseName} onAdd={onAddCompetition} />}
+        />
       )}
     </div>
   );

@@ -2,6 +2,8 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Activity, Calendar, Clock } from "lucide-react";
 import { AddTrainingSessionDialog } from "@/components/AddTrainingSessionDialog";
+import { EmptyStateCard } from "@/components/EmptyStateCard";
+import { StatsCard } from "@/components/StatsCard";
 
 interface TrainingSession {
   id: number;
@@ -48,6 +50,40 @@ export const HorseTrainingTab = ({
         <AddTrainingSessionDialog horseName={horseName} onAdd={onAddTrainingSession} />
       </div>
 
+      {sortedTrainingSessions.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <StatsCard
+            title="Pass denna vecka"
+            value={trainingSessions.filter(s => {
+              const weekAgo = new Date();
+              weekAgo.setDate(weekAgo.getDate() - 7);
+              return new Date(s.date) >= weekAgo;
+            }).length}
+            icon={Activity}
+            gradient="from-primary/20 to-primary/5"
+            delay={0}
+          />
+          <StatsCard
+            title="Pass denna månad"
+            value={trainingSessions.filter(s => {
+              const monthAgo = new Date();
+              monthAgo.setMonth(monthAgo.getMonth() - 1);
+              return new Date(s.date) >= monthAgo;
+            }).length}
+            icon={Calendar}
+            gradient="from-secondary/20 to-secondary/5"
+            delay={100}
+          />
+          <StatsCard
+            title="Totalt pass"
+            value={trainingSessions.length}
+            icon={Clock}
+            gradient="from-accent/20 to-accent/5"
+            delay={200}
+          />
+        </div>
+      )}
+
       {sortedTrainingSessions.length > 0 ? (
         <div className="space-y-4">
           {sortedTrainingSessions.map((session, index) => (
@@ -86,17 +122,13 @@ export const HorseTrainingTab = ({
           ))}
         </div>
       ) : (
-        <Card className="p-12 text-center animate-fade-in">
-          <Activity className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-          <h4 className="text-xl font-semibold mb-2">Inga träningspass än</h4>
-          <p className="text-muted-foreground mb-2">
-            Det du skriver idag blir värdefull kunskap i morgon.
-          </p>
-          <p className="text-sm text-muted-foreground mb-6">
-            Börja logga träningspass för {horseName} för att följa utveckling och planera framåt.
-          </p>
-          <AddTrainingSessionDialog horseName={horseName} onAdd={onAddTrainingSession} />
-        </Card>
+        <EmptyStateCard
+          icon={Activity}
+          title="Inga träningspass än"
+          motivationalText="Det du skriver idag blir värdefull kunskap i morgon"
+          description={`Börja logga träningspass för ${horseName} för att följa utveckling och planera framåt.`}
+          action={<AddTrainingSessionDialog horseName={horseName} onAdd={onAddTrainingSession} />}
+        />
       )}
     </div>
   );

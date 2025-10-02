@@ -6,6 +6,8 @@ import { Heart, Calendar, Clock, AlertCircle, CheckCircle, Image as ImageIcon } 
 import { AddHealthLogToHorseDialog } from "@/components/AddHealthLogToHorseDialog";
 import { HealthLogDetailsDialog } from "@/components/HealthLogDetailsDialog";
 import { UpdateHealthLogDialog } from "@/components/UpdateHealthLogDialog";
+import { EmptyStateCard } from "@/components/EmptyStateCard";
+import { StatsCard } from "@/components/StatsCard";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 import { Loader2 } from "lucide-react";
@@ -90,6 +92,32 @@ export const HorseHealthTab = ({
         <AddHealthLogToHorseDialog horseName={horseName} onAdd={onAddHealthLog} />
       </div>
 
+      {sortedHealthLogs.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <StatsCard
+            title="Pågående"
+            value={healthLogs.filter(log => log.status === "Pågående").length}
+            icon={Clock}
+            gradient="from-primary/20 to-primary/5"
+            delay={0}
+          />
+          <StatsCard
+            title="Klara"
+            value={healthLogs.filter(log => log.status === "Klar").length}
+            icon={CheckCircle}
+            gradient="from-secondary/20 to-secondary/5"
+            delay={100}
+          />
+          <StatsCard
+            title="Uppmärksamhet"
+            value={healthLogs.filter(log => log.status === "Uppmärksamhet").length}
+            icon={AlertCircle}
+            gradient="from-destructive/20 to-destructive/5"
+            delay={200}
+          />
+        </div>
+      )}
+
       {sortedHealthLogs.length > 0 ? (
         <div className="space-y-4">
           {sortedHealthLogs.map((log, index) => (
@@ -137,14 +165,13 @@ export const HorseHealthTab = ({
           ))}
         </div>
       ) : (
-        <Card className="p-12 text-center animate-fade-in">
-          <Heart className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-          <h4 className="text-xl font-semibold mb-2">Inga hälsoanteckningar än</h4>
-          <p className="text-muted-foreground mb-6">
-            Börja logga hälsohändelser för {horseName} för att hålla koll på veterinärbesök och behandlingar.
-          </p>
-          <AddHealthLogToHorseDialog horseName={horseName} onAdd={onAddHealthLog} />
-        </Card>
+        <EmptyStateCard
+          icon={Heart}
+          title="Inga hälsoanteckningar än"
+          motivationalText="En frisk häst är en lycklig häst"
+          description={`Börja logga hälsohändelser för ${horseName} för att hålla koll på veterinärbesök och behandlingar.`}
+          action={<AddHealthLogToHorseDialog horseName={horseName} onAdd={onAddHealthLog} />}
+        />
       )}
 
       {selectedLog && (

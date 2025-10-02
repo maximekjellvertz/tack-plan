@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
+import { celebrateGoalCompletion } from "@/lib/confetti";
 
 interface Goal {
   id: string;
@@ -154,6 +155,9 @@ export const GoalJourneyPath = ({ goals, onGoalClick, onToggleComplete, onDelete
                     className="cursor-pointer"
                     onClick={(e) => {
                       e.stopPropagation();
+                      if (!goal.is_completed) {
+                        celebrateGoalCompletion();
+                      }
                       onToggleComplete?.(goal.id, goal.is_completed);
                     }}
                     title={goal.is_completed ? "Markera som ej klar" : "Markera som klar"}
