@@ -1,14 +1,21 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
+import heroHorse from "@/assets/hero-horse.jpg";
 
 const Index = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-primary/10 to-secondary/10 flex flex-col">
+    <div className="min-h-screen w-full bg-gradient-to-br from-primary/10 to-secondary/10 flex flex-col relative">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center opacity-20"
+        style={{ backgroundImage: `url(${heroHorse})` }}
+      />
+      
       {/* Login Button - Top Right */}
-      <div className="absolute top-6 right-6 z-20">
+      <div className="absolute top-6 right-6 z-20 relative">
         <Button 
           onClick={() => navigate("/auth")}
           size="lg"
@@ -19,7 +26,7 @@ const Index = () => {
       </div>
       
       {/* Content */}
-      <div className="flex min-h-screen items-center justify-center px-4">
+      <div className="flex min-h-screen items-center justify-center px-4 relative z-10">
         <div className="max-w-4xl text-center space-y-8">
           <h1 className="text-5xl md:text-7xl font-bold text-foreground">
             Hoofprints
