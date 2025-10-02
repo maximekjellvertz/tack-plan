@@ -58,7 +58,7 @@ const Index = () => {
             <Button 
               onClick={() => navigate("/auth")}
               size="lg"
-              className="text-lg px-8 py-6 bg-orange-600 hover:bg-orange-700 text-white"
+              className="text-lg px-8 py-6"
             >
               Kom igång gratis
             </Button>
