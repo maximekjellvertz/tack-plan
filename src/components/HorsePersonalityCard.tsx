@@ -72,13 +72,15 @@ export const HorsePersonalityCard = ({
   funFact,
   onUpdate
 }: HorsePersonalityCardProps) => {
-  // Use user-defined personality or default to a friendly one
-  const personality = personalityTrait && personalityMap[personalityTrait] 
+  // Check if it's a predefined personality or custom one
+  const isPredefined = personalityTrait && personalityMap[personalityTrait];
+  
+  const personality = isPredefined
     ? personalityMap[personalityTrait]
     : {
-        trait: "Personlighet",
+        trait: personalityTrait || "Personlighet",
         icon: Sparkles,
-        description: "Lägg till personlighetsdrag för din häst",
+        description: personalityTrait ? "Egen personlighet" : "Lägg till personlighetsdrag för din häst",
         color: "from-primary/20 to-secondary/20 text-primary"
       };
   
