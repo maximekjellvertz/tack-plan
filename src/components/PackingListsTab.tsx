@@ -176,6 +176,39 @@ export function PackingListsTab() {
     fetchTemplates();
   };
 
+  const toggleItemCheck = async (itemId: string, currentChecked: boolean) => {
+    const { error } = await supabase
+      .from("packing_list_items")
+      .update({ is_checked: !currentChecked })
+      .eq("id", itemId);
+
+    if (error) {
+      toast({ title: "Fel", description: "Kunde inte uppdatera", variant: "destructive" });
+      return;
+    }
+
+    if (selectedTemplate) {
+      fetchItems(selectedTemplate);
+    }
+  };
+
+  const resetAllChecks = async () => {
+    if (!selectedTemplate) return;
+
+    const { error } = await supabase
+      .from("packing_list_items")
+      .update({ is_checked: false })
+      .eq("template_id", selectedTemplate);
+
+    if (error) {
+      toast({ title: "Fel", description: "Kunde inte återställa", variant: "destructive" });
+      return;
+    }
+
+    toast({ title: "Framgång", description: "Alla bockar återställda!" });
+    fetchItems(selectedTemplate);
+  };
+
   const groupedItems = items.reduce((acc, item) => {
     if (!acc[item.category]) {
       acc[item.category] = [];
@@ -272,10 +305,12 @@ export function PackingListsTab() {
             {Object.entries(groupedItems).map(([category, categoryItems]) => (
               <Card key={category}>
                 <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <Package className="h-5 w-5 text-primary" />
-                    <CardTitle className="text-lg">{category}</CardTitle>
-                    <Badge variant="secondary">{categoryItems.length}</Badge>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Package className="h-5 w-5 text-primary" />
+                      <CardTitle className="text-lg">{category}</CardTitle>
+                      <Badge variant="secondary">{categoryItems.length}</Badge>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -283,9 +318,17 @@ export function PackingListsTab() {
                     {categoryItems.map((item) => (
                       <div
                         key={item.id}
-                        className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50"
+                        className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 border"
                       >
-                        <span>{item.name}</span>
+                        <div className="flex items-center gap-3 flex-1">
+                          <Checkbox
+                            checked={item.is_checked}
+                            onCheckedChange={() => toggleItemCheck(item.id, item.is_checked)}
+                          />
+                          <span className={item.is_checked ? "line-through text-muted-foreground" : ""}>
+                            {item.name}
+                          </span>
+                        </div>
                         <Button
                           variant="ghost"
                           size="icon"
@@ -299,6 +342,16 @@ export function PackingListsTab() {
                 </CardContent>
               </Card>
             ))}
+
+            {items.length > 0 && (
+              <Button 
+                onClick={resetAllChecks} 
+                variant="outline" 
+                className="w-full"
+              >
+                Återställ alla bockar
+              </Button>
+            )}
           </div>
         </>
       )}
