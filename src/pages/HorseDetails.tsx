@@ -727,6 +727,8 @@ const HorseDetails = () => {
   };
 
   const handleDeleteMilestone = async (milestoneId: string) => {
+    if (!horse) return;
+    
     try {
       const { error } = await supabase
         .from('milestones')
@@ -734,6 +736,17 @@ const HorseDetails = () => {
         .eq('id', milestoneId);
 
       if (error) throw error;
+
+      // Immediately refresh milestones
+      const { data: milestonesData } = await supabase
+        .from('milestones')
+        .select('*')
+        .eq('horse_id', horse.id)
+        .order('achieved_date', { ascending: false });
+      
+      if (milestonesData) {
+        setMilestones(milestonesData);
+      }
 
       toast({
         title: "Milstolpe raderad!",
