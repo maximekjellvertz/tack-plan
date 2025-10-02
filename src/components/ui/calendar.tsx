@@ -18,12 +18,12 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-6",
-        caption: "flex justify-center pt-1 relative items-center mb-2",
+        caption: "flex justify-center pt-1 relative items-center mb-4",
         caption_label: "text-base font-bold",
-        caption_dropdowns: "flex gap-3",
-        dropdown_month: "relative inline-flex items-center px-4 py-2 text-sm font-semibold border-2 rounded-lg hover:bg-accent hover:scale-105 transition-all bg-background/80 backdrop-blur-sm shadow-sm",
-        dropdown_year: "relative inline-flex items-center px-4 py-2 text-sm font-semibold border-2 rounded-lg hover:bg-accent hover:scale-105 transition-all bg-background/80 backdrop-blur-sm shadow-sm",
-        dropdown: "absolute inset-0 opacity-0 cursor-pointer",
+        caption_dropdowns: "flex gap-4 items-center justify-center",
+        dropdown_month: "relative inline-flex items-center px-4 py-2 text-sm font-semibold border-2 rounded-lg hover:bg-accent hover:scale-105 transition-all bg-background shadow-md min-w-[120px] justify-center z-10",
+        dropdown_year: "relative inline-flex items-center px-4 py-2 text-sm font-semibold border-2 rounded-lg hover:bg-accent hover:scale-105 transition-all bg-background shadow-md min-w-[100px] justify-center z-10",
+        dropdown: "absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
