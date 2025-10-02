@@ -1,11 +1,12 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Heart, FileText, Bell } from "lucide-react";
+import { Calendar, Heart, FileText, Bell, TrendingUp } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-horse.jpg";
+import { DailyTipCard } from "@/components/DailyTipCard";
 
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
@@ -113,46 +114,63 @@ const Dashboard = () => {
       {/* Quick Stats */}
       <section className="max-w-7xl mx-auto px-4 -mt-16 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-shadow">
-            <Heart className="w-8 h-8 text-primary mb-3" />
-            <h3 className="text-2xl font-bold text-foreground">
+          <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group" style={{ animationDelay: "0ms" }}>
+            <Heart className="w-8 h-8 text-primary mb-3 transition-transform group-hover:scale-110" />
+            <h3 className="text-3xl font-bold text-foreground transition-all group-hover:text-primary">
               {loading ? "..." : stats.horses}
             </h3>
             <p className="text-muted-foreground">Hästar</p>
+            <div className="mt-2 h-1 bg-primary/20 rounded-full overflow-hidden">
+              <div className="h-full bg-primary rounded-full w-full animate-pulse" />
+            </div>
           </Card>
-          <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-shadow">
-            <Calendar className="w-8 h-8 text-secondary mb-3" />
-            <h3 className="text-2xl font-bold text-foreground">
+          <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group" style={{ animationDelay: "100ms" }}>
+            <Calendar className="w-8 h-8 text-secondary mb-3 transition-transform group-hover:scale-110" />
+            <h3 className="text-3xl font-bold text-foreground transition-all group-hover:text-secondary">
               {loading ? "..." : stats.competitions}
             </h3>
             <p className="text-muted-foreground">Kommande tävlingar</p>
+            <div className="mt-2 h-1 bg-secondary/20 rounded-full overflow-hidden">
+              <div className="h-full bg-secondary rounded-full w-full animate-pulse" />
+            </div>
           </Card>
-          <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-shadow">
-            <FileText className="w-8 h-8 text-accent mb-3" />
-            <h3 className="text-2xl font-bold text-foreground">
+          <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group" style={{ animationDelay: "200ms" }}>
+            <FileText className="w-8 h-8 text-accent mb-3 transition-transform group-hover:scale-110" />
+            <h3 className="text-3xl font-bold text-foreground transition-all group-hover:text-accent">
               {loading ? "..." : stats.healthLogs}
             </h3>
             <p className="text-muted-foreground">Loggade händelser</p>
+            <div className="mt-2 h-1 bg-accent/20 rounded-full overflow-hidden">
+              <div className="h-full bg-accent rounded-full w-full animate-pulse" />
+            </div>
           </Card>
-          <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-shadow">
-            <Bell className="w-8 h-8 text-primary mb-3" />
-            <h3 className="text-2xl font-bold text-foreground">
+          <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group" style={{ animationDelay: "300ms" }}>
+            <Bell className="w-8 h-8 text-primary mb-3 transition-transform group-hover:scale-110" />
+            <h3 className="text-3xl font-bold text-foreground transition-all group-hover:text-primary">
               {loading ? "..." : stats.reminders}
             </h3>
             <p className="text-muted-foreground">Aktiva påminnelser</p>
+            <div className="mt-2 h-1 bg-primary/20 rounded-full overflow-hidden">
+              <div className="h-full bg-primary rounded-full w-full animate-pulse" />
+            </div>
           </Card>
         </div>
       </section>
 
       {/* Main Content */}
       <section className="max-w-7xl mx-auto px-4 py-16">
+        {/* Daily Tip */}
+        <div className="mb-8">
+          <DailyTipCard />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Upcoming Competitions */}
-          <Card className="p-6 bg-gradient-to-br from-card to-muted/30">
+          <Card className="p-6 bg-gradient-to-br from-card to-muted/30 hover-scale animate-fade-in">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-foreground">Kommande tävlingar</h2>
+              <h2 className="text-2xl font-bold text-foreground glow-text">Kommande tävlingar</h2>
               <Link to="/competitions">
-                <Button variant="ghost" size="sm">Se alla</Button>
+                <Button variant="ghost" size="sm" className="hover-scale">Se alla</Button>
               </Link>
             </div>
             <div className="space-y-4">
@@ -170,8 +188,12 @@ const Dashboard = () => {
                   </Link>
                 </div>
               ) : (
-                upcomingCompetitions.map((comp) => (
-                  <div key={comp.id} className="p-4 bg-background rounded-lg border border-border hover:border-primary transition-colors">
+                upcomingCompetitions.map((comp, index) => (
+                  <div 
+                    key={comp.id} 
+                    className="p-4 bg-background rounded-lg border border-border hover:border-primary transition-all hover-scale animate-fade-in"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
                     <div className="flex justify-between items-start">
                       <div>
                         <p className="font-semibold text-foreground">{comp.name}</p>
@@ -186,11 +208,11 @@ const Dashboard = () => {
           </Card>
 
           {/* Recent Health Logs */}
-          <Card className="p-6 bg-gradient-to-br from-card to-muted/30">
+          <Card className="p-6 bg-gradient-to-br from-card to-muted/30 hover-scale animate-fade-in">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-foreground">Senaste loggarna</h2>
+              <h2 className="text-2xl font-bold text-foreground glow-text">Senaste loggarna</h2>
               <Link to="/health-log">
-                <Button variant="ghost" size="sm">Se alla</Button>
+                <Button variant="ghost" size="sm" className="hover-scale">Se alla</Button>
               </Link>
             </div>
             <div className="space-y-4">
@@ -208,8 +230,12 @@ const Dashboard = () => {
                   </Link>
                 </div>
               ) : (
-                recentHealthLogs.map((log) => (
-                  <div key={log.id} className="p-4 bg-background rounded-lg border border-border hover:border-secondary transition-colors">
+                recentHealthLogs.map((log, index) => (
+                  <div 
+                    key={log.id} 
+                    className="p-4 bg-background rounded-lg border border-border hover:border-secondary transition-all hover-scale animate-fade-in"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
                     <div className="flex justify-between items-start">
                       <div>
                         <p className="font-semibold text-foreground">{log.horse_name}</p>

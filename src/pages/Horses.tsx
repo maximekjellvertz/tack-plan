@@ -1,11 +1,12 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, Trash2 } from "lucide-react";
+import { Heart, Trash2, TrendingUp, Activity } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { AddHorseDialog } from "@/components/AddHorseDialog";
 import { EditHorseDialog } from "@/components/EditHorseDialog";
 import { supabase } from "@/integrations/supabase/client";
+import { ProgressRing } from "@/components/ProgressRing";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,8 +31,14 @@ interface Horse {
   color: string;
 }
 
+interface HorseStats {
+  trainingProgress: number;
+  healthScore: number;
+}
+
 const Horses = () => {
   const [horses, setHorses] = useState<Horse[]>([]);
+  const [horseStats, setHorseStats] = useState<{ [key: string]: HorseStats }>({});
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
@@ -76,6 +83,36 @@ const Horses = () => {
       if (error) throw error;
 
       setHorses(data || []);
+
+      // Fetch stats for each horse
+      if (data) {
+        const statsPromises = data.map(async (horse: any) => {
+          // Get health logs count (recent issues)
+          const { count: healthIssues } = await supabase
+            .from("health_logs")
+            .select("*", { count: "exact", head: true })
+            .eq("horse_id", horse.id)
+            .neq("status", "completed");
+
+          // Calculate progress based on training sessions stored in horses table (out of 50 goal)
+          const trainingProgress = Math.min(((horse.training_sessions || 0) / 50) * 100, 100);
+          // Calculate health score (100 - issues * 10, minimum 0)
+          const healthScore = Math.max(100 - (healthIssues || 0) * 10, 0);
+
+          return {
+            horseId: horse.id,
+            stats: { trainingProgress, healthScore }
+          };
+        });
+
+        const statsResults = await Promise.all(statsPromises);
+        const statsMap = statsResults.reduce((acc, { horseId, stats }) => {
+          acc[horseId] = stats;
+          return acc;
+        }, {} as { [key: string]: HorseStats });
+
+        setHorseStats(statsMap);
+      }
     } catch (error) {
       console.error("Error fetching horses:", error);
       toast({
@@ -145,11 +182,37 @@ const Horses = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {horses.map((horse) => (
-              <Card key={horse.id} className="overflow-hidden hover:shadow-elevated transition-shadow">
-                <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                  <Heart className="w-24 h-24 text-primary/40" />
-                </div>
+            {horses.map((horse, index) => {
+              const stats = horseStats[horse.id] || { trainingProgress: 0, healthScore: 0 };
+              return (
+                <Card 
+                  key={horse.id} 
+                  className="overflow-hidden hover:shadow-elevated transition-all hover-scale animate-fade-in"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center relative">
+                    <Heart className="w-24 h-24 text-primary/40" />
+                    {/* Progress Rings */}
+                    <div className="absolute top-4 right-4 flex gap-2">
+                      <div className="relative">
+                        <ProgressRing progress={stats.trainingProgress} size={60} strokeWidth={5} />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <TrendingUp className="w-5 h-5 text-primary" />
+                        </div>
+                      </div>
+                      <div className="relative">
+                        <ProgressRing 
+                          progress={stats.healthScore} 
+                          size={60} 
+                          strokeWidth={5}
+                          color="hsl(var(--secondary))"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <Activity className="w-5 h-5 text-secondary" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
@@ -207,9 +270,24 @@ const Horses = () => {
                       Visa detaljer
                     </Button>
                   </Link>
+                  
+                  {/* Stats summary */}
+                  <div className="grid grid-cols-2 gap-2 text-xs pt-3 border-t border-border">
+                    <div className="text-center">
+                      <TrendingUp className="w-4 h-4 text-primary mx-auto mb-1" />
+                      <p className="text-muted-foreground">Träning</p>
+                      <p className="font-semibold text-foreground">{stats.trainingProgress}%</p>
+                    </div>
+                    <div className="text-center">
+                      <Activity className="w-4 h-4 text-secondary mx-auto mb-1" />
+                      <p className="text-muted-foreground">Hälsa</p>
+                      <p className="font-semibold text-foreground">{stats.healthScore}%</p>
+                    </div>
+                  </div>
                 </div>
               </Card>
-            ))}
+            );
+            })}
           </div>
         )}
       </div>

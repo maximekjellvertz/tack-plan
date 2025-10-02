@@ -13,6 +13,7 @@ import { HorseTrainingTab } from "@/components/HorseTrainingTab";
 import { HorseCompetitionsTab } from "@/components/HorseCompetitionsTab";
 import { HorseHealthTab } from "@/components/HorseHealthTab";
 import { HorseJourneyTab } from "@/components/HorseJourneyTab";
+import { HorsePersonalityCard } from "@/components/HorsePersonalityCard";
 
 interface Competition {
   id: number;
@@ -746,6 +747,14 @@ const HorseDetails = () => {
         </Button>
 
         <HorseHeader horse={horse} />
+
+        <div className="mb-6 animate-fade-in" style={{ animationDelay: "200ms" }}>
+          <HorsePersonalityCard 
+            horseName={horse.name}
+            breed={horse.breed}
+            level={horse.level}
+          />
+        </div>
 
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="grid w-full grid-cols-5 animate-fade-in">
