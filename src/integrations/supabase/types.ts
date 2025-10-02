@@ -571,6 +571,48 @@ export type Database = {
         }
         Relationships: []
       }
+      training_sessions: {
+        Row: {
+          created_at: string
+          date: string
+          duration: string | null
+          horse_id: string
+          horse_name: string
+          id: string
+          intensity: string | null
+          notes: string | null
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          duration?: string | null
+          horse_id: string
+          horse_name: string
+          id?: string
+          intensity?: string | null
+          notes?: string | null
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          duration?: string | null
+          horse_id?: string
+          horse_name?: string
+          id?: string
+          intensity?: string | null
+          notes?: string | null
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

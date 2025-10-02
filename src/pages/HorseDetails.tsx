@@ -28,7 +28,7 @@ interface Competition {
 }
 
 interface TrainingSession {
-  id: number;
+  id: string;
   type: string;
   date: string;
   duration: string;
@@ -129,6 +129,52 @@ const HorseDetails = () => {
   useEffect(() => {
     fetchHorse();
   }, [id, toast]);
+
+  // Fetch training sessions
+  useEffect(() => {
+    const fetchTrainingSessions = async () => {
+      if (!id) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('training_sessions')
+          .select('*')
+          .eq('horse_id', id)
+          .order('date', { ascending: false });
+
+        if (error) throw error;
+        
+        setTrainingSessions(data || []);
+      } catch (error) {
+        console.error('Error fetching training sessions:', error);
+      }
+    };
+
+    if (horse) {
+      fetchTrainingSessions();
+    }
+
+    // Set up realtime subscription for training sessions
+    const channel = supabase
+      .channel('horse-training-sessions')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'training_sessions',
+          filter: `horse_id=eq.${id}`
+        },
+        () => {
+          fetchTrainingSessions();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [id, horse]);
 
   // Fetch health logs
   useEffect(() => {
@@ -291,12 +337,40 @@ const HorseDetails = () => {
   };
 
   // Handlers for training sessions
-  const handleAddTrainingSession = (newSession: Omit<TrainingSession, 'id'>) => {
-    const session: TrainingSession = {
-      ...newSession,
-      id: Date.now(),
-    };
-    setTrainingSessions([session, ...trainingSessions]);
+  const handleAddTrainingSession = async (newSession: Omit<TrainingSession, 'id'>) => {
+    if (!horse) return;
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('training_sessions')
+        .insert({
+          user_id: user.id,
+          horse_id: horse.id,
+          horse_name: horse.name,
+          type: newSession.type,
+          date: newSession.date,
+          duration: newSession.duration,
+          intensity: newSession.intensity,
+          notes: newSession.notes,
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Träningspass tillagt!",
+        description: `Träningspass för ${horse.name} har skapats`,
+      });
+    } catch (error) {
+      console.error('Error adding training session:', error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte lägga till träningspass",
+        variant: "destructive",
+      });
+    }
   };
 
   // Handlers for health logs

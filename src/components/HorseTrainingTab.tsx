@@ -6,7 +6,7 @@ import { EmptyStateCard } from "@/components/EmptyStateCard";
 import { StatsCard } from "@/components/StatsCard";
 
 interface TrainingSession {
-  id: number;
+  id: string;
   type: string;
   date: string;
   duration: string;
