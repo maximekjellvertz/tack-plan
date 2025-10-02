@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bell, Check, Plus, Calendar, Pill, Heart, X } from "lucide-react";
+import { Bell, Check, Plus, Calendar, Pill, Heart, X, Sparkles } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -200,66 +200,79 @@ const Reminders = () => {
           
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-primary hover:bg-primary/90">
-                <Plus className="w-4 h-4 mr-2" />
+              <Button className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all hover:scale-105">
+                <Sparkles className="w-4 h-4 mr-2" />
                 Ny påminnelse
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md">
+            <DialogContent className="sm:max-w-[500px]">
               <DialogHeader>
-                <DialogTitle>Skapa påminnelse</DialogTitle>
-                <DialogDescription>
+                <DialogTitle className="text-xl flex items-center gap-2">
+                  <Bell className="h-5 w-5 text-primary" />
+                  Skapa påminnelse
+                </DialogTitle>
+                <DialogDescription className="text-base">
                   Lägg till en egen påminnelse för behandlingar eller viktiga datum
                 </DialogDescription>
               </DialogHeader>
 
-              <form onSubmit={handleAddReminder} className="space-y-4">
+              <form onSubmit={handleAddReminder} className="space-y-6 mt-2">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Titel *</Label>
+                  <Label htmlFor="title" className="text-base font-semibold">Titel *</Label>
                   <Input
                     id="title"
                     placeholder="T.ex. Ge kortison"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    className="h-11"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="date">Datum *</Label>
-                  <Input
-                    id="date"
-                    type="date"
-                    value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="date" className="text-base font-semibold">Datum *</Label>
+                    <Input
+                      id="date"
+                      type="date"
+                      value={formData.date}
+                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                      className="h-11"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="horse" className="text-base">Häst (valfritt)</Label>
+                    <Input
+                      id="horse"
+                      placeholder="T.ex. Thunder"
+                      value={formData.horse}
+                      onChange={(e) => setFormData({ ...formData, horse: e.target.value })}
+                      className="h-11"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="horse">Häst (valfritt)</Label>
-                  <Input
-                    id="horse"
-                    placeholder="T.ex. Thunder"
-                    value={formData.horse}
-                    onChange={(e) => setFormData({ ...formData, horse: e.target.value })}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="description">Beskrivning</Label>
+                  <Label htmlFor="description" className="text-base">Beskrivning</Label>
                   <Textarea
                     id="description"
                     placeholder="Lägg till detaljer..."
                     rows={3}
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    className="resize-none"
                   />
                 </div>
 
-                <div className="flex gap-3 justify-end">
-                  <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+                <div className="flex gap-3 pt-4">
+                  <Button type="button" variant="outline" onClick={() => setOpen(false)} className="flex-1">
                     Avbryt
                   </Button>
-                  <Button type="submit" className="bg-primary hover:bg-primary/90">
+                  <Button 
+                    type="submit" 
+                    className="flex-1 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all"
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
                     Skapa påminnelse
                   </Button>
                 </div>
