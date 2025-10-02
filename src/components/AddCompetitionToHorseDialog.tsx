@@ -150,7 +150,7 @@ export const AddCompetitionToHorseDialog = ({ horseName, onAdd }: AddCompetition
               </Button>
             </div>
 
-            <Popover modal={true}>
+            <Popover modal={false}>
               <PopoverTrigger asChild>
                 <Button
                   type="button"
@@ -169,20 +169,22 @@ export const AddCompetitionToHorseDialog = ({ horseName, onAdd }: AddCompetition
                 </Button>
               </PopoverTrigger>
               <PopoverContent 
-                className="w-auto p-0" 
-                align="center" 
-                side="bottom"
+                className="w-auto p-0 z-[100]" 
+                align="start" 
+                side="right"
                 sideOffset={8}
                 avoidCollisions={true}
-                collisionPadding={20}
+                collisionPadding={10}
               >
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={handleDateSelect}
-                  initialFocus
-                  locale={sv}
-                />
+                <div className="max-h-[400px] overflow-auto">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={handleDateSelect}
+                    initialFocus
+                    locale={sv}
+                  />
+                </div>
               </PopoverContent>
             </Popover>
           </div>
