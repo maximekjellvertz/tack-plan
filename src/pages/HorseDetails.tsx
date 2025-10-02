@@ -359,6 +359,17 @@ const HorseDetails = () => {
 
       if (error) throw error;
 
+      // Fetch updated list immediately
+      const { data: updatedSessions } = await supabase
+        .from('training_sessions')
+        .select('*')
+        .eq('horse_id', horse.id)
+        .order('date', { ascending: false });
+
+      if (updatedSessions) {
+        setTrainingSessions(updatedSessions);
+      }
+
       toast({
         title: "Träningspass tillagt!",
         description: `Träningspass för ${horse.name} har skapats`,
