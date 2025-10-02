@@ -14,31 +14,31 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
       captionLayout="dropdown-buttons"
       fromYear={1900}
       toYear={2050}
-      className={cn("p-6", className)}
+      className={cn("p-3 pointer-events-auto", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-        month: "space-y-6",
-        caption: "flex justify-center pt-1 relative items-center mb-4 z-10",
+        month: "space-y-3",
+        caption: "flex justify-center pt-1 relative items-center mb-3 z-10",
         caption_label: "hidden",
-        caption_dropdowns: "flex gap-3 items-center justify-center z-20",
-        dropdown_month: "px-4 py-2.5 text-sm font-semibold border-2 rounded-lg hover:bg-accent transition-all bg-card shadow-md cursor-pointer relative z-30",
-        dropdown_year: "px-4 py-2.5 text-sm font-semibold border-2 rounded-lg hover:bg-accent transition-all bg-card shadow-md cursor-pointer relative z-30",
+        caption_dropdowns: "flex gap-2 items-center justify-center z-20",
+        dropdown_month: "px-3 py-1.5 text-xs font-semibold border-2 rounded-lg hover:bg-accent transition-all bg-card shadow-md cursor-pointer relative z-30",
+        dropdown_year: "px-3 py-1.5 text-xs font-semibold border-2 rounded-lg hover:bg-accent transition-all bg-card shadow-md cursor-pointer relative z-30",
         dropdown: "w-full h-full opacity-100 cursor-pointer appearance-none bg-transparent text-center font-semibold pointer-events-auto",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
-          "h-9 w-9 bg-background/80 backdrop-blur-sm p-0 border-2 hover:bg-primary hover:text-primary-foreground hover:scale-110 transition-all shadow-sm",
+          "h-7 w-7 bg-background/80 backdrop-blur-sm p-0 border-2 hover:bg-primary hover:text-primary-foreground hover:scale-110 transition-all shadow-sm",
         ),
         nav_button_previous: "absolute left-1",
         nav_button_next: "absolute right-1",
-        table: "w-full border-collapse space-y-1 mt-4",
-        head_row: "flex mb-2",
-        head_cell: "text-muted-foreground rounded-md w-12 font-bold text-sm uppercase tracking-wide",
-        row: "flex w-full mt-2",
-        cell: "h-12 w-12 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+        table: "w-full border-collapse space-y-1 mt-2",
+        head_row: "flex mb-1",
+        head_cell: "text-muted-foreground rounded-md w-9 font-bold text-xs uppercase tracking-wide",
+        row: "flex w-full mt-1",
+        cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
         day: cn(
           buttonVariants({ variant: "ghost" }), 
-          "h-12 w-12 p-0 font-semibold text-base aria-selected:opacity-100 hover:scale-110 transition-all rounded-xl hover:bg-primary/20 hover:shadow-md"
+          "h-9 w-9 p-0 font-semibold text-sm aria-selected:opacity-100 hover:scale-110 transition-all rounded-xl hover:bg-primary/20 hover:shadow-md"
         ),
         day_range_end: "day-range-end",
         day_selected:
@@ -52,8 +52,8 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         ...classNames,
       }}
       components={{
-        IconLeft: ({ ..._props }) => <ChevronLeft className="h-5 w-5" />,
-        IconRight: ({ ..._props }) => <ChevronRight className="h-5 w-5" />,
+        IconLeft: ({ ..._props }) => <ChevronLeft className="h-4 w-4" />,
+        IconRight: ({ ..._props }) => <ChevronRight className="h-4 w-4" />,
       }}
       {...props}
     />

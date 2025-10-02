@@ -176,7 +176,7 @@ export const AddCompetitionToHorseDialog = ({ horseName, onAdd }: AddCompetition
                 avoidCollisions={true}
                 collisionPadding={10}
               >
-                <div className="max-h-[400px] overflow-auto">
+                <div className="max-h-[350px] overflow-y-auto">
                   <Calendar
                     mode="single"
                     selected={selectedDate}
