@@ -359,15 +359,35 @@ const HorseDetails = () => {
 
       if (error) throw error;
 
-      // Fetch updated list immediately
-      const { data: updatedSessions } = await supabase
-        .from('training_sessions')
-        .select('*')
-        .eq('horse_id', horse.id)
-        .order('date', { ascending: false });
+      // Update horse's training_sessions counter
+      const newCount = (horse.training_sessions || 0) + 1;
+      const { error: updateError } = await supabase
+        .from('horses')
+        .update({ training_sessions: newCount })
+        .eq('id', horse.id);
 
-      if (updatedSessions) {
-        setTrainingSessions(updatedSessions);
+      if (updateError) throw updateError;
+
+      // Fetch updated list and horse data immediately
+      const [sessionsResult, horseResult] = await Promise.all([
+        supabase
+          .from('training_sessions')
+          .select('*')
+          .eq('horse_id', horse.id)
+          .order('date', { ascending: false }),
+        supabase
+          .from('horses')
+          .select('*')
+          .eq('id', horse.id)
+          .maybeSingle()
+      ]);
+
+      if (sessionsResult.data) {
+        setTrainingSessions(sessionsResult.data);
+      }
+
+      if (horseResult.data) {
+        setHorse(horseResult.data);
       }
 
       toast({
@@ -395,15 +415,35 @@ const HorseDetails = () => {
 
       if (error) throw error;
 
-      // Fetch updated list immediately
-      const { data: updatedSessions } = await supabase
-        .from('training_sessions')
-        .select('*')
-        .eq('horse_id', horse.id)
-        .order('date', { ascending: false });
+      // Update horse's training_sessions counter
+      const newCount = Math.max((horse.training_sessions || 0) - 1, 0);
+      const { error: updateError } = await supabase
+        .from('horses')
+        .update({ training_sessions: newCount })
+        .eq('id', horse.id);
 
-      if (updatedSessions) {
-        setTrainingSessions(updatedSessions);
+      if (updateError) throw updateError;
+
+      // Fetch updated list and horse data immediately
+      const [sessionsResult, horseResult] = await Promise.all([
+        supabase
+          .from('training_sessions')
+          .select('*')
+          .eq('horse_id', horse.id)
+          .order('date', { ascending: false }),
+        supabase
+          .from('horses')
+          .select('*')
+          .eq('id', horse.id)
+          .maybeSingle()
+      ]);
+
+      if (sessionsResult.data) {
+        setTrainingSessions(sessionsResult.data);
+      }
+
+      if (horseResult.data) {
+        setHorse(horseResult.data);
       }
 
       toast({
