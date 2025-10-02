@@ -168,7 +168,7 @@ export const AddCompetitionToHorseDialog = ({ horseName, onAdd }: AddCompetition
                   )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 z-50" align="start" sideOffset={5}>
+              <PopoverContent className="w-auto p-0 z-50" align="center" side="bottom" sideOffset={8}>
                 <Calendar
                   mode="single"
                   selected={selectedDate}
