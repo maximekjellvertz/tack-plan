@@ -81,8 +81,8 @@ export const AddGoalDialog = ({ onAdd }: AddGoalDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <Plus className="w-4 h-4 mr-2" />
+        <Button className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all hover:scale-105">
+          <Sparkles className="w-4 h-4 mr-2" />
           Nytt mål
         </Button>
       </DialogTrigger>
