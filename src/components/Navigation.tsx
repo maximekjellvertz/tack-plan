@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Heart, Calendar, FileText, Home, Bell, LogOut, Menu, Target, Trophy } from "lucide-react";
+import { Heart, Calendar, FileText, Home, Bell, LogOut, Menu, Target, Trophy, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,6 +16,7 @@ const navItems = [
   { name: "Hälsologg", path: "/health-log", icon: FileText },
   { name: "Mål", path: "/goals", icon: Target },
   { name: "Påminnelser", path: "/reminders", icon: Bell },
+  { name: "Om oss", path: "/about", icon: Info },
 ];
 
 const Navigation = () => {
