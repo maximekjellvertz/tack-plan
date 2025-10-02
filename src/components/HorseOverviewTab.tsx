@@ -14,6 +14,9 @@ interface Horse {
   microchip?: string | null;
   birth_date?: string | null;
   gender?: string | null;
+  diet_feed?: string | null;
+  diet_supplements?: string | null;
+  diet_restrictions?: string | null;
   competitions_this_year?: number | null;
   placements?: number | null;
   training_sessions?: number | null;
@@ -27,7 +30,8 @@ interface HorseOverviewTabProps {
 
 export const HorseOverviewTab = ({ horse, onUpdate }: HorseOverviewTabProps) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <Card className="p-6 hover-scale" style={{ animationDelay: "100ms" }}>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-semibold">Grundläggande information</h3>
@@ -38,6 +42,9 @@ export const HorseOverviewTab = ({ horse, onUpdate }: HorseOverviewTabProps) => 
               microchip: horse.microchip,
               birth_date: horse.birth_date,
               gender: horse.gender,
+              diet_feed: horse.diet_feed,
+              diet_supplements: horse.diet_supplements,
+              diet_restrictions: horse.diet_restrictions,
             }}
             onUpdate={onUpdate}
           />
@@ -92,6 +99,40 @@ export const HorseOverviewTab = ({ horse, onUpdate }: HorseOverviewTabProps) => 
           <div className="bg-muted/50 p-4 rounded-lg">
             <p className="text-2xl font-bold text-destructive">{horse.vet_visits || 0}</p>
             <p className="text-sm text-muted-foreground">Veterinärbesök</p>
+          </div>
+        </div>
+      </Card>
+      </div>
+
+      <Card className="p-6 hover-scale" style={{ animationDelay: "300ms" }}>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-xl font-semibold">Kost & Näring</h3>
+          <EditHorseInfoDialog
+            horseId={horse.id}
+            currentData={{
+              registration_number: horse.registration_number,
+              microchip: horse.microchip,
+              birth_date: horse.birth_date,
+              gender: horse.gender,
+              diet_feed: horse.diet_feed,
+              diet_supplements: horse.diet_supplements,
+              diet_restrictions: horse.diet_restrictions,
+            }}
+            onUpdate={onUpdate}
+          />
+        </div>
+        <div className="space-y-3">
+          <div>
+            <p className="text-sm text-muted-foreground">Standardfoder</p>
+            <p className="font-medium">{horse.diet_feed || "Ej angivet"}</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">Kosttillägg</p>
+            <p className="font-medium">{horse.diet_supplements || "Ej angivet"}</p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">Allergier/Specialkost</p>
+            <p className="font-medium">{horse.diet_restrictions || "Ej angivet"}</p>
           </div>
         </div>
       </Card>

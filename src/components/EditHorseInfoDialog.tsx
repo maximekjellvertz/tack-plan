@@ -14,6 +14,9 @@ interface EditHorseInfoDialogProps {
     microchip?: string | null;
     birth_date?: string | null;
     gender?: string | null;
+    diet_feed?: string | null;
+    diet_supplements?: string | null;
+    diet_restrictions?: string | null;
   };
   onUpdate?: () => void;
 }
@@ -28,6 +31,9 @@ export const EditHorseInfoDialog = ({ horseId, currentData, onUpdate }: EditHors
     microchip: currentData.microchip || "",
     birth_date: currentData.birth_date || "",
     gender: currentData.gender || "",
+    diet_feed: currentData.diet_feed || "",
+    diet_supplements: currentData.diet_supplements || "",
+    diet_restrictions: currentData.diet_restrictions || "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,6 +48,9 @@ export const EditHorseInfoDialog = ({ horseId, currentData, onUpdate }: EditHors
           microchip: formData.microchip || null,
           birth_date: formData.birth_date || null,
           gender: formData.gender || null,
+          diet_feed: formData.diet_feed || null,
+          diet_supplements: formData.diet_supplements || null,
+          diet_restrictions: formData.diet_restrictions || null,
           updated_at: new Date().toISOString(),
         })
         .eq("id", horseId);
@@ -116,6 +125,36 @@ export const EditHorseInfoDialog = ({ horseId, currentData, onUpdate }: EditHors
               placeholder="T.ex. Valack, Sto, Hingst"
               value={formData.gender}
               onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="diet_feed">Standardfoder</Label>
+            <Input
+              id="diet_feed"
+              placeholder="T.ex. Havre, hösilage, pellets"
+              value={formData.diet_feed}
+              onChange={(e) => setFormData({ ...formData, diet_feed: e.target.value })}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="diet_supplements">Kosttillägg</Label>
+            <Input
+              id="diet_supplements"
+              placeholder="T.ex. Vitaminer, mineraler, tillskott"
+              value={formData.diet_supplements}
+              onChange={(e) => setFormData({ ...formData, diet_supplements: e.target.value })}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="diet_restrictions">Allergier/Specialkost</Label>
+            <Input
+              id="diet_restrictions"
+              placeholder="T.ex. Glutenintolerans, ingen sockerbetor"
+              value={formData.diet_restrictions}
+              onChange={(e) => setFormData({ ...formData, diet_restrictions: e.target.value })}
             />
           </div>
 

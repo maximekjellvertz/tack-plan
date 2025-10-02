@@ -241,6 +241,9 @@ export type Database = {
           color: string
           competitions_this_year: number | null
           created_at: string
+          diet_feed: string | null
+          diet_restrictions: string | null
+          diet_supplements: string | null
           discipline: string
           fun_fact: string | null
           gender: string | null
@@ -264,6 +267,9 @@ export type Database = {
           color: string
           competitions_this_year?: number | null
           created_at?: string
+          diet_feed?: string | null
+          diet_restrictions?: string | null
+          diet_supplements?: string | null
           discipline: string
           fun_fact?: string | null
           gender?: string | null
@@ -287,6 +293,9 @@ export type Database = {
           color?: string
           competitions_this_year?: number | null
           created_at?: string
+          diet_feed?: string | null
+          diet_restrictions?: string | null
+          diet_supplements?: string | null
           discipline?: string
           fun_fact?: string | null
           gender?: string | null
