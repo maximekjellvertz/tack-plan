@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { format, isPast, isToday, isTomorrow } from "date-fns";
 import { sv } from "date-fns/locale";
@@ -28,6 +29,7 @@ const Reminders = () => {
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [horses, setHorses] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -63,8 +65,24 @@ const Reminders = () => {
   useEffect(() => {
     if (user) {
       fetchReminders();
+      fetchHorses();
     }
   }, [user]);
+
+  const fetchHorses = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("horses")
+        .select("id, name")
+        .order("name", { ascending: true });
+
+      if (error) throw error;
+
+      setHorses(data || []);
+    } catch (error) {
+      console.error("Error fetching horses:", error);
+    }
+  };
 
   const fetchReminders = async () => {
     try {
@@ -247,13 +265,19 @@ const Reminders = () => {
 
                   <div className="space-y-2">
                     <Label htmlFor="horse" className="text-base">Häst (valfritt)</Label>
-                    <Input
-                      id="horse"
-                      placeholder="T.ex. Thunder"
-                      value={formData.horse}
-                      onChange={(e) => setFormData({ ...formData, horse: e.target.value })}
-                      className="h-11"
-                    />
+                    <Select value={formData.horse} onValueChange={(value) => setFormData({ ...formData, horse: value })}>
+                      <SelectTrigger className="h-11">
+                        <SelectValue placeholder="Välj häst" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-background z-50">
+                        <SelectItem value="">Ingen häst</SelectItem>
+                        {horses.map((horse) => (
+                          <SelectItem key={horse.id} value={horse.name}>
+                            {horse.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
