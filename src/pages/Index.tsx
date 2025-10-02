@@ -62,6 +62,15 @@ const Index = () => {
             >
               Kom igång gratis
             </Button>
+            <div className="mt-4">
+              <Button 
+                onClick={() => navigate("/about")}
+                variant="ghost"
+                className="text-white hover:text-white/80 underline"
+              >
+                Läs mer om oss
+              </Button>
+            </div>
           </div>
         </div>
       </div>
