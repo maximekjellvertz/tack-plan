@@ -1,5 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 
@@ -17,6 +19,7 @@ interface GoalJourneyPathProps {
   goals: Goal[];
   onGoalClick?: (goal: Goal) => void;
   onToggleComplete?: (goalId: string, currentStatus: boolean) => void;
+  onDelete?: (goalId: string) => void;
 }
 
 const HorseshoeIcon = ({ isCompleted }: { isCompleted: boolean }) => (
@@ -50,7 +53,7 @@ const HorseshoeIcon = ({ isCompleted }: { isCompleted: boolean }) => (
   </svg>
 );
 
-export const GoalJourneyPath = ({ goals, onGoalClick, onToggleComplete }: GoalJourneyPathProps) => {
+export const GoalJourneyPath = ({ goals, onGoalClick, onToggleComplete, onDelete }: GoalJourneyPathProps) => {
   const sortedGoals = [...goals].sort((a, b) => {
     if (a.target_date && b.target_date) {
       return new Date(a.target_date).getTime() - new Date(b.target_date).getTime();
@@ -195,11 +198,26 @@ export const GoalJourneyPath = ({ goals, onGoalClick, onToggleComplete }: GoalJo
                   )}
                 </div>
               </div>
-              <div className="text-right">
-                {goal.is_completed ? (
-                  <Badge className="bg-primary">Klar!</Badge>
-                ) : (
-                  <Badge variant="outline">{goal.progress_percent}%</Badge>
+              <div className="flex items-center gap-2">
+                <div className="text-right">
+                  {goal.is_completed ? (
+                    <Badge className="bg-primary">Klar!</Badge>
+                  ) : (
+                    <Badge variant="outline">{goal.progress_percent}%</Badge>
+                  )}
+                </div>
+                {onDelete && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(goal.id);
+                    }}
+                    title="Radera mål"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 )}
               </div>
             </div>

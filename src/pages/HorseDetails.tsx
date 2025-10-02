@@ -1249,6 +1249,7 @@ const HorseDetails = () => {
                   <GoalJourneyPath 
                     goals={activeGoals} 
                     onToggleComplete={handleToggleGoalComplete}
+                    onDelete={handleDeleteGoal}
                   />
                 )}
               </TabsContent>
