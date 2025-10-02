@@ -5,30 +5,44 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Trophy, Users, Clock, Phone, Mail, Globe } from "lucide-react";
 
 interface Competition {
-  id: number;
+  id: string | number;
   name: string;
   date: string;
   location: string;
-  district: string;
+  district?: string;
   discipline: string;
-  height: string;
-  status: string;
+  height?: string;
+  status?: string;
+  time?: string;
+  classes?: any[];
+  registration_status?: string;
 }
 
 interface CompetitionDetailsDialogProps {
   competition: Competition;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export const CompetitionDetailsDialog = ({ competition }: CompetitionDetailsDialogProps) => {
-  const [open, setOpen] = useState(false);
+export const CompetitionDetailsDialog = ({ 
+  competition, 
+  open: controlledOpen, 
+  onOpenChange: controlledOnOpenChange 
+}: CompetitionDetailsDialogProps) => {
+  const [internalOpen, setInternalOpen] = useState(false);
+  
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = controlledOnOpenChange || setInternalOpen;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline">
-          Mer information
-        </Button>
-      </DialogTrigger>
+      {controlledOpen === undefined && (
+        <DialogTrigger asChild>
+          <Button variant="outline">
+            Mer information
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
@@ -39,9 +53,11 @@ export const CompetitionDetailsDialog = ({ competition }: CompetitionDetailsDial
               <DialogTitle className="text-2xl">{competition.name}</DialogTitle>
               <div className="flex gap-2 mt-1">
                 <Badge variant="secondary">{competition.discipline}</Badge>
-                <Badge className={competition.status === "Öppen" ? "bg-secondary" : "bg-primary"}>
-                  {competition.status}
-                </Badge>
+                {competition.status && (
+                  <Badge className={competition.status === "upcoming" ? "bg-secondary" : "bg-primary"}>
+                    {competition.status === "upcoming" ? "Kommande" : competition.status}
+                  </Badge>
+                )}
               </div>
             </div>
           </div>
@@ -71,16 +87,20 @@ export const CompetitionDetailsDialog = ({ competition }: CompetitionDetailsDial
                 <div>
                   <p className="text-sm text-muted-foreground">Plats</p>
                   <p className="font-medium">{competition.location}</p>
-                  <p className="text-sm text-muted-foreground">{competition.district}</p>
+                  {competition.district && (
+                    <p className="text-sm text-muted-foreground">{competition.district}</p>
+                  )}
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <Trophy className="w-5 h-5 text-primary" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Höjd/Nivå</p>
-                  <p className="font-medium">{competition.height}</p>
+              {competition.height && (
+                <div className="flex items-center gap-3">
+                  <Trophy className="w-5 h-5 text-primary" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Höjd/Nivå</p>
+                    <p className="font-medium">{competition.height}</p>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
 

@@ -61,8 +61,42 @@ export type Database = {
           },
         ]
       }
+      competition_rules: {
+        Row: {
+          category: string
+          content: string | null
+          created_at: string
+          id: string
+          title: string
+          updated_at: string
+          url: string | null
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          title: string
+          updated_at?: string
+          url?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          url?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       competitions: {
         Row: {
+          accommodation_info: string | null
           classes: Json | null
           created_at: string
           date: string
@@ -78,11 +112,17 @@ export type Database = {
           status: string | null
           tdb_id: string | null
           time: string | null
+          transport_vehicle: string | null
+          travel_companions: string | null
+          travel_departure_time: string | null
+          travel_notes: string | null
           updated_at: string
           user_id: string
+          venue_map_url: string | null
           website: string | null
         }
         Insert: {
+          accommodation_info?: string | null
           classes?: Json | null
           created_at?: string
           date: string
@@ -98,11 +138,17 @@ export type Database = {
           status?: string | null
           tdb_id?: string | null
           time?: string | null
+          transport_vehicle?: string | null
+          travel_companions?: string | null
+          travel_departure_time?: string | null
+          travel_notes?: string | null
           updated_at?: string
           user_id: string
+          venue_map_url?: string | null
           website?: string | null
         }
         Update: {
+          accommodation_info?: string | null
           classes?: Json | null
           created_at?: string
           date?: string
@@ -118,8 +164,13 @@ export type Database = {
           status?: string | null
           tdb_id?: string | null
           time?: string | null
+          transport_vehicle?: string | null
+          travel_companions?: string | null
+          travel_departure_time?: string | null
+          travel_notes?: string | null
           updated_at?: string
           user_id?: string
+          venue_map_url?: string | null
           website?: string | null
         }
         Relationships: []
@@ -367,6 +418,75 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      packing_list_items: {
+        Row: {
+          category: string
+          competition_id: string | null
+          created_at: string
+          id: string
+          is_checked: boolean
+          name: string
+          template_id: string | null
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          competition_id?: string | null
+          created_at?: string
+          id?: string
+          is_checked?: boolean
+          name: string
+          template_id?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string
+          competition_id?: string | null
+          created_at?: string
+          id?: string
+          is_checked?: boolean
+          name?: string
+          template_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "packing_list_items_competition_id_fkey"
+            columns: ["competition_id"]
+            isOneToOne: false
+            referencedRelation: "competitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "packing_list_items_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "packing_list_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      packing_list_templates: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       reminders: {
         Row: {
