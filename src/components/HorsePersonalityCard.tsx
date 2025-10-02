@@ -112,7 +112,9 @@ export const HorsePersonalityCard = ({
               {personalityTrait && (
                 <>
                   <p className="text-sm text-primary font-semibold mb-1">{personality.trait}</p>
-                  <p className="text-sm text-muted-foreground mb-3">{personality.description}</p>
+                  {isPredefined && (
+                    <p className="text-sm text-muted-foreground mb-3">{personality.description}</p>
+                  )}
                 </>
               )}
               {funFact && (
