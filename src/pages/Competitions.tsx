@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Settings } from "lucide-react";
+import { Settings, CalendarDays, Package, BookOpen } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { CompetitionsPlanningTab } from "@/components/CompetitionsPlanningTab";
@@ -112,13 +112,40 @@ const Competitions = () => {
         </div>
 
         <Tabs defaultValue="planning" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="planning">Planering</TabsTrigger>
-            <TabsTrigger value="packing">Packlistor</TabsTrigger>
-            <TabsTrigger value="rules">Regler & Info</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 h-auto p-1">
+            <TabsTrigger 
+              value="planning" 
+              className="gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all hover:scale-105"
+            >
+              <CalendarDays className="h-4 w-4" />
+              <div className="flex flex-col items-start">
+                <span className="font-semibold">Planering</span>
+                <span className="text-xs opacity-80 hidden sm:block">Hitta tävlingar</span>
+              </div>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="packing" 
+              className="gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all hover:scale-105"
+            >
+              <Package className="h-4 w-4" />
+              <div className="flex flex-col items-start">
+                <span className="font-semibold">Packlistor</span>
+                <span className="text-xs opacity-80 hidden sm:block">Bocka av & packa</span>
+              </div>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="rules" 
+              className="gap-2 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all hover:scale-105"
+            >
+              <BookOpen className="h-4 w-4" />
+              <div className="flex flex-col items-start">
+                <span className="font-semibold">Regler & Info</span>
+                <span className="text-xs opacity-80 hidden sm:block">Allt du behöver</span>
+              </div>
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="planning">
+          <TabsContent value="planning" className="animate-fade-in">
             <CompetitionsPlanningTab
               competitions={competitions}
               searchTerm={searchTerm}
@@ -127,11 +154,11 @@ const Competitions = () => {
             />
           </TabsContent>
 
-          <TabsContent value="packing">
+          <TabsContent value="packing" className="animate-fade-in">
             <PackingListsTab />
           </TabsContent>
 
-          <TabsContent value="rules">
+          <TabsContent value="rules" className="animate-fade-in">
             <RulesInfoTab />
           </TabsContent>
         </Tabs>
