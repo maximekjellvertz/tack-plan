@@ -122,7 +122,7 @@ export const HorsePersonalityCard = ({
               {funFact && (
                 <div className={personalityTrait ? "pt-3 border-t border-border" : ""}>
                   <p className="text-xs text-muted-foreground mb-1">Visste du att {horseName}...</p>
-                  <p className="text-sm text-foreground italic">{funFact} 🎯</p>
+                  <p className="text-sm text-foreground italic">{funFact}</p>
                 </div>
               )}
             </>
