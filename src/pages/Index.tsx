@@ -10,7 +10,7 @@ const Index = () => {
     <div className="min-h-screen w-full bg-gradient-to-br from-primary/10 to-secondary/10 flex flex-col relative">
       {/* Background Image */}
       <div 
-        className="absolute inset-0 bg-cover bg-center opacity-20"
+        className="absolute inset-0 bg-cover bg-center opacity-40"
         style={{ backgroundImage: `url(${heroHorse})` }}
       />
       
@@ -37,17 +37,17 @@ const Index = () => {
           
           {/* Info Section */}
           <div className="grid md:grid-cols-3 gap-6 mt-12">
-            <div className="bg-card p-6 rounded-lg border shadow-soft">
+            <div className="bg-card/80 backdrop-blur-md p-6 rounded-lg border shadow-soft">
               <h3 className="text-xl font-semibold mb-3">Följ din hästs resa</h3>
               <p className="text-muted-foreground">Varje steg lämnar ett avtryck – samla hela din hästs resa på ett ställe.</p>
             </div>
             
-            <div className="bg-card p-6 rounded-lg border shadow-soft">
+            <div className="bg-card/80 backdrop-blur-md p-6 rounded-lg border shadow-soft">
               <h3 className="text-xl font-semibold mb-3">Hälsa & utveckling</h3>
               <p className="text-muted-foreground">Ge din häst bästa förutsättningar – följ utvecklingen och fånga signalerna i tid.</p>
             </div>
             
-            <div className="bg-card p-6 rounded-lg border shadow-soft">
+            <div className="bg-card/80 backdrop-blur-md p-6 rounded-lg border shadow-soft">
               <h3 className="text-xl font-semibold mb-3">Sätt mål & fira framsteg</h3>
               <p className="text-muted-foreground">Från första tävlingen till stora drömmar – fira varje milstolpe på vägen.</p>
             </div>
