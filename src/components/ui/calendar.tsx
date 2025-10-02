@@ -21,9 +21,9 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         caption: "flex justify-center pt-1 relative items-center mb-4",
         caption_label: "hidden",
         caption_dropdowns: "flex gap-3 items-center justify-center",
-        dropdown_month: "relative px-4 py-2.5 text-sm font-semibold border-2 rounded-lg hover:bg-accent hover:scale-105 transition-all bg-background shadow-md",
-        dropdown_year: "relative px-4 py-2.5 text-sm font-semibold border-2 rounded-lg hover:bg-accent hover:scale-105 transition-all bg-background shadow-md",
-        dropdown: "absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20",
+        dropdown_month: "px-4 py-2.5 text-sm font-semibold border-2 rounded-lg hover:bg-accent transition-all bg-background shadow-md cursor-pointer",
+        dropdown_year: "px-4 py-2.5 text-sm font-semibold border-2 rounded-lg hover:bg-accent transition-all bg-background shadow-md cursor-pointer",
+        dropdown: "w-full h-full opacity-100 cursor-pointer appearance-none bg-transparent text-center font-semibold",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
