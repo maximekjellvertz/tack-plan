@@ -126,7 +126,7 @@ export const EditGoalDialog = ({ open, onOpenChange, goal, onUpdate }: EditGoalD
                     {targetDate ? format(targetDate, "PPP", { locale: sv }) : "Välj datum"}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0 z-50" align="start" sideOffset={5}>
                   <Calendar
                     mode="single"
                     selected={targetDate}

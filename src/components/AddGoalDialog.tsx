@@ -182,13 +182,14 @@ export const AddGoalDialog = ({ onAdd }: AddGoalDialogProps) => {
                   {targetDate ? format(targetDate, "d MMMM yyyy", { locale: sv }) : "Välj datum"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
+              <PopoverContent className="w-auto p-0 z-50" align="start" sideOffset={5}>
                 <Calendar
                   mode="single"
                   selected={targetDate}
                   onSelect={setTargetDate}
                   initialFocus
                   locale={sv}
+                  className="pointer-events-auto"
                 />
               </PopoverContent>
             </Popover>
