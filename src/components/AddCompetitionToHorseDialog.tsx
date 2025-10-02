@@ -95,7 +95,7 @@ export const AddCompetitionToHorseDialog = ({ horseName, onAdd }: AddCompetition
           Lägg till tävling
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-md max-h-[95vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">Planera tävling</DialogTitle>
           <div className="flex items-center gap-2 mt-3 px-4 py-3 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border border-primary/20">
@@ -150,7 +150,7 @@ export const AddCompetitionToHorseDialog = ({ horseName, onAdd }: AddCompetition
               </Button>
             </div>
 
-            <Popover>
+            <Popover modal={true}>
               <PopoverTrigger asChild>
                 <Button
                   type="button"
@@ -168,14 +168,20 @@ export const AddCompetitionToHorseDialog = ({ horseName, onAdd }: AddCompetition
                   )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 z-50" align="center" side="bottom" sideOffset={8}>
+              <PopoverContent 
+                className="w-auto p-0" 
+                align="center" 
+                side="bottom"
+                sideOffset={8}
+                avoidCollisions={true}
+                collisionPadding={20}
+              >
                 <Calendar
                   mode="single"
                   selected={selectedDate}
                   onSelect={handleDateSelect}
                   initialFocus
                   locale={sv}
-                  className="pointer-events-auto"
                 />
               </PopoverContent>
             </Popover>
