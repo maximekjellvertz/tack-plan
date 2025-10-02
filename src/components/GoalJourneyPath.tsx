@@ -54,6 +54,9 @@ const HorseshoeIcon = ({ isCompleted }: { isCompleted: boolean }) => (
 );
 
 export const GoalJourneyPath = ({ goals, onGoalClick, onToggleComplete, onDelete }: GoalJourneyPathProps) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
   const sortedGoals = [...goals].sort((a, b) => {
     if (a.target_date && b.target_date) {
       return new Date(a.target_date).getTime() - new Date(b.target_date).getTime();
@@ -127,8 +130,21 @@ export const GoalJourneyPath = ({ goals, onGoalClick, onToggleComplete, onDelete
               }}
             />
 
-            {/* Goals as checkpoints */}
+            {/* Goals as checkpoints - with TODAY at the start */}
             <div className="relative flex justify-between items-center py-8 px-4">
+              {/* TODAY marker */}
+              <div className="flex flex-col items-center z-10">
+                <div className="w-12 h-12 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center animate-pulse">
+                  <div className="w-6 h-6 rounded-full bg-primary" />
+                </div>
+                <div className="mt-2 text-center max-w-[120px]">
+                  <p className="text-xs font-bold text-primary">IDAG</p>
+                  <p className="text-xs text-muted-foreground">
+                    {format(today, "d MMM", { locale: sv })}
+                  </p>
+                </div>
+              </div>
+              
               {sortedGoals.map((goal) => (
                 <div
                   key={goal.id}
