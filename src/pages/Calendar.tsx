@@ -223,20 +223,19 @@ const Calendar = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-8">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-4xl font-bold text-foreground mb-2 glow-text">Kalender</h1>
-            <p className="text-muted-foreground">
-              Se alla dina tävlingar, hälsohändelser och påminnelser
-            </p>
-          </div>
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-foreground mb-2 glow-text">Kalender</h1>
+          <p className="text-muted-foreground mb-4">
+            Se alla dina tävlingar, hälsohändelser och påminnelser
+          </p>
           <Select value={selectedHorseId} onValueChange={setSelectedHorseId}>
-            <SelectTrigger className="w-[200px]">
+            <SelectTrigger className="w-[200px] bg-card z-50">
               <SelectValue placeholder="Filtrera per häst" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="z-[100] bg-card">
               <SelectItem value="all">Alla hästar</SelectItem>
               {horses.map((horse) => (
                 <SelectItem key={horse.id} value={horse.id}>
@@ -247,123 +246,88 @@ const Calendar = () => {
           </Select>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Calendar */}
-          <Card className="lg:col-span-2 p-6">
+        {/* Legend & Stats Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <Card className="p-4 bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-500/20 hover-scale">
+            <div className="flex items-center gap-3 mb-2">
+              <Trophy className="w-5 h-5 text-blue-600" />
+              <h3 className="font-semibold text-foreground">Tävlingar</h3>
+            </div>
+            <p className="text-3xl font-bold text-blue-600">
+              {events.filter((e) => e.type === "competition").length}
+            </p>
+          </Card>
+
+          <Card className="p-4 bg-gradient-to-br from-red-500/10 to-red-600/10 border-red-500/20 hover-scale">
+            <div className="flex items-center gap-3 mb-2">
+              <Activity className="w-5 h-5 text-red-600" />
+              <h3 className="font-semibold text-foreground">Hälsologgar</h3>
+            </div>
+            <p className="text-3xl font-bold text-red-600">
+              {events.filter((e) => e.type === "health").length}
+            </p>
+          </Card>
+
+          <Card className="p-4 bg-gradient-to-br from-green-500/10 to-green-600/10 border-green-500/20 hover-scale">
+            <div className="flex items-center gap-3 mb-2">
+              <Bell className="w-5 h-5 text-green-600" />
+              <h3 className="font-semibold text-foreground">Påminnelser</h3>
+            </div>
+            <p className="text-3xl font-bold text-green-600">
+              {events.filter((e) => e.type === "reminder").length}
+            </p>
+          </Card>
+        </div>
+
+        {/* Calendar - Full Width */}
+        <Card className="p-8 bg-gradient-to-br from-card to-muted/20">
+          <div className="flex justify-center">
             <CalendarComponent
               mode="single"
               selected={date}
               onSelect={(newDate) => newDate && handleDayClick(newDate)}
               onDayClick={handleDayClick}
-              className="rounded-md pointer-events-auto"
+              className="rounded-md pointer-events-auto scale-125 origin-center"
               modifiers={{
                 hasEvent: datesWithEvents,
               }}
               modifiersClassNames={{
-                hasEvent: "bg-primary/20 font-bold",
+                hasEvent: "bg-primary/30 font-bold ring-2 ring-primary",
               }}
             />
-          </Card>
-
-          {/* Legend & Stats */}
-          <div className="space-y-4">
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Färgkodning</h3>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-4 h-4 rounded-full bg-blue-500" />
-                  <span className="text-sm">Tävlingar</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-4 h-4 rounded-full bg-red-500" />
-                  <span className="text-sm">Hälsohändelser</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-4 h-4 rounded-full bg-green-500" />
-                  <span className="text-sm">Påminnelser</span>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Statistik</h3>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Totalt händelser</span>
-                  <span className="font-bold">{events.length}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Tävlingar</span>
-                  <span className="font-bold text-blue-600">
-                    {events.filter((e) => e.type === "competition").length}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Hälsologgar</span>
-                  <span className="font-bold text-red-600">
-                    {events.filter((e) => e.type === "health").length}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Påminnelser</span>
-                  <span className="font-bold text-green-600">
-                    {events.filter((e) => e.type === "reminder").length}
-                  </span>
-                </div>
-              </div>
-            </Card>
           </div>
-        </div>
-
-        {/* Day Events Dialog */}
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>
-                Händelser för {date && format(date, "PPP", { locale: sv })}
-              </DialogTitle>
-              <DialogDescription>
-                {selectedDayEvents.length} händelse(r) denna dag
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-3 mt-4">
-              {selectedDayEvents.map((event) => (
-                <Card
-                  key={event.id}
-                  className={`p-4 border ${getEventColor(event.type)}`}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="mt-1">{getEventIcon(event.type)}</div>
-                    <div className="flex-1">
-                      <h4 className="font-semibold mb-1">{event.title}</h4>
-                      {event.horseName && (
-                        <p className="text-sm text-muted-foreground mb-1">
-                          <Heart className="w-3 h-3 inline mr-1" />
-                          {event.horseName}
-                        </p>
-                      )}
-                      {event.description && (
-                        <p className="text-sm text-muted-foreground">
-                          {event.description}
-                        </p>
-                      )}
-                      {event.severity && (
-                        <Badge variant="outline" className="mt-2">
-                          {event.severity}
-                        </Badge>
-                      )}
-                      {event.status && (
-                        <Badge variant="outline" className="mt-2 ml-2">
-                          {event.status}
-                        </Badge>
-                      )}
+          
+          {/* Quick Event List Below Calendar */}
+          {selectedDayEvents.length > 0 && (
+            <div className="mt-8 pt-6 border-t border-border">
+              <h3 className="text-lg font-semibold mb-4">
+                Händelser {date && format(date, "PPP", { locale: sv })}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {selectedDayEvents.map((event) => (
+                  <Card
+                    key={event.id}
+                    className={`p-4 border hover-scale ${getEventColor(event.type)}`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="mt-1">{getEventIcon(event.type)}</div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold mb-1 truncate">{event.title}</h4>
+                        {event.horseName && (
+                          <p className="text-xs text-muted-foreground truncate">
+                            <Heart className="w-3 h-3 inline mr-1" />
+                            {event.horseName}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              ))}
+                  </Card>
+                ))}
+              </div>
             </div>
-          </DialogContent>
-        </Dialog>
+          )}
+        </Card>
+
       </div>
     </div>
   );
