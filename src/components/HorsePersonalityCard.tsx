@@ -90,11 +90,9 @@ export const HorsePersonalityCard = ({
   return (
     <Card className="p-6 bg-gradient-to-br from-card to-muted/20 hover-scale animate-fade-in">
       <div className="flex items-start gap-4">
-        {isPredefined && (
-          <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${personality.color} flex items-center justify-center flex-shrink-0`}>
-            <Icon className="w-8 h-8" />
-          </div>
-        )}
+        <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${personality.color} flex items-center justify-center flex-shrink-0`}>
+          <Icon className="w-8 h-8" />
+        </div>
         <div className="flex-1">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
