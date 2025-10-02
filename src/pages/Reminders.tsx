@@ -113,12 +113,18 @@ const Reminders = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Find horse details if a horse was selected
+      const selectedHorse = formData.horse !== "none" && formData.horse 
+        ? horses.find(h => h.id === formData.horse)
+        : null;
+
       const { error } = await supabase.from("reminders").insert({
         user_id: user.id,
         title: formData.title,
         description: formData.description,
         date: formData.date,
-        horse_name: formData.horse === "none" ? null : formData.horse || null,
+        horse_id: selectedHorse?.id || null,
+        horse_name: selectedHorse?.name || null,
         type: "custom",
         completed: false,
       });
@@ -272,7 +278,7 @@ const Reminders = () => {
                       <SelectContent className="bg-background z-50">
                         <SelectItem value="none">Ingen häst</SelectItem>
                         {horses.map((horse) => (
-                          <SelectItem key={horse.id} value={horse.name}>
+                          <SelectItem key={horse.id} value={horse.id}>
                             {horse.name}
                           </SelectItem>
                         ))}
