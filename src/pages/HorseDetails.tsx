@@ -82,6 +82,64 @@ const HorseDetails = () => {
   const upcomingCompetitions = competitions.filter(c => c.status === "upcoming");
   const completedCompetitions = competitions.filter(c => c.status === "completed");
 
+  // Fetch competitions from database
+  useEffect(() => {
+    const fetchCompetitions = async () => {
+      if (!id) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('competitions')
+          .select('*')
+          .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+          .order('date', { ascending: false });
+
+        if (error) throw error;
+        
+        // Map database competitions to local format
+        const mappedComps = (data || []).map(comp => ({
+          id: parseInt(comp.id) || Date.now(),
+          name: comp.name,
+          date: comp.date,
+          location: comp.location,
+          discipline: comp.discipline,
+          class: comp.classes ? JSON.stringify(comp.classes) : '',
+          notes: comp.travel_notes || '',
+          status: comp.status as "upcoming" | "completed",
+          result: undefined
+        }));
+        
+        setCompetitions(mappedComps);
+      } catch (error) {
+        console.error('Error fetching competitions:', error);
+      }
+    };
+
+    if (horse) {
+      fetchCompetitions();
+    }
+
+    // Set up realtime subscription for competitions
+    const channel = supabase
+      .channel('horse-competitions')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'competitions'
+        },
+        () => {
+          fetchCompetitions();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [id, horse]);
+
   // Training sessions state
   const [trainingSessions, setTrainingSessions] = useState<TrainingSession[]>([]);
   const sortedTrainingSessions = [...trainingSessions].sort((a, b) => 
@@ -327,13 +385,115 @@ const HorseDetails = () => {
   }, [id, horse]);
 
   // Handlers for competitions
-  const handleAddCompetition = (newComp: Omit<Competition, 'id' | 'status' | 'result'>) => {
-    const competition: Competition = {
-      ...newComp,
-      id: Date.now(),
-      status: new Date(newComp.date) > new Date() ? "upcoming" : "completed",
-    };
-    setCompetitions([competition, ...competitions]);
+  const handleAddCompetition = async (newComp: Omit<Competition, 'id' | 'status' | 'result'>) => {
+    if (!horse) return;
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const status = new Date(newComp.date) > new Date() ? "upcoming" : "completed";
+      
+      const { error } = await supabase
+        .from('competitions')
+        .insert({
+          user_id: user.id,
+          name: newComp.name,
+          date: newComp.date,
+          location: newComp.location,
+          discipline: newComp.discipline,
+          status: status,
+        });
+
+      if (error) throw error;
+
+      // Update horse's competitions counter if this year
+      const compYear = new Date(newComp.date).getFullYear();
+      const currentYear = new Date().getFullYear();
+      
+      if (compYear === currentYear) {
+        const newCount = (horse.competitions_this_year || 0) + 1;
+        const { error: updateError } = await supabase
+          .from('horses')
+          .update({ competitions_this_year: newCount })
+          .eq('id', horse.id);
+
+        if (updateError) throw updateError;
+
+        // Refresh horse data
+        const { data: horseData } = await supabase
+          .from('horses')
+          .select('*')
+          .eq('id', horse.id)
+          .maybeSingle();
+
+        if (horseData) {
+          setHorse(horseData);
+        }
+      }
+
+      toast({
+        title: "Tävling tillagd!",
+        description: `Tävling för ${horse.name} har skapats`,
+      });
+    } catch (error) {
+      console.error('Error adding competition:', error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte lägga till tävling",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteCompetition = async (competitionId: number, competitionDate: string) => {
+    if (!horse) return;
+
+    try {
+      const { error } = await supabase
+        .from('competitions')
+        .delete()
+        .eq('id', competitionId.toString());
+
+      if (error) throw error;
+
+      // Update horse's competitions counter if this year
+      const compYear = new Date(competitionDate).getFullYear();
+      const currentYear = new Date().getFullYear();
+      
+      if (compYear === currentYear) {
+        const newCount = Math.max((horse.competitions_this_year || 0) - 1, 0);
+        const { error: updateError } = await supabase
+          .from('horses')
+          .update({ competitions_this_year: newCount })
+          .eq('id', horse.id);
+
+        if (updateError) throw updateError;
+
+        // Refresh horse data
+        const { data: horseData } = await supabase
+          .from('horses')
+          .select('*')
+          .eq('id', horse.id)
+          .maybeSingle();
+
+        if (horseData) {
+          setHorse(horseData);
+        }
+      }
+
+      toast({
+        title: "Tävling raderad!",
+        description: "Tävlingen har tagits bort",
+      });
+    } catch (error) {
+      console.error('Error deleting competition:', error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte radera tävling",
+        variant: "destructive",
+      });
+    }
   };
 
   // Handlers for training sessions
@@ -954,6 +1114,7 @@ const HorseDetails = () => {
               upcomingCompetitions={upcomingCompetitions}
               completedCompetitions={completedCompetitions}
               onAddCompetition={handleAddCompetition}
+              onDeleteCompetition={handleDeleteCompetition}
             />
           </TabsContent>
 

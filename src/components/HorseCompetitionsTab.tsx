@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Calendar, MapPin } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Trophy, Calendar, MapPin, Trash2 } from "lucide-react";
 import { AddCompetitionToHorseDialog } from "@/components/AddCompetitionToHorseDialog";
 import { EmptyStateCard } from "@/components/EmptyStateCard";
 
@@ -22,6 +23,7 @@ interface HorseCompetitionsTabProps {
   upcomingCompetitions: Competition[];
   completedCompetitions: Competition[];
   onAddCompetition: (comp: any) => void;
+  onDeleteCompetition?: (id: number, date: string) => void;
 }
 
 export const HorseCompetitionsTab = ({
@@ -30,6 +32,7 @@ export const HorseCompetitionsTab = ({
   upcomingCompetitions,
   completedCompetitions,
   onAddCompetition,
+  onDeleteCompetition,
 }: HorseCompetitionsTabProps) => {
   return (
     <div className="animate-fade-in">
@@ -82,6 +85,16 @@ export const HorseCompetitionsTab = ({
                       </div>
                     </div>
                   </div>
+                  {onDeleteCompetition && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onDeleteCompetition(comp.id, comp.date)}
+                      className="text-muted-foreground hover:text-destructive"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  )}
                 </div>
               </Card>
             ))}
@@ -132,6 +145,16 @@ export const HorseCompetitionsTab = ({
                       </div>
                     </div>
                   </div>
+                  {onDeleteCompetition && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onDeleteCompetition(comp.id, comp.date)}
+                      className="text-muted-foreground hover:text-destructive"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  )}
                 </div>
               </Card>
             ))}
