@@ -9,6 +9,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Pencil, Sparkles, Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,7 +31,8 @@ const personalityTraits = [
   { value: "calm", label: "Lugn", description: "Behåller sinneslugnet i alla situationer" },
   { value: "energetic", label: "Energisk", description: "Alltid redo för action" },
   { value: "curious", label: "Nyfiken", description: "Vill utforska allt och alla" },
-  { value: "gentle", label: "Mild", description: "Extra försiktig och ömsint" }
+  { value: "gentle", label: "Mild", description: "Extra försiktig och ömsint" },
+  { value: "custom", label: "Annan/Egen", description: "Skriv in ett eget personlighetsdrag" }
 ];
 
 export const EditHorsePersonalityDialog = ({
@@ -41,7 +43,15 @@ export const EditHorsePersonalityDialog = ({
 }: EditHorsePersonalityDialogProps) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [personalityTrait, setPersonalityTrait] = useState(currentPersonalityTrait || "");
+  
+  // Check if current trait is a predefined one
+  const isPredefined = personalityTraits.some(t => t.value === currentPersonalityTrait);
+  const [selectedOption, setSelectedOption] = useState(
+    isPredefined ? currentPersonalityTrait || "" : "custom"
+  );
+  const [customTrait, setCustomTrait] = useState(
+    !isPredefined ? currentPersonalityTrait || "" : ""
+  );
   const [funFact, setFunFact] = useState(currentFunFact || "");
   const { toast } = useToast();
 
@@ -50,10 +60,12 @@ export const EditHorsePersonalityDialog = ({
     setLoading(true);
 
     try {
+      const finalPersonalityTrait = selectedOption === "custom" ? customTrait : selectedOption;
+      
       const { error } = await supabase
         .from("horses")
         .update({
-          personality_trait: personalityTrait || null,
+          personality_trait: finalPersonalityTrait || null,
           fun_fact: funFact || null,
         })
         .eq("id", horseId);
@@ -100,11 +112,11 @@ export const EditHorsePersonalityDialog = ({
         <form onSubmit={handleSubmit} className="space-y-6 mt-2">
           <div className="space-y-2">
             <Label htmlFor="personality" className="text-base font-semibold">Personlighetsdrag</Label>
-            <Select value={personalityTrait} onValueChange={setPersonalityTrait}>
+            <Select value={selectedOption} onValueChange={setSelectedOption}>
               <SelectTrigger className="h-11">
                 <SelectValue placeholder="✨ Välj personlighetsdrag" />
               </SelectTrigger>
-              <SelectContent className="bg-background">
+              <SelectContent className="bg-background z-50">
                 {personalityTraits.map((trait) => (
                   <SelectItem key={trait.value} value={trait.value} className="cursor-pointer">
                     <div>
@@ -115,6 +127,22 @@ export const EditHorsePersonalityDialog = ({
                 ))}
               </SelectContent>
             </Select>
+            
+            {selectedOption === "custom" && (
+              <div className="mt-3">
+                <Input
+                  id="customTrait"
+                  placeholder="Skriv in eget personlighetsdrag"
+                  value={customTrait}
+                  onChange={(e) => setCustomTrait(e.target.value)}
+                  className="h-11"
+                  maxLength={50}
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  {customTrait.length}/50 tecken
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">
