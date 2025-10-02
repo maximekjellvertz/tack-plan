@@ -656,8 +656,8 @@ const HorseDetails = () => {
         });
       }
       
-      // Force refresh the goals data
-      console.log('Refreshing goals data...');
+      // Force refresh the goals and milestones data
+      console.log('Refreshing goals and milestones data...');
       const { data: goalsData } = await supabase
         .from('goals')
         .select('*')
@@ -667,6 +667,18 @@ const HorseDetails = () => {
       if (goalsData) {
         console.log('Goals refreshed:', goalsData);
         setGoals(goalsData);
+      }
+
+      // Refresh milestones
+      const { data: milestonesData } = await supabase
+        .from('milestones')
+        .select('*')
+        .eq('horse_id', horse.id)
+        .order('achieved_date', { ascending: false });
+      
+      if (milestonesData) {
+        console.log('Milestones refreshed:', milestonesData);
+        setMilestones(milestonesData);
       }
     } catch (error) {
       console.error('Error toggling goal completion:', error);
