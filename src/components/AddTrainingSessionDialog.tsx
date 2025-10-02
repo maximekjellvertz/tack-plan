@@ -5,9 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Sparkles, Zap, Target, Heart, Mountain, Wind, Footprints, Coffee } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Plus, Sparkles, Zap, Target, Heart, Mountain, Wind, Footprints, Coffee, CalendarIcon } from "lucide-react";
 import { toast } from "sonner";
 import { celebrateGoalCompletion } from "@/lib/confetti";
+import { format } from "date-fns";
+import { sv } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 
 interface AddTrainingSessionDialogProps {
   horseName: string;
@@ -44,6 +49,7 @@ const trainingTypes = [
 export const AddTrainingSessionDialog = ({ horseName, onAdd }: AddTrainingSessionDialogProps) => {
   const [open, setOpen] = useState(false);
   const [quote, setQuote] = useState(motivationalQuotes[0]);
+  const [selectedDate, setSelectedDate] = useState<Date>();
   const [formData, setFormData] = useState({
     type: "",
     date: "",
@@ -56,12 +62,25 @@ export const AddTrainingSessionDialog = ({ horseName, onAdd }: AddTrainingSessio
     if (open) {
       const randomQuote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
       setQuote(randomQuote);
+      // Set today as default
+      const today = new Date();
+      setSelectedDate(today);
+      setFormData(prev => ({ ...prev, date: format(today, "yyyy-MM-dd") }));
     }
   }, [open]);
 
-  const setToday = () => {
-    const today = new Date().toISOString().split('T')[0];
-    setFormData({ ...formData, date: today });
+  const setQuickDate = (daysAgo: number) => {
+    const date = new Date();
+    date.setDate(date.getDate() - daysAgo);
+    setSelectedDate(date);
+    setFormData({ ...formData, date: format(date, "yyyy-MM-dd") });
+  };
+
+  const handleDateSelect = (date: Date | undefined) => {
+    setSelectedDate(date);
+    if (date) {
+      setFormData({ ...formData, date: format(date, "yyyy-MM-dd") });
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -127,27 +146,70 @@ export const AddTrainingSessionDialog = ({ horseName, onAdd }: AddTrainingSessio
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="date" className="text-base">När? *</Label>
+          <div className="space-y-3">
+            <Label className="text-base">När? *</Label>
+            
+            {/* Quick date buttons */}
+            <div className="flex gap-2">
               <Button
                 type="button"
-                variant="ghost"
+                variant="outline"
                 size="sm"
-                onClick={setToday}
-                className="text-xs h-7"
+                onClick={() => setQuickDate(0)}
+                className="flex-1 h-9"
               >
                 <Zap className="w-3 h-3 mr-1" />
                 Idag
               </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setQuickDate(1)}
+                className="flex-1 h-9"
+              >
+                Igår
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setQuickDate(2)}
+                className="flex-1 h-9"
+              >
+                I förrgår
+              </Button>
             </div>
-            <Input
-              id="date"
-              type="date"
-              value={formData.date}
-              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-              className="h-11"
-            />
+
+            {/* Calendar picker */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className={cn(
+                    "w-full h-11 justify-start text-left font-normal",
+                    !selectedDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {selectedDate ? (
+                    format(selectedDate, "d MMMM yyyy", { locale: sv })
+                  ) : (
+                    <span>Välj datum</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={handleDateSelect}
+                  initialFocus
+                  locale={sv}
+                />
+              </PopoverContent>
+            </Popover>
           </div>
 
           <div className="space-y-2">
