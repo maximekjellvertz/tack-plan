@@ -6,7 +6,7 @@ import { AddCompetitionToHorseDialog } from "@/components/AddCompetitionToHorseD
 import { EmptyStateCard } from "@/components/EmptyStateCard";
 
 interface Competition {
-  id: number;
+  id: string;
   name: string;
   date: string;
   location: string;
@@ -23,7 +23,7 @@ interface HorseCompetitionsTabProps {
   upcomingCompetitions: Competition[];
   completedCompetitions: Competition[];
   onAddCompetition: (comp: any) => void;
-  onDeleteCompetition?: (id: number, date: string) => void;
+  onDeleteCompetition?: (id: string, date: string) => void;
 }
 
 export const HorseCompetitionsTab = ({

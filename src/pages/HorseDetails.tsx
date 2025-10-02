@@ -16,7 +16,7 @@ import { HorseJourneyTab } from "@/components/HorseJourneyTab";
 import { HorsePersonalityCard } from "@/components/HorsePersonalityCard";
 
 interface Competition {
-  id: number;
+  id: string;
   name: string;
   date: string;
   location: string;
@@ -98,7 +98,7 @@ const HorseDetails = () => {
         
         // Map database competitions to local format
         const mappedComps = (data || []).map(comp => ({
-          id: parseInt(comp.id) || Date.now(),
+          id: comp.id,
           name: comp.name,
           date: comp.date,
           location: comp.location,
@@ -446,14 +446,14 @@ const HorseDetails = () => {
     }
   };
 
-  const handleDeleteCompetition = async (competitionId: number, competitionDate: string) => {
+  const handleDeleteCompetition = async (competitionId: string, competitionDate: string) => {
     if (!horse) return;
 
     try {
       const { error } = await supabase
         .from('competitions')
         .delete()
-        .eq('id', competitionId.toString());
+        .eq('id', competitionId);
 
       if (error) throw error;
 
