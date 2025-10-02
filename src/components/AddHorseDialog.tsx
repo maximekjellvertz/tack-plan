@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Loader2, CheckCircle } from "lucide-react";
+import { Plus, Loader2, CheckCircle, Sparkles, Heart, Star, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
@@ -172,18 +172,25 @@ export const AddHorseDialog = ({ onHorseAdded }: AddHorseDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-primary hover:bg-primary/90">
-          <Plus className="w-4 h-4 mr-2" />
+        <Button className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all hover:scale-105">
+          <Sparkles className="w-4 h-4 mr-2" />
           Lägg till häst
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Lägg till ny häst</DialogTitle>
+          <DialogTitle className="text-2xl flex items-center gap-2">
+            <Heart className="w-6 h-6 text-primary" />
+            Lägg till ny häst
+          </DialogTitle>
+          <div className="flex items-center gap-2 mt-3 px-4 py-3 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border border-primary/20">
+            <Star className="w-5 h-5 text-primary flex-shrink-0" />
+            <p className="text-sm text-muted-foreground italic">Varje häst är unik - börja din gemensamma resa här</p>
+          </div>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6 mt-2">
           <div className="space-y-2">
-            <Label htmlFor="name">Namn *</Label>
+            <Label htmlFor="name" className="text-base font-semibold">Namn *</Label>
             <div className="relative">
               <Input
                 id="name"
@@ -191,44 +198,73 @@ export const AddHorseDialog = ({ onHorseAdded }: AddHorseDialogProps) => {
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="T.ex. Thunder"
+                className="h-11 pr-10"
               />
               {searchingTDB && (
-                <Loader2 className="w-4 h-4 animate-spin absolute right-3 top-3 text-muted-foreground" />
+                <Loader2 className="w-4 h-4 animate-spin absolute right-3 top-3.5 text-primary" />
               )}
               {selectedTDBHorse && !searchingTDB && (
-                <CheckCircle className="w-4 h-4 absolute right-3 top-3 text-green-600" />
+                <div className="absolute right-3 top-3.5">
+                  <CheckCircle className="w-4 h-4 text-primary animate-scale-in" />
+                </div>
               )}
             </div>
             {formData.name.length > 0 && formData.name.length < 3 && (
-              <p className="text-xs text-muted-foreground">Skriv minst 3 tecken för att söka i TDB</p>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Zap className="w-3 h-3" />
+                <span>Skriv minst 3 tecken för att söka i TDB</span>
+              </div>
+            )}
+            {selectedTDBHorse && (
+              <div className="flex items-center gap-2 px-3 py-2 bg-primary/10 border border-primary/20 rounded-lg text-sm">
+                <CheckCircle className="w-4 h-4 text-primary" />
+                <span className="text-muted-foreground">Häst hittad i TDB - uppgifter ifyllda!</span>
+              </div>
             )}
           </div>
 
           {/* TDB Search Results */}
           {tdbResults.length > 1 && (
-            <div className="space-y-2">
-              <Label>Välj häst från TDB ({tdbResults.length} hittade)</Label>
-              <div className="space-y-2 max-h-60 overflow-y-auto">
+            <div className="space-y-3 animate-fade-in">
+              <div className="flex items-center gap-2">
+                <Star className="w-4 h-4 text-primary" />
+                <Label className="text-base font-semibold">
+                  Välj häst från TDB ({tdbResults.length} hittade)
+                </Label>
+              </div>
+              <div className="space-y-2 max-h-72 overflow-y-auto pr-2">
                 {tdbResults.map((horse, index) => (
                   <Card 
                     key={index} 
-                    className="p-3 cursor-pointer hover:bg-accent transition-colors"
+                    className="p-4 cursor-pointer hover:bg-primary/5 hover:border-primary/30 transition-all hover:shadow-md animate-fade-in"
+                    style={{ animationDelay: `${index * 50}ms` }}
                     onClick={() => selectTDBHorse(horse)}
                   >
                     <div className="flex items-start justify-between">
-                      <div>
-                        <p className="font-medium">{horse.name}</p>
-                        <div className="flex gap-2 mt-1">
-                          <Badge variant="secondary">{horse.breed}</Badge>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Heart className="w-4 h-4 text-primary" />
+                          <p className="font-semibold text-lg">{horse.name}</p>
+                        </div>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          <Badge className="bg-primary/10 text-primary border-primary/20">
+                            {horse.breed}
+                          </Badge>
                           <Badge variant="outline">{horse.age} år</Badge>
-                          {horse.color && <Badge variant="outline">{horse.color}</Badge>}
+                          {horse.color && (
+                            <Badge variant="outline" className="bg-secondary/10">
+                              {horse.color}
+                            </Badge>
+                          )}
                         </div>
                         {horse.registrationNumber && (
-                          <p className="text-xs text-muted-foreground mt-1">
+                          <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
+                            <CheckCircle className="w-3 h-3" />
                             Reg: {horse.registrationNumber}
                           </p>
                         )}
                       </div>
+                      <Zap className="w-5 h-5 text-primary ml-2 flex-shrink-0" />
                     </div>
                   </Card>
                 ))}
@@ -236,69 +272,91 @@ export const AddHorseDialog = ({ onHorseAdded }: AddHorseDialogProps) => {
             </div>
           )}
 
-          <div className="space-y-2">
-            <Label htmlFor="breed">Ras *</Label>
-            <Input
-              id="breed"
-              required
-              value={formData.breed}
-              onChange={(e) => setFormData({ ...formData, breed: e.target.value })}
-              placeholder="T.ex. Svensk Varmblod"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="breed" className="text-base">Ras *</Label>
+              <Input
+                id="breed"
+                required
+                value={formData.breed}
+                onChange={(e) => setFormData({ ...formData, breed: e.target.value })}
+                placeholder="T.ex. Svensk Varmblod"
+                className="h-11"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="age" className="text-base">Ålder *</Label>
+              <Input
+                id="age"
+                type="number"
+                required
+                min="1"
+                max="40"
+                value={formData.age}
+                onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                placeholder="T.ex. 8"
+                className="h-11"
+              />
+            </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="age">Ålder *</Label>
-            <Input
-              id="age"
-              type="number"
-              required
-              min="1"
-              max="40"
-              value={formData.age}
-              onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-              placeholder="T.ex. 8"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="discipline">Gren *</Label>
+            <Label htmlFor="discipline" className="text-base">Gren *</Label>
             <Input
               id="discipline"
               required
               value={formData.discipline}
               onChange={(e) => setFormData({ ...formData, discipline: e.target.value })}
               placeholder="T.ex. Hoppning, Dressyr"
+              className="h-11"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="level">Nivå</Label>
-            <Select value={formData.level} onValueChange={(value) => setFormData({ ...formData, level: value })}>
-              <SelectTrigger id="level">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Lätt">Lätt</SelectItem>
-                <SelectItem value="Medel">Medel</SelectItem>
-                <SelectItem value="Avancerad">Avancerad</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="level" className="text-base">Nivå</Label>
+              <Select value={formData.level} onValueChange={(value) => setFormData({ ...formData, level: value })}>
+                <SelectTrigger id="level" className="h-11">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Lätt">Lätt</SelectItem>
+                  <SelectItem value="Medel">Medel</SelectItem>
+                  <SelectItem value="Avancerad">Avancerad</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="color" className="text-base">Färg</Label>
+              <Input
+                id="color"
+                value={formData.color}
+                onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                placeholder="T.ex. Brun, Svart, Grå"
+                className="h-11"
+              />
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="color">Färg</Label>
-            <Input
-              id="color"
-              value={formData.color}
-              onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-              placeholder="T.ex. Brun, Svart, Grå"
-            />
+          <div className="flex gap-3 pt-4">
+            <Button 
+              type="button" 
+              variant="outline" 
+              className="flex-1"
+              onClick={() => setOpen(false)}
+            >
+              Avbryt
+            </Button>
+            <Button 
+              type="submit" 
+              className="flex-1 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all"
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              Spara häst
+            </Button>
           </div>
-
-          <Button type="submit" className="w-full">
-            Spara häst
-          </Button>
         </form>
       </DialogContent>
     </Dialog>
