@@ -118,7 +118,7 @@ const Reminders = () => {
         title: formData.title,
         description: formData.description,
         date: formData.date,
-        horse_name: formData.horse || null,
+        horse_name: formData.horse === "none" ? null : formData.horse || null,
         type: "custom",
         completed: false,
       });
@@ -270,7 +270,7 @@ const Reminders = () => {
                         <SelectValue placeholder="Välj häst" />
                       </SelectTrigger>
                       <SelectContent className="bg-background z-50">
-                        <SelectItem value="">Ingen häst</SelectItem>
+                        <SelectItem value="none">Ingen häst</SelectItem>
                         {horses.map((horse) => (
                           <SelectItem key={horse.id} value={horse.name}>
                             {horse.name}
