@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import Footer from "@/components/Footer";
 
 const Index = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-primary/10 to-secondary/10">
+    <div className="min-h-screen w-full bg-gradient-to-br from-primary/10 to-secondary/10 flex flex-col">
       {/* Login Button - Top Right */}
       <div className="absolute top-6 right-6 z-20">
         <Button 
@@ -56,6 +57,8 @@ const Index = () => {
           </div>
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 };

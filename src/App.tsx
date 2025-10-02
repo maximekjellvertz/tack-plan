@@ -12,6 +12,7 @@ import HealthLog from "./pages/HealthLog";
 import Reminders from "./pages/Reminders";
 import Goals from "./pages/Goals";
 import Auth from "./pages/Auth";
+import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import Navigation from "./components/Navigation";
 import Calendar from "./pages/Calendar";
@@ -27,6 +28,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/about" element={<About />} />
           <Route path="/dashboard" element={<><Navigation /><Dashboard /></>} />
           <Route path="/horses" element={<><Navigation /><Horses /></>} />
           <Route path="/horses/:id" element={<><Navigation /><HorseDetails /></>} />
