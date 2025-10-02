@@ -6,6 +6,12 @@
 All colors MUST be HSL.
 */
 
+@layer utilities {
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-105;
+  }
+}
+
 @layer base {
   :root {
     --background: 35 25% 97%;

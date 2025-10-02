@@ -2,24 +2,17 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Heart, Calendar, Activity, FileText, Trophy, MapPin, Clock, AlertCircle, CheckCircle, Image as ImageIcon, Target } from "lucide-react";
-import { AddCompetitionToHorseDialog } from "@/components/AddCompetitionToHorseDialog";
-import { AddTrainingSessionDialog } from "@/components/AddTrainingSessionDialog";
-import { AddHealthLogToHorseDialog } from "@/components/AddHealthLogToHorseDialog";
-import { HealthLogDetailsDialog } from "@/components/HealthLogDetailsDialog";
-import { UpdateHealthLogDialog } from "@/components/UpdateHealthLogDialog";
-import { EditHorseInfoDialog } from "@/components/EditHorseInfoDialog";
-import { EditHorseStatsDialog } from "@/components/EditHorseStatsDialog";
-import { AddGoalDialog } from "@/components/AddGoalDialog";
-import { GoalCard } from "@/components/GoalCard";
-import { GoalJourneyPath } from "@/components/GoalJourneyPath";
-import { MilestoneTimeline } from "@/components/MilestoneTimeline";
-import { BadgesGrid } from "@/components/BadgesGrid";
+import { ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { HorseHeader } from "@/components/HorseHeader";
+import { HorseOverviewTab } from "@/components/HorseOverviewTab";
+import { HorseTrainingTab } from "@/components/HorseTrainingTab";
+import { HorseCompetitionsTab } from "@/components/HorseCompetitionsTab";
+import { HorseHealthTab } from "@/components/HorseHealthTab";
+import { HorseJourneyTab } from "@/components/HorseJourneyTab";
 
 interface Competition {
   id: number;
@@ -80,6 +73,28 @@ const HorseDetails = () => {
   const [horse, setHorse] = useState<Horse | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Competitions state
+  const [competitions, setCompetitions] = useState<Competition[]>([]);
+  const upcomingCompetitions = competitions.filter(c => c.status === "upcoming");
+  const completedCompetitions = competitions.filter(c => c.status === "completed");
+
+  // Training sessions state
+  const [trainingSessions, setTrainingSessions] = useState<TrainingSession[]>([]);
+  const sortedTrainingSessions = [...trainingSessions].sort((a, b) => 
+    new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+
+  // Health logs state
+  const [healthLogs, setHealthLogs] = useState<HealthLog[]>([]);
+  const [loadingHealthLogs, setLoadingHealthLogs] = useState(true);
+
+  // Goals, milestones and badges state
+  const [goals, setGoals] = useState<any[]>([]);
+  const [milestones, setMilestones] = useState<any[]>([]);
+  const [badges, setBadges] = useState<any[]>([]);
+  const [loadingJourney, setLoadingJourney] = useState(true);
+
+  // Fetch horse data
   useEffect(() => {
     const fetchHorse = async () => {
       if (!id) return;
@@ -111,40 +126,7 @@ const HorseDetails = () => {
     fetchHorse();
   }, [id, toast]);
 
-  // Competitions - empty by default, users add their own or sync from TDB
-  const [competitions, setCompetitions] = useState<Competition[]>([]);
-
-  const handleAddCompetition = (newComp: Omit<Competition, 'id' | 'status' | 'result'>) => {
-    const competition: Competition = {
-      ...newComp,
-      id: Date.now(),
-      status: new Date(newComp.date) > new Date() ? "upcoming" : "completed",
-    };
-    setCompetitions([competition, ...competitions]);
-  };
-
-  const upcomingCompetitions = competitions.filter(c => c.status === "upcoming");
-  const completedCompetitions = competitions.filter(c => c.status === "completed");
-
-  // Training sessions - empty by default, users add their own
-  const [trainingSessions, setTrainingSessions] = useState<TrainingSession[]>([]);
-
-  const handleAddTrainingSession = (newSession: Omit<TrainingSession, 'id'>) => {
-    const session: TrainingSession = {
-      ...newSession,
-      id: Date.now(),
-    };
-    setTrainingSessions([session, ...trainingSessions]);
-  };
-
-  const sortedTrainingSessions = [...trainingSessions].sort((a, b) => 
-    new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
-
-  // Fetch health logs from database
-  const [healthLogs, setHealthLogs] = useState<HealthLog[]>([]);
-  const [loadingHealthLogs, setLoadingHealthLogs] = useState(true);
-
+  // Fetch health logs
   useEffect(() => {
     const fetchHealthLogs = async () => {
       if (!id) return;
@@ -192,125 +174,7 @@ const HorseDetails = () => {
     };
   }, [id, horse]);
 
-  const handleAddHealthLog = async (newLog: Omit<HealthLog, 'id' | 'created_at' | 'status' | 'horse_name'>) => {
-    if (!horse) return;
-    
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { error } = await supabase
-        .from('health_logs')
-        .insert({
-          user_id: user.id,
-          horse_id: horse.id,
-          horse_name: horse.name,
-          event: newLog.event,
-          severity: newLog.severity,
-          treatment: newLog.treatment,
-          notes: newLog.notes,
-          images: newLog.images || [],
-          status: 'Pågående',
-        });
-
-      if (error) throw error;
-
-      toast({
-        title: "Hälsologg tillagd!",
-        description: `Hälsologg för ${horse.name} har skapats`,
-      });
-    } catch (error) {
-      console.error('Error adding health log:', error);
-      toast({
-        title: "Fel",
-        description: "Kunde inte lägga till hälsologg",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleUpdateHealthLog = async (id: string, updates: Partial<HealthLog>) => {
-    try {
-      const { error } = await supabase
-        .from('health_logs')
-        .update(updates)
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Hälsologg uppdaterad!",
-        description: "Hälsologgen har uppdaterats",
-      });
-    } catch (error) {
-      console.error('Error updating health log:', error);
-      toast({
-        title: "Fel",
-        description: "Kunde inte uppdatera hälsologg",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleDeleteHealthLog = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from('health_logs')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-
-      toast({
-        title: "Hälsologg raderad!",
-        description: "Hälsologgen har raderats",
-      });
-    } catch (error) {
-      console.error('Error deleting health log:', error);
-      toast({
-        title: "Fel",
-        description: "Kunde inte radera hälsologg",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case "Lätt":
-        return "bg-secondary";
-      case "Medel":
-        return "bg-primary";
-      case "Allvarlig":
-        return "bg-destructive";
-      default:
-        return "bg-muted";
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "Pågående":
-        return <Clock className="w-4 h-4" />;
-      case "Klar":
-        return <CheckCircle className="w-4 h-4" />;
-      case "Uppmärksamhet":
-        return <AlertCircle className="w-4 h-4" />;
-      default:
-        return <FileText className="w-4 h-4" />;
-    }
-  };
-
-  const sortedHealthLogs = [...healthLogs].sort((a, b) => 
-    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-  );
-
-  // Goals, milestones and badges state
-  const [goals, setGoals] = useState<any[]>([]);
-  const [milestones, setMilestones] = useState<any[]>([]);
-  const [badges, setBadges] = useState<any[]>([]);
-  const [loadingJourney, setLoadingJourney] = useState(true);
-
+  // Fetch journey data (goals, milestones, badges)
   useEffect(() => {
     const fetchJourneyData = async () => {
       if (!id) return;
@@ -412,6 +276,110 @@ const HorseDetails = () => {
     };
   }, [id, horse]);
 
+  // Handlers for competitions
+  const handleAddCompetition = (newComp: Omit<Competition, 'id' | 'status' | 'result'>) => {
+    const competition: Competition = {
+      ...newComp,
+      id: Date.now(),
+      status: new Date(newComp.date) > new Date() ? "upcoming" : "completed",
+    };
+    setCompetitions([competition, ...competitions]);
+  };
+
+  // Handlers for training sessions
+  const handleAddTrainingSession = (newSession: Omit<TrainingSession, 'id'>) => {
+    const session: TrainingSession = {
+      ...newSession,
+      id: Date.now(),
+    };
+    setTrainingSessions([session, ...trainingSessions]);
+  };
+
+  // Handlers for health logs
+  const handleAddHealthLog = async (newLog: Omit<HealthLog, 'id' | 'created_at' | 'status' | 'horse_name'>) => {
+    if (!horse) return;
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('health_logs')
+        .insert({
+          user_id: user.id,
+          horse_id: horse.id,
+          horse_name: horse.name,
+          event: newLog.event,
+          severity: newLog.severity,
+          treatment: newLog.treatment,
+          notes: newLog.notes,
+          images: newLog.images || [],
+          status: 'Pågående',
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Hälsologg tillagd!",
+        description: `Hälsologg för ${horse.name} har skapats`,
+      });
+    } catch (error) {
+      console.error('Error adding health log:', error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte lägga till hälsologg",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUpdateHealthLog = async (id: string, updates: Partial<HealthLog>) => {
+    try {
+      const { error } = await supabase
+        .from('health_logs')
+        .update(updates)
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Hälsologg uppdaterad!",
+        description: "Hälsologgen har uppdaterats",
+      });
+    } catch (error) {
+      console.error('Error updating health log:', error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte uppdatera hälsologg",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteHealthLog = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('health_logs')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Hälsologg raderad!",
+        description: "Hälsologgen har raderats",
+      });
+    } catch (error) {
+      console.error('Error deleting health log:', error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte radera hälsologg",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handlers for goals
   const handleAddGoal = async (newGoal: any) => {
     if (!horse) {
       console.error('No horse found');
@@ -430,8 +398,6 @@ const HorseDetails = () => {
         return;
       }
 
-      console.log('Adding goal:', newGoal);
-
       const goalData = {
         user_id: user.id,
         horse_id: horse.id,
@@ -442,8 +408,6 @@ const HorseDetails = () => {
         auto_calculate: newGoal.auto_calculate !== undefined ? newGoal.auto_calculate : true,
       };
 
-      console.log('Goal data to insert:', goalData);
-
       const { data, error } = await supabase
         .from('goals')
         .insert(goalData)
@@ -453,8 +417,6 @@ const HorseDetails = () => {
         console.error('Supabase error:', error);
         throw error;
       }
-
-      console.log('Goal created:', data);
 
       // Immediately refresh goals
       const { data: goalsData } = await supabase
@@ -476,6 +438,50 @@ const HorseDetails = () => {
       toast({
         title: "Fel",
         description: error instanceof Error ? error.message : "Kunde inte lägga till mål",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUpdateGoal = async (goalId: string, updates: any) => {
+    if (!horse) return;
+
+    try {
+      const updateData = {
+        title: updates.title,
+        description: updates.description || null,
+        target_date: updates.target_date ? updates.target_date.toISOString().split('T')[0] : null,
+        goal_type: updates.goal_type,
+        auto_calculate: updates.auto_calculate,
+      };
+
+      const { error } = await supabase
+        .from('goals')
+        .update(updateData)
+        .eq('id', goalId);
+
+      if (error) throw error;
+
+      // Immediately refresh goals
+      const { data: goalsData } = await supabase
+        .from('goals')
+        .select('*')
+        .eq('horse_id', horse.id)
+        .order('created_at', { ascending: false });
+      
+      if (goalsData) {
+        setGoals(goalsData);
+      }
+
+      toast({
+        title: "Mål uppdaterat!",
+        description: "Målet har uppdaterats",
+      });
+    } catch (error) {
+      console.error('Error updating goal:', error);
+      toast({
+        title: "Fel",
+        description: "Kunde inte uppdatera mål",
         variant: "destructive",
       });
     }
@@ -517,58 +523,7 @@ const HorseDetails = () => {
     }
   };
 
-  const handleCompleteGoal = async (goalId: string) => {
-    try {
-      const goal = goals.find((g) => g.id === goalId);
-      if (!goal || !horse) return;
-
-      // Mark goal as completed
-      const { error: goalError } = await supabase
-        .from('goals')
-        .update({
-          is_completed: true,
-          completed_at: new Date().toISOString(),
-          progress_percent: 100,
-        })
-        .eq('id', goalId);
-
-      if (goalError) throw goalError;
-
-      // Create milestone
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { error: milestoneError } = await supabase
-        .from('milestones')
-        .insert({
-          user_id: user.id,
-          horse_id: horse.id,
-          goal_id: goalId,
-          title: goal.title,
-          description: goal.description,
-          achieved_date: new Date().toISOString().split('T')[0],
-          milestone_type: 'goal_completed',
-        });
-
-      if (milestoneError) throw milestoneError;
-
-      toast({
-        title: "Grattis!",
-        description: "Målet är klart och har lagts till som milstolpe",
-      });
-    } catch (error) {
-      console.error('Error completing goal:', error);
-      toast({
-        title: "Fel",
-        description: "Kunde inte markera mål som klart",
-        variant: "destructive",
-      });
-    }
-  };
-
   const handleToggleGoalComplete = async (goalId: string, currentStatus: boolean) => {
-    console.log('Toggle goal complete:', { goalId, currentStatus });
-    
     try {
       const goal = goals.find((g) => g.id === goalId);
       if (!goal || !horse) {
@@ -578,7 +533,6 @@ const HorseDetails = () => {
 
       if (currentStatus) {
         // Mark as incomplete
-        console.log('Marking goal as incomplete');
         const { error } = await supabase
           .from('goals')
           .update({
@@ -592,14 +546,12 @@ const HorseDetails = () => {
           throw error;
         }
 
-        console.log('Goal marked as incomplete successfully');
         toast({
           title: "Uppdaterat",
           description: "Målet har markerats som ej klart",
         });
       } else {
         // Mark as completed
-        console.log('Marking goal as complete');
         const { error: goalError } = await supabase
           .from('goals')
           .update({
@@ -614,8 +566,6 @@ const HorseDetails = () => {
           throw goalError;
         }
 
-        console.log('Goal marked as complete successfully');
-
         // Create milestone (only if it doesn't exist)
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
@@ -627,7 +577,6 @@ const HorseDetails = () => {
             .maybeSingle();
 
           if (!existingMilestone) {
-            console.log('Creating milestone for goal');
             const { error: milestoneError } = await supabase
               .from('milestones')
               .insert({
@@ -642,11 +591,7 @@ const HorseDetails = () => {
 
             if (milestoneError) {
               console.error('Error creating milestone:', milestoneError);
-            } else {
-              console.log('Milestone created successfully');
             }
-          } else {
-            console.log('Milestone already exists');
           }
         }
 
@@ -657,7 +602,6 @@ const HorseDetails = () => {
       }
       
       // Force refresh the goals and milestones data
-      console.log('Refreshing goals and milestones data...');
       const { data: goalsData } = await supabase
         .from('goals')
         .select('*')
@@ -665,7 +609,6 @@ const HorseDetails = () => {
         .order('created_at', { ascending: false });
       
       if (goalsData) {
-        console.log('Goals refreshed:', goalsData);
         setGoals(goalsData);
       }
 
@@ -677,7 +620,6 @@ const HorseDetails = () => {
         .order('achieved_date', { ascending: false });
       
       if (milestonesData) {
-        console.log('Milestones refreshed:', milestonesData);
         setMilestones(milestonesData);
       }
     } catch (error) {
@@ -762,7 +704,15 @@ const HorseDetails = () => {
     }
   };
 
-  const activeGoals = goals.filter((g) => !g.is_completed);
+  const handleUpdateHorse = async () => {
+    if (!id) return;
+    const { data } = await supabase
+      .from('horses')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+    if (data) setHorse(data);
+  };
 
   if (loading) {
     return (
@@ -775,7 +725,7 @@ const HorseDetails = () => {
   if (!horse) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <Card className="p-8 text-center">
+        <Card className="p-8 text-center animate-fade-in">
           <h2 className="text-2xl font-bold mb-4">Häst hittades inte</h2>
           <Button onClick={() => navigate("/horses")}>Tillbaka till mina hästar</Button>
         </Card>
@@ -788,49 +738,17 @@ const HorseDetails = () => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <Button 
           variant="ghost" 
-          className="mb-6"
+          className="mb-6 animate-fade-in hover-scale"
           onClick={() => navigate("/horses")}
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Tillbaka till mina hästar
         </Button>
 
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-start gap-6">
-            <div className="w-32 h-32 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-lg flex items-center justify-center">
-              <Heart className="w-16 h-16 text-primary/40" />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-4xl font-bold text-foreground">{horse.name}</h1>
-                <Badge variant="secondary">{horse.level}</Badge>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">Ras</p>
-                  <p className="font-medium">{horse.breed}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Ålder</p>
-                  <p className="font-medium">{horse.age} år</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Gren</p>
-                  <p className="font-medium">{horse.discipline}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Färg</p>
-                  <p className="font-medium">{horse.color}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <HorseHeader horse={horse} />
 
-        {/* Tabs */}
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-5 animate-fade-in">
             <TabsTrigger value="overview">Översikt</TabsTrigger>
             <TabsTrigger value="training">Träning</TabsTrigger>
             <TabsTrigger value="competitions">Tävlingar</TabsTrigger>
@@ -839,462 +757,51 @@ const HorseDetails = () => {
           </TabsList>
 
           <TabsContent value="overview" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-semibold">Grundläggande information</h3>
-                  <EditHorseInfoDialog 
-                    horseId={horse.id}
-                    currentData={{
-                      registration_number: horse.registration_number,
-                      microchip: horse.microchip,
-                      birth_date: horse.birth_date,
-                      gender: horse.gender,
-                    }}
-                    onUpdate={async () => {
-                      const { data } = await supabase
-                        .from('horses')
-                        .select('*')
-                        .eq('id', id)
-                        .maybeSingle();
-                      if (data) setHorse(data);
-                    }}
-                  />
-                </div>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Registreringsnummer:</span>
-                    <span className="font-medium">{horse.registration_number || "Ej angivet"}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Mikrochip:</span>
-                    <span className="font-medium">{horse.microchip || "Ej angivet"}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Födelsedatum:</span>
-                    <span className="font-medium">{horse.birth_date || "Ej angivet"}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Kön:</span>
-                    <span className="font-medium">{horse.gender || "Ej angivet"}</span>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-semibold">Statistik</h3>
-                  <EditHorseStatsDialog 
-                    horseId={horse.id}
-                    currentData={{
-                      competitions_this_year: horse.competitions_this_year,
-                      placements: horse.placements,
-                      training_sessions: horse.training_sessions,
-                      vet_visits: horse.vet_visits,
-                    }}
-                    onUpdate={async () => {
-                      const { data } = await supabase
-                        .from('horses')
-                        .select('*')
-                        .eq('id', id)
-                        .maybeSingle();
-                      if (data) setHorse(data);
-                    }}
-                  />
-                </div>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Tävlingar i år:</span>
-                    <span className="font-medium">{horse.competitions_this_year || 0}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Placeringar:</span>
-                    <span className="font-medium">{horse.placements || 0}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Träningspass:</span>
-                    <span className="font-medium">{horse.training_sessions || 0}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Veterinärbesök:</span>
-                    <span className="font-medium">{horse.vet_visits || 0}</span>
-                  </div>
-                </div>
-              </Card>
-            </div>
+            <HorseOverviewTab horse={horse} onUpdate={handleUpdateHorse} />
           </TabsContent>
 
           <TabsContent value="training" className="mt-6">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <Activity className="w-6 h-6 text-primary" />
-                <h3 className="text-xl font-semibold">Träningshistorik</h3>
-              </div>
-              <AddTrainingSessionDialog horseName={horse.name} onAdd={handleAddTrainingSession} />
-            </div>
-
-            {/* Training Statistics */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <Card className="p-4">
-                <p className="text-sm text-muted-foreground mb-1">Pass denna vecka</p>
-                <p className="text-2xl font-bold">{trainingSessions.filter(s => {
-                  const weekAgo = new Date();
-                  weekAgo.setDate(weekAgo.getDate() - 7);
-                  return new Date(s.date) >= weekAgo;
-                }).length}</p>
-              </Card>
-              <Card className="p-4">
-                <p className="text-sm text-muted-foreground mb-1">Pass denna månad</p>
-                <p className="text-2xl font-bold">{trainingSessions.filter(s => {
-                  const monthAgo = new Date();
-                  monthAgo.setMonth(monthAgo.getMonth() - 1);
-                  return new Date(s.date) >= monthAgo;
-                }).length}</p>
-              </Card>
-              <Card className="p-4">
-                <p className="text-sm text-muted-foreground mb-1">Totalt pass</p>
-                <p className="text-2xl font-bold">{trainingSessions.length}</p>
-              </Card>
-            </div>
-
-            {/* Training Sessions List */}
-            {sortedTrainingSessions.length > 0 ? (
-              <div className="space-y-4">
-                {sortedTrainingSessions.map((session) => (
-                  <Card key={session.id} className="p-5 hover:shadow-elevated transition-shadow">
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Activity className="w-6 h-6 text-primary" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h5 className="font-semibold text-lg">{session.type}</h5>
-                          {session.intensity && (
-                            <Badge variant={
-                              session.intensity === "Hög" ? "default" : 
-                              session.intensity === "Medel" ? "secondary" : 
-                              "outline"
-                            }>
-                              {session.intensity}
-                            </Badge>
-                          )}
-                        </div>
-                        <div className="space-y-1 text-sm">
-                          <div className="flex items-center gap-2 text-muted-foreground">
-                            <Calendar className="w-4 h-4" />
-                            <span>{session.date}</span>
-                          </div>
-                          {session.duration && (
-                            <div className="flex items-center gap-2 text-muted-foreground">
-                              <Clock className="w-4 h-4" />
-                              <span>{session.duration}</span>
-                            </div>
-                          )}
-                          {session.notes && (
-                            <p className="text-muted-foreground mt-2">{session.notes}</p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <Card className="p-12 text-center">
-                <Activity className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <h4 className="text-xl font-semibold mb-2">Inga träningspass än</h4>
-                <p className="text-muted-foreground mb-2">
-                  Det du skriver idag blir värdefull kunskap i morgon.
-                </p>
-                <p className="text-sm text-muted-foreground mb-6">
-                  Börja logga träningspass för {horse.name} för att följa utveckling och planera framåt.
-                </p>
-                <AddTrainingSessionDialog horseName={horse.name} onAdd={handleAddTrainingSession} />
-              </Card>
-            )}
+            <HorseTrainingTab
+              horseName={horse.name}
+              trainingSessions={trainingSessions}
+              sortedTrainingSessions={sortedTrainingSessions}
+              onAddTrainingSession={handleAddTrainingSession}
+            />
           </TabsContent>
 
           <TabsContent value="competitions" className="mt-6">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <Calendar className="w-6 h-6 text-primary" />
-                <h3 className="text-xl font-semibold">Tävlingsschema</h3>
-              </div>
-              <AddCompetitionToHorseDialog horseName={horse.name} onAdd={handleAddCompetition} />
-            </div>
-
-            {/* Upcoming Competitions */}
-            {upcomingCompetitions.length > 0 && (
-              <div className="mb-8">
-                <h4 className="text-lg font-semibold mb-4">Kommande tävlingar ({upcomingCompetitions.length})</h4>
-                <div className="space-y-4">
-                  {upcomingCompetitions.map((comp) => (
-                    <Card key={comp.id} className="p-5 hover:shadow-elevated transition-shadow">
-                      <div className="flex items-start justify-between">
-                        <div className="flex gap-4 flex-1">
-                          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <Trophy className="w-6 h-6 text-primary" />
-                          </div>
-                          <div className="flex-1">
-                            <h5 className="font-semibold text-lg mb-1">{comp.name}</h5>
-                            <div className="space-y-1 text-sm">
-                              <div className="flex items-center gap-2 text-muted-foreground">
-                                <Calendar className="w-4 h-4" />
-                                <span>{comp.date}</span>
-                              </div>
-                              {comp.location && (
-                                <div className="flex items-center gap-2 text-muted-foreground">
-                                  <MapPin className="w-4 h-4" />
-                                  <span>{comp.location}</span>
-                                </div>
-                              )}
-                              {comp.class && (
-                                <div className="flex items-center gap-2">
-                                  <Badge variant="secondary">{comp.class}</Badge>
-                                  {comp.discipline && <Badge variant="outline">{comp.discipline}</Badge>}
-                                </div>
-                              )}
-                              {comp.notes && (
-                                <p className="text-muted-foreground mt-2">{comp.notes}</p>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Completed Competitions */}
-            {completedCompetitions.length > 0 && (
-              <div>
-                <h4 className="text-lg font-semibold mb-4">Tidigare tävlingar ({completedCompetitions.length})</h4>
-                <div className="space-y-4">
-                  {completedCompetitions.map((comp) => (
-                    <Card key={comp.id} className="p-5 hover:shadow-elevated transition-shadow border-muted">
-                      <div className="flex items-start justify-between">
-                        <div className="flex gap-4 flex-1">
-                          <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
-                            <Trophy className="w-6 h-6 text-muted-foreground" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-3 mb-1">
-                              <h5 className="font-semibold text-lg">{comp.name}</h5>
-                              {comp.result && (
-                                <Badge className="bg-secondary">{comp.result}</Badge>
-                              )}
-                            </div>
-                            <div className="space-y-1 text-sm">
-                              <div className="flex items-center gap-2 text-muted-foreground">
-                                <Calendar className="w-4 h-4" />
-                                <span>{comp.date}</span>
-                              </div>
-                              {comp.location && (
-                                <div className="flex items-center gap-2 text-muted-foreground">
-                                  <MapPin className="w-4 h-4" />
-                                  <span>{comp.location}</span>
-                                </div>
-                              )}
-                              {comp.class && (
-                                <div className="flex items-center gap-2">
-                                  <Badge variant="secondary">{comp.class}</Badge>
-                                  {comp.discipline && <Badge variant="outline">{comp.discipline}</Badge>}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {competitions.length === 0 && (
-              <Card className="p-12 text-center">
-                <Trophy className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <h4 className="text-xl font-semibold mb-2">Inga tävlingar än</h4>
-                <p className="text-muted-foreground mb-6">
-                  Lägg till kommande tävlingar för {horse.name} för att planera träning och hålla koll på scheman.
-                </p>
-                <AddCompetitionToHorseDialog horseName={horse.name} onAdd={handleAddCompetition} />
-              </Card>
-            )}
+            <HorseCompetitionsTab
+              horseName={horse.name}
+              competitions={competitions}
+              upcomingCompetitions={upcomingCompetitions}
+              completedCompetitions={completedCompetitions}
+              onAddCompetition={handleAddCompetition}
+            />
           </TabsContent>
 
           <TabsContent value="health" className="mt-6">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <FileText className="w-6 h-6 text-primary" />
-                <h3 className="text-xl font-semibold">Hälsojournal</h3>
-              </div>
-              <AddHealthLogToHorseDialog horseName={horse.name} onAdd={handleAddHealthLog} />
-            </div>
-
-            {/* Health Statistics */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <Card className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Pågående</p>
-                    <p className="text-2xl font-bold">
-                      {healthLogs.filter(log => log.status === "Pågående").length}
-                    </p>
-                  </div>
-                  <Clock className="w-8 h-8 text-primary" />
-                </div>
-              </Card>
-              <Card className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Avslutade</p>
-                    <p className="text-2xl font-bold">
-                      {healthLogs.filter(log => log.status === "Klar").length}
-                    </p>
-                  </div>
-                  <CheckCircle className="w-8 h-8 text-secondary" />
-                </div>
-              </Card>
-              <Card className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Totalt händelser</p>
-                    <p className="text-2xl font-bold">{healthLogs.length}</p>
-                  </div>
-                  <FileText className="w-8 h-8 text-muted-foreground" />
-                </div>
-              </Card>
-            </div>
-
-            {/* Health Log Entries */}
-            {sortedHealthLogs.length > 0 ? (
-              <div className="space-y-4">
-                {sortedHealthLogs.map((log) => (
-                  <Card key={log.id} className="p-6 hover:shadow-elevated transition-shadow">
-                    <div className="flex flex-col md:flex-row md:items-start gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between mb-3">
-                          <div>
-                            <div className="flex items-center gap-2 mb-2">
-                              <h3 className="text-xl font-bold text-foreground">{log.event}</h3>
-                              <Badge className={getSeverityColor(log.severity)}>
-                                {log.severity}
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-muted-foreground">
-                              {new Date(log.created_at).toLocaleDateString('sv-SE')}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {getStatusIcon(log.status)}
-                            <span className="text-sm font-medium text-foreground">{log.status}</span>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2 mb-4">
-                          <div>
-                            <p className="text-sm font-medium text-foreground mb-1">Behandling:</p>
-                            <p className="text-sm text-muted-foreground">{log.treatment}</p>
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-foreground mb-1">Anteckningar:</p>
-                            <p className="text-sm text-muted-foreground">{log.notes}</p>
-                          </div>
-                          {log.images && log.images.length > 0 && (
-                            <div>
-                              <p className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
-                                <ImageIcon className="w-4 h-4" />
-                                Bilder ({log.images.length})
-                              </p>
-                              <div className="grid grid-cols-3 gap-2">
-                                {log.images.map((img, imgIndex) => (
-                                  <img
-                                    key={imgIndex}
-                                    src={img}
-                                    alt={`${log.event} bild ${imgIndex + 1}`}
-                                    className="w-full h-24 object-cover rounded-lg border border-border hover:scale-105 transition-transform cursor-pointer"
-                                  />
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-2 md:w-40">
-                        <HealthLogDetailsDialog log={log} onDelete={handleDeleteHealthLog} />
-                        {log.status === "Pågående" && (
-                          <UpdateHealthLogDialog log={log} onUpdate={handleUpdateHealthLog} />
-                        )}
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <Card className="p-12 text-center">
-                <FileText className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <h4 className="text-xl font-semibold mb-2">Inga hälsohändelser än</h4>
-                <p className="text-muted-foreground mb-6">
-                  Börja dokumentera hälsohändelser för {horse.name} för att spåra symptom och behandlingar.
-                </p>
-                <AddHealthLogToHorseDialog horseName={horse.name} onAdd={handleAddHealthLog} />
-              </Card>
-            )}
+            <HorseHealthTab
+              horseName={horse.name}
+              healthLogs={healthLogs}
+              loadingHealthLogs={loadingHealthLogs}
+              onAddHealthLog={handleAddHealthLog}
+              onUpdateHealthLog={handleUpdateHealthLog}
+              onDeleteHealthLog={handleDeleteHealthLog}
+            />
           </TabsContent>
 
           <TabsContent value="journey" className="mt-6">
-            <Tabs defaultValue="goals" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="goals">Aktiva mål</TabsTrigger>
-                <TabsTrigger value="milestones">Milstolpar</TabsTrigger>
-                <TabsTrigger value="badges">Badges</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="goals" className="mt-6">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <Target className="w-6 h-6 text-primary" />
-                    <h3 className="text-xl font-semibold">Aktiva mål</h3>
-                  </div>
-                  <AddGoalDialog onAdd={handleAddGoal} />
-                </div>
-
-                {activeGoals.length === 0 ? (
-                  <Card className="p-8 text-center">
-                    <Target className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-muted-foreground">Inga aktiva mål</p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Lägg till ett mål för att komma igång!
-                    </p>
-                  </Card>
-                ) : (
-                  <GoalJourneyPath 
-                    goals={activeGoals} 
-                    onToggleComplete={handleToggleGoalComplete}
-                    onDelete={handleDeleteGoal}
-                  />
-                )}
-              </TabsContent>
-
-              <TabsContent value="milestones" className="mt-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <Trophy className="w-6 h-6 text-primary" />
-                  <h3 className="text-xl font-semibold">Milstolpar</h3>
-                </div>
-                <MilestoneTimeline milestones={milestones} onDelete={handleDeleteMilestone} />
-              </TabsContent>
-
-              <TabsContent value="badges" className="mt-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <Trophy className="w-6 h-6 text-primary" />
-                  <h3 className="text-xl font-semibold">Badges</h3>
-                </div>
-                <BadgesGrid badges={badges} />
-              </TabsContent>
-            </Tabs>
+            <HorseJourneyTab
+              goals={goals}
+              milestones={milestones}
+              badges={badges}
+              loadingJourney={loadingJourney}
+              onAddGoal={handleAddGoal}
+              onUpdateGoal={handleUpdateGoal}
+              onToggleGoalComplete={handleToggleGoalComplete}
+              onDeleteGoal={handleDeleteGoal}
+              onDeleteMilestone={handleDeleteMilestone}
+            />
           </TabsContent>
         </Tabs>
       </div>
