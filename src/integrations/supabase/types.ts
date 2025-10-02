@@ -245,6 +245,7 @@ export type Database = {
           fun_fact: string | null
           gender: string | null
           id: string
+          image_url: string | null
           level: string
           microchip: string | null
           name: string
@@ -267,6 +268,7 @@ export type Database = {
           fun_fact?: string | null
           gender?: string | null
           id?: string
+          image_url?: string | null
           level: string
           microchip?: string | null
           name: string
@@ -289,6 +291,7 @@ export type Database = {
           fun_fact?: string | null
           gender?: string | null
           id?: string
+          image_url?: string | null
           level?: string
           microchip?: string | null
           name?: string

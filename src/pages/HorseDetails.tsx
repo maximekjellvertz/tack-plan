@@ -66,6 +66,7 @@ interface Horse {
   vet_visits?: number | null;
   personality_trait?: string | null;
   fun_fact?: string | null;
+  image_url?: string | null;
 }
 
 const HorseDetails = () => {
@@ -748,7 +749,7 @@ const HorseDetails = () => {
           Tillbaka till mina hästar
         </Button>
 
-        <HorseHeader horse={horse} />
+        <HorseHeader horse={horse} onUpdate={fetchHorse} />
 
         <div className="mb-6 animate-fade-in" style={{ animationDelay: "200ms" }}>
           <HorsePersonalityCard 

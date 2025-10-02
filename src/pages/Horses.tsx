@@ -29,6 +29,7 @@ interface Horse {
   discipline: string;
   level: string;
   color: string;
+  image_url?: string | null;
 }
 
 interface HorseStats {
@@ -190,10 +191,18 @@ const Horses = () => {
                   className="overflow-hidden hover:shadow-elevated transition-all hover-scale animate-fade-in"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center relative">
-                    <Heart className="w-24 h-24 text-primary/40" />
+                  <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center relative overflow-hidden">
+                    {horse.image_url ? (
+                      <img
+                        src={horse.image_url}
+                        alt={horse.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <Heart className="w-24 h-24 text-primary/40" />
+                    )}
                     {/* Progress Rings */}
-                    <div className="absolute top-4 right-4 flex gap-2">
+                    <div className="absolute top-4 right-4 flex gap-2 bg-background/80 backdrop-blur-sm p-2 rounded-lg">
                       <div className="relative">
                         <ProgressRing progress={stats.trainingProgress} size={60} strokeWidth={5} />
                         <div className="absolute inset-0 flex items-center justify-center">
