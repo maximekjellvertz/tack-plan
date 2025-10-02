@@ -280,19 +280,19 @@ const Calendar = () => {
         </div>
 
         {/* Calendar - Full Width */}
-        <Card className="p-8 bg-gradient-to-br from-card to-muted/20">
+        <Card className="p-8 bg-gradient-to-br from-primary/5 via-card to-accent/5 border-2 shadow-xl hover:shadow-2xl transition-all">
           <div className="flex justify-center">
             <CalendarComponent
               mode="single"
               selected={date}
               onSelect={(newDate) => newDate && handleDayClick(newDate)}
               onDayClick={handleDayClick}
-              className="rounded-md pointer-events-auto scale-125 origin-center"
+              className="rounded-lg pointer-events-auto scale-110 origin-center"
               modifiers={{
                 hasEvent: datesWithEvents,
               }}
               modifiersClassNames={{
-                hasEvent: "bg-primary/30 font-bold ring-2 ring-primary",
+                hasEvent: "bg-gradient-to-br from-primary/40 to-primary/20 font-bold ring-2 ring-primary shadow-lg scale-105 hover:scale-110",
               }}
             />
           </div>
