@@ -456,6 +456,17 @@ const HorseDetails = () => {
 
       console.log('Goal created:', data);
 
+      // Immediately refresh goals
+      const { data: goalsData } = await supabase
+        .from('goals')
+        .select('*')
+        .eq('horse_id', horse.id)
+        .order('created_at', { ascending: false });
+      
+      if (goalsData) {
+        setGoals(goalsData);
+      }
+
       toast({
         title: "Mål tillagt!",
         description: `Mål för ${horse.name} har skapats`,
@@ -471,6 +482,8 @@ const HorseDetails = () => {
   };
 
   const handleUpdateGoalProgress = async (id: string, progress: number) => {
+    if (!horse) return;
+    
     try {
       const { error } = await supabase
         .from('goals')
@@ -478,6 +491,17 @@ const HorseDetails = () => {
         .eq('id', id);
 
       if (error) throw error;
+
+      // Immediately refresh goals
+      const { data: goalsData } = await supabase
+        .from('goals')
+        .select('*')
+        .eq('horse_id', horse.id)
+        .order('created_at', { ascending: false });
+      
+      if (goalsData) {
+        setGoals(goalsData);
+      }
 
       toast({
         title: "Framsteg uppdaterat!",
@@ -655,6 +679,8 @@ const HorseDetails = () => {
   };
 
   const handleDeleteGoal = async (goalId: string) => {
+    if (!horse) return;
+    
     try {
       const { error } = await supabase
         .from('goals')
@@ -662,6 +688,17 @@ const HorseDetails = () => {
         .eq('id', goalId);
 
       if (error) throw error;
+
+      // Immediately refresh goals
+      const { data: goalsData } = await supabase
+        .from('goals')
+        .select('*')
+        .eq('horse_id', horse.id)
+        .order('created_at', { ascending: false });
+      
+      if (goalsData) {
+        setGoals(goalsData);
+      }
 
       toast({
         title: "Mål raderat!",
