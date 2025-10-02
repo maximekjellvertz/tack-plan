@@ -86,7 +86,7 @@ export const AddGoalDialog = ({ onAdd }: AddGoalDialogProps) => {
           Nytt mål
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">Sätt ett nytt mål</DialogTitle>
           <div className="flex items-center gap-2 mt-3 px-4 py-3 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border border-primary/20">

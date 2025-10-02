@@ -95,7 +95,7 @@ export const AddCompetitionToHorseDialog = ({ horseName, onAdd }: AddCompetition
           Lägg till tävling
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">Planera tävling</DialogTitle>
           <div className="flex items-center gap-2 mt-3 px-4 py-3 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg border border-primary/20">
