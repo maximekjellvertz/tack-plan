@@ -3,9 +3,25 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import Footer from "@/components/Footer";
 import heroHorse from "@/assets/hero-horse.jpg";
+import { supabase } from "@/integrations/supabase/client";
+import { useState, useEffect } from "react";
 
 const About = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    // Check if user is logged in
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10 flex flex-col relative">
@@ -93,16 +109,18 @@ const About = () => {
             </p>
           </section>
 
-          {/* CTA */}
-          <div className="pt-8 text-center">
-            <Button 
-              onClick={() => navigate("/auth")}
-              size="lg"
-              className="text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all hover:scale-105"
-            >
-              Kom igång gratis
-            </Button>
-          </div>
+          {/* CTA - Only show for logged out users */}
+          {!user && (
+            <div className="pt-8 text-center">
+              <Button 
+                onClick={() => navigate("/auth")}
+                size="lg"
+                className="text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all hover:scale-105"
+              >
+                Kom igång gratis
+              </Button>
+            </div>
+          )}
         </div>
       </div>
       
