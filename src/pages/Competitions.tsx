@@ -84,6 +84,7 @@ const Competitions = () => {
           ...competition,
           user_id: user.id,
           status: "upcoming",
+          horse_id: competition.horse_id || null,
         }]);
 
       if (error) throw error;
