@@ -123,16 +123,18 @@ const Dashboard = () => {
       {/* Quick Stats */}
       <section className="max-w-7xl mx-auto px-4 -mt-16 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group" style={{ animationDelay: "0ms" }}>
-            <Heart className="w-8 h-8 text-primary mb-3 transition-transform group-hover:scale-110" />
-            <h3 className="text-3xl font-bold text-foreground transition-all group-hover:text-primary">
-              {loading ? "..." : stats.horses}
-            </h3>
-            <p className="text-muted-foreground">Hästar</p>
-            <div className="mt-2 h-1 bg-primary/20 rounded-full overflow-hidden">
-              <div className="h-full bg-primary rounded-full w-full animate-pulse" />
-            </div>
-          </Card>
+          <Link to="/horses" className="block">
+            <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "0ms" }}>
+              <Heart className="w-8 h-8 text-primary mb-3 transition-transform group-hover:scale-110" />
+              <h3 className="text-3xl font-bold text-foreground transition-all group-hover:text-primary">
+                {loading ? "..." : stats.horses}
+              </h3>
+              <p className="text-muted-foreground">Hästar</p>
+              <div className="mt-2 h-1 bg-primary/20 rounded-full overflow-hidden">
+                <div className="h-full bg-primary rounded-full w-full animate-pulse" />
+              </div>
+            </Card>
+          </Link>
           <Link to="/competitions" className="block">
             <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "100ms" }}>
               <Calendar className="w-8 h-8 text-secondary mb-3 transition-transform group-hover:scale-110" />
@@ -145,16 +147,18 @@ const Dashboard = () => {
               </div>
             </Card>
           </Link>
-          <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group" style={{ animationDelay: "200ms" }}>
-            <FileText className="w-8 h-8 text-accent mb-3 transition-transform group-hover:scale-110" />
-            <h3 className="text-3xl font-bold text-foreground transition-all group-hover:text-accent">
-              {loading ? "..." : stats.healthLogs}
-            </h3>
-            <p className="text-muted-foreground">Loggade händelser</p>
-            <div className="mt-2 h-1 bg-accent/20 rounded-full overflow-hidden">
-              <div className="h-full bg-accent rounded-full w-full animate-pulse" />
-            </div>
-          </Card>
+          <Link to="/health-log" className="block">
+            <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "200ms" }}>
+              <FileText className="w-8 h-8 text-accent mb-3 transition-transform group-hover:scale-110" />
+              <h3 className="text-3xl font-bold text-foreground transition-all group-hover:text-accent">
+                {loading ? "..." : stats.healthLogs}
+              </h3>
+              <p className="text-muted-foreground">Loggade händelser</p>
+              <div className="mt-2 h-1 bg-accent/20 rounded-full overflow-hidden">
+                <div className="h-full bg-accent rounded-full w-full animate-pulse" />
+              </div>
+            </Card>
+          </Link>
           <Link to="/badges" className="block">
             <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "300ms" }}>
               <Award className="w-8 h-8 text-primary mb-3 transition-transform group-hover:scale-110" />
@@ -167,16 +171,18 @@ const Dashboard = () => {
               </div>
             </Card>
           </Link>
-          <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group" style={{ animationDelay: "300ms" }}>
-            <Bell className="w-8 h-8 text-primary mb-3 transition-transform group-hover:scale-110" />
-            <h3 className="text-3xl font-bold text-foreground transition-all group-hover:text-primary">
-              {loading ? "..." : stats.reminders}
-            </h3>
-            <p className="text-muted-foreground">Aktiva påminnelser</p>
-            <div className="mt-2 h-1 bg-primary/20 rounded-full overflow-hidden">
-              <div className="h-full bg-primary rounded-full w-full animate-pulse" />
-            </div>
-          </Card>
+          <Link to="/reminders" className="block">
+            <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "400ms" }}>
+              <Bell className="w-8 h-8 text-primary mb-3 transition-transform group-hover:scale-110" />
+              <h3 className="text-3xl font-bold text-foreground transition-all group-hover:text-primary">
+                {loading ? "..." : stats.reminders}
+              </h3>
+              <p className="text-muted-foreground">Aktiva påminnelser</p>
+              <div className="mt-2 h-1 bg-primary/20 rounded-full overflow-hidden">
+                <div className="h-full bg-primary rounded-full w-full animate-pulse" />
+              </div>
+            </Card>
+          </Link>
         </div>
       </section>
 
