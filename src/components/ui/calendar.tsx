@@ -21,9 +21,9 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         caption: "flex justify-center pt-3 relative items-center mb-6 z-10 w-full",
         caption_label: "hidden",
         caption_dropdowns: "flex gap-4 items-center justify-center z-20",
-        dropdown_month: "px-6 py-3 text-base font-bold border-2 rounded-2xl hover:bg-primary hover:text-primary-foreground hover:scale-105 transition-all bg-card shadow-xl cursor-pointer relative z-[60] min-w-[140px]",
-        dropdown_year: "px-6 py-3 text-base font-bold border-2 rounded-2xl hover:bg-primary hover:text-primary-foreground hover:scale-105 transition-all bg-card shadow-xl cursor-pointer relative z-[60] min-w-[120px]",
-        dropdown: "w-full h-full opacity-100 cursor-pointer appearance-none bg-card text-center font-bold pointer-events-auto z-[70]",
+        dropdown_month: "px-6 py-3 text-base font-bold border-2 rounded-2xl hover:bg-primary hover:text-primary-foreground hover:scale-105 transition-all bg-card shadow-2xl cursor-pointer relative z-[60] min-w-[140px] overflow-hidden",
+        dropdown_year: "px-6 py-3 text-base font-bold border-2 rounded-2xl hover:bg-primary hover:text-primary-foreground hover:scale-105 transition-all bg-card shadow-2xl cursor-pointer relative z-[60] min-w-[120px] overflow-hidden",
+        dropdown: "w-full h-full opacity-100 cursor-pointer appearance-none bg-card text-center font-bold pointer-events-auto z-[70] absolute inset-0",
         nav: "space-x-2 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
