@@ -49,11 +49,11 @@ export const EditHorseDialog = ({ horse, onHorseUpdated }: EditHorseDialogProps)
         .from("horses")
         .update({
           name: formData.name,
-          breed: formData.breed,
-          age: formData.age,
-          discipline: formData.discipline,
-          level: formData.level,
-          color: formData.color,
+          breed: formData.breed || "Okänd",
+          age: formData.age || 0,
+          discipline: formData.discipline || "Okänd",
+          level: formData.level || "Lätt",
+          color: formData.color || "Okänd",
           updated_at: new Date().toISOString(),
         })
         .eq("id", horse.id);
@@ -102,53 +102,48 @@ export const EditHorseDialog = ({ horse, onHorseUpdated }: EditHorseDialogProps)
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="breed">Ras *</Label>
+            <Label htmlFor="breed">Ras</Label>
             <Input
               id="breed"
               value={formData.breed}
               onChange={(e) => setFormData({ ...formData, breed: e.target.value })}
-              required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="age">Ålder *</Label>
+            <Label htmlFor="age">Ålder</Label>
             <Input
               id="age"
               type="number"
               value={formData.age}
               onChange={(e) => setFormData({ ...formData, age: parseInt(e.target.value) })}
-              required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="discipline">Gren *</Label>
+            <Label htmlFor="discipline">Gren</Label>
             <Input
               id="discipline"
               value={formData.discipline}
               onChange={(e) => setFormData({ ...formData, discipline: e.target.value })}
-              required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="level">Nivå *</Label>
+            <Label htmlFor="level">Nivå</Label>
             <Input
               id="level"
               value={formData.level}
               onChange={(e) => setFormData({ ...formData, level: e.target.value })}
-              required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="color">Färg *</Label>
+            <Label htmlFor="color">Färg</Label>
             <Input
               id="color"
               value={formData.color}
               onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-              required
             />
           </div>
 

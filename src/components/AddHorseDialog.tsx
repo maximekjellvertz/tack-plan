@@ -130,11 +130,11 @@ export const AddHorseDialog = ({ onHorseAdded }: AddHorseDialogProps) => {
       const { error } = await supabase.from("horses").insert({
         user_id: user.id,
         name: formData.name,
-        breed: formData.breed,
-        age: parseInt(formData.age),
-        discipline: formData.discipline,
+        breed: formData.breed || "Okänd",
+        age: formData.age ? parseInt(formData.age) : 0,
+        discipline: formData.discipline || "Okänd",
         level: formData.level,
-        color: formData.color,
+        color: formData.color || "Okänd",
       });
 
       if (error) throw error;
@@ -274,10 +274,9 @@ export const AddHorseDialog = ({ onHorseAdded }: AddHorseDialogProps) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="breed" className="text-base">Ras *</Label>
+              <Label htmlFor="breed" className="text-base">Ras</Label>
               <Input
                 id="breed"
-                required
                 value={formData.breed}
                 onChange={(e) => setFormData({ ...formData, breed: e.target.value })}
                 placeholder="T.ex. Svensk Varmblod"
@@ -286,11 +285,10 @@ export const AddHorseDialog = ({ onHorseAdded }: AddHorseDialogProps) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="age" className="text-base">Ålder *</Label>
+              <Label htmlFor="age" className="text-base">Ålder</Label>
               <Input
                 id="age"
                 type="number"
-                required
                 min="1"
                 max="40"
                 value={formData.age}
@@ -302,10 +300,9 @@ export const AddHorseDialog = ({ onHorseAdded }: AddHorseDialogProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="discipline" className="text-base">Gren *</Label>
+            <Label htmlFor="discipline" className="text-base">Gren</Label>
             <Input
               id="discipline"
-              required
               value={formData.discipline}
               onChange={(e) => setFormData({ ...formData, discipline: e.target.value })}
               placeholder="T.ex. Hoppning, Dressyr"
