@@ -158,10 +158,9 @@ export const AddCompetitionDialog = ({ onAdd }: AddCompetitionDialogProps) => {
                 onValueChange={(value) => setFormData({ ...formData, horse_id: value })}
               >
                 <SelectTrigger className="border-2">
-                  <SelectValue placeholder={loading ? "Laddar hästar..." : "Välj häst"} />
+                  <SelectValue placeholder={loading ? "Laddar hästar..." : "Välj häst (valfritt)"} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Ingen häst vald</SelectItem>
                   {horses.map((horse) => (
                     <SelectItem key={horse.id} value={horse.id}>
                       {horse.name}
