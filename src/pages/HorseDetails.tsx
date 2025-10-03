@@ -297,7 +297,10 @@ const HorseDetails = () => {
       if (!id) return;
 
       try {
-        // Fetch goals
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        // Fetch goals for this specific horse
         const { data: goalsData, error: goalsError } = await supabase
           .from('goals')
           .select('*')
@@ -307,7 +310,7 @@ const HorseDetails = () => {
         if (goalsError) throw goalsError;
         setGoals(goalsData || []);
 
-        // Fetch milestones
+        // Fetch milestones for this specific horse
         const { data: milestonesData, error: milestonesError } = await supabase
           .from('milestones')
           .select('*')
@@ -317,11 +320,11 @@ const HorseDetails = () => {
         if (milestonesError) throw milestonesError;
         setMilestones(milestonesData || []);
 
-        // Fetch badges
+        // Fetch ALL badges for the user (not just horse-specific)
         const { data: badgesData, error: badgesError } = await supabase
           .from('badges')
           .select('*')
-          .eq('horse_id', id)
+          .eq('user_id', user.id)
           .order('earned_date', { ascending: false });
 
         if (badgesError) throw badgesError;
@@ -371,14 +374,13 @@ const HorseDetails = () => {
       .subscribe();
 
     const badgesChannel = supabase
-      .channel('horse-badges')
+      .channel('user-badges')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'badges',
-          filter: `horse_id=eq.${id}`
+          table: 'badges'
         },
         () => {
           fetchJourneyData();
