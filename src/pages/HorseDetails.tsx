@@ -14,6 +14,7 @@ import { HorseCompetitionsTab } from "@/components/HorseCompetitionsTab";
 import { HorseHealthTab } from "@/components/HorseHealthTab";
 import { HorseJourneyTab } from "@/components/HorseJourneyTab";
 import { HorsePersonalityCard } from "@/components/HorsePersonalityCard";
+import { useBadgeManager } from "@/hooks/useBadgeManager";
 
 interface Competition {
   id: string;
@@ -73,6 +74,8 @@ const HorseDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [userId, setUserId] = useState<string>();
+  const { checkBadges } = useBadgeManager(userId);
   
   const [horse, setHorse] = useState<Horse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -161,6 +164,12 @@ const HorseDetails = () => {
     if (!id) return;
 
     try {
+      // Get user and set userId for badge manager
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+      }
+
       const { data, error } = await supabase
         .from('horses')
         .select('*')
@@ -549,6 +558,9 @@ const HorseDetails = () => {
       if (horseResult.data) {
         setHorse(horseResult.data);
       }
+
+      // Check for new badges
+      checkBadges();
 
       toast({
         title: "Träningspass tillagt!",

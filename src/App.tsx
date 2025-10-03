@@ -11,6 +11,7 @@ import Competitions from "./pages/Competitions";
 import HealthLog from "./pages/HealthLog";
 import Reminders from "./pages/Reminders";
 import Goals from "./pages/Goals";
+import Badges from "./pages/Badges";
 import Auth from "./pages/Auth";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/health-log" element={<><Navigation /><HealthLog /></>} />
           <Route path="/reminders" element={<><Navigation /><Reminders /></>} />
           <Route path="/goals" element={<><Navigation /><Goals /></>} />
+          <Route path="/badges" element={<><Navigation /><Badges /></>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

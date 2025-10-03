@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { GoalCard } from "@/components/GoalCard";
 import { AddGoalDialog } from "@/components/AddGoalDialog";
 import { Loader2 } from "lucide-react";
+import { useBadgeManager } from "@/hooks/useBadgeManager";
 
 interface Goal {
   id: string;
@@ -33,8 +34,17 @@ const Goals = () => {
   const [horses, setHorses] = useState<Horse[]>([]);
   const [selectedHorse, setSelectedHorse] = useState<string>("all");
   const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState<string>();
+  const { checkBadges } = useBadgeManager(userId);
 
   useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+      }
+    };
+    getUser();
     fetchHorses();
     fetchGoals();
   }, []);
@@ -191,6 +201,9 @@ const Goals = () => {
         title: "Grattis!",
         description: "Målet är klart och har lagts till som milstolpe",
       });
+
+      // Check for new badges
+      checkBadges();
 
       fetchGoals();
     } catch (error) {

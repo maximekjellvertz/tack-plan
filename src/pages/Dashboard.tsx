@@ -1,13 +1,14 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Heart, FileText, Bell, TrendingUp } from "lucide-react";
+import { Calendar, Heart, FileText, Bell, TrendingUp, Award } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-horse.jpg";
 import { DailyTipCard } from "@/components/DailyTipCard";
 import { WeeklySummary } from "@/components/WeeklySummary";
+import { useBadgeManager } from "@/hooks/useBadgeManager";
 
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
@@ -16,7 +17,9 @@ const Dashboard = () => {
     competitions: 0,
     healthLogs: 0,
     reminders: 0,
+    badges: 0,
   });
+  const { checkBadges } = useBadgeManager(user?.id);
   const [recentHealthLogs, setRecentHealthLogs] = useState<any[]>([]);
   const [upcomingCompetitions, setUpcomingCompetitions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,7 +49,7 @@ const Dashboard = () => {
       setLoading(true);
 
       // Fetch all data in parallel
-      const [horsesRes, competitionsRes, healthLogsRes, remindersRes, recentLogsRes] = await Promise.all([
+      const [horsesRes, competitionsRes, healthLogsRes, remindersRes, recentLogsRes, badgesRes] = await Promise.all([
         supabase.from("horses").select("id", { count: "exact", head: true }),
         supabase.from("competitions")
           .select("*", { count: "exact" })
@@ -61,6 +64,7 @@ const Dashboard = () => {
           .select("*")
           .order("created_at", { ascending: false })
           .limit(3),
+        supabase.from("badges").select("id", { count: "exact", head: true }),
       ]);
 
       setStats({
@@ -68,10 +72,16 @@ const Dashboard = () => {
         competitions: competitionsRes.count || 0,
         healthLogs: healthLogsRes.count || 0,
         reminders: remindersRes.count || 0,
+        badges: badgesRes.count || 0,
       });
 
       setUpcomingCompetitions(competitionsRes.data || []);
       setRecentHealthLogs(recentLogsRes.data || []);
+      
+      // Check for new badges when dashboard loads
+      if (user) {
+        checkBadges();
+      }
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
     } finally {
@@ -117,7 +127,7 @@ const Dashboard = () => {
 
       {/* Quick Stats */}
       <section className="max-w-7xl mx-auto px-4 -mt-16 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group" style={{ animationDelay: "0ms" }}>
             <Heart className="w-8 h-8 text-primary mb-3 transition-transform group-hover:scale-110" />
             <h3 className="text-3xl font-bold text-foreground transition-all group-hover:text-primary">
@@ -148,6 +158,18 @@ const Dashboard = () => {
               <div className="h-full bg-accent rounded-full w-full animate-pulse" />
             </div>
           </Card>
+          <Link to="/badges" className="block">
+            <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "300ms" }}>
+              <Award className="w-8 h-8 text-primary mb-3 transition-transform group-hover:scale-110" />
+              <h3 className="text-3xl font-bold text-foreground transition-all group-hover:text-primary">
+                {loading ? "..." : stats.badges}
+              </h3>
+              <p className="text-muted-foreground">Tjänade badges</p>
+              <div className="mt-2 h-1 bg-primary/20 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-primary to-secondary rounded-full w-full animate-pulse" />
+              </div>
+            </Card>
+          </Link>
           <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group" style={{ animationDelay: "300ms" }}>
             <Bell className="w-8 h-8 text-primary mb-3 transition-transform group-hover:scale-110" />
             <h3 className="text-3xl font-bold text-foreground transition-all group-hover:text-primary">
