@@ -27,10 +27,10 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         nav: "space-x-2 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
-          "h-11 w-11 bg-gradient-to-br from-card to-card/80 p-0 border-2 hover:bg-primary hover:text-primary-foreground hover:scale-110 transition-all shadow-xl font-bold rounded-xl backdrop-blur-sm",
+          "h-11 w-11 bg-gradient-to-br from-card to-card/80 p-0 border-2 hover:bg-primary hover:text-primary-foreground hover:scale-110 transition-all shadow-xl font-bold rounded-xl backdrop-blur-sm z-[80]",
         ),
-        nav_button_previous: "absolute left-3 top-4",
-        nav_button_next: "absolute right-3 top-4",
+        nav_button_previous: "absolute left-3 top-4 z-[80]",
+        nav_button_next: "absolute right-3 top-4 z-[80]",
         table: "w-full border-collapse space-y-2 mt-4",
         head_row: "flex mb-3",
         head_cell: "text-muted-foreground rounded-xl w-12 h-12 font-bold text-sm uppercase tracking-wider flex items-center justify-center",
