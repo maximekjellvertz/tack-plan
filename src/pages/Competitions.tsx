@@ -76,6 +76,34 @@ const Competitions = () => {
     });
   };
 
+  const handleAddCompetition = async (competition: any) => {
+    try {
+      const { error } = await supabase
+        .from("competitions")
+        .insert([{
+          ...competition,
+          user_id: user.id,
+          status: "upcoming",
+        }]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Tävling tillagd!",
+        description: `${competition.name} har lagts till.`,
+      });
+
+      fetchCompetitions();
+    } catch (error) {
+      console.error("Error adding competition:", error);
+      toast({
+        title: "Kunde inte lägga till tävling",
+        description: "Försök igen senare",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (!user) {
     return null;
   }
@@ -151,6 +179,7 @@ const Competitions = () => {
               searchTerm={searchTerm}
               onSearchChange={setSearchTerm}
               onAddToCalendar={handleAddToCalendar}
+              onAddCompetition={handleAddCompetition}
             />
           </TabsContent>
 

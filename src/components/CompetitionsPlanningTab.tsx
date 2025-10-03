@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Trophy, Search } from "lucide-react";
 import { CompetitionDetailsDialog } from "./CompetitionDetailsDialog";
+import { AddCompetitionDialog } from "./AddCompetitionDialog";
 import { useState } from "react";
 
 interface Competition {
@@ -25,6 +26,7 @@ interface CompetitionsPlanningTabProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
   onAddToCalendar: (competition: Competition) => void;
+  onAddCompetition: (competition: any) => void;
 }
 
 export function CompetitionsPlanningTab({
@@ -32,6 +34,7 @@ export function CompetitionsPlanningTab({
   searchTerm,
   onSearchChange,
   onAddToCalendar,
+  onAddCompetition,
 }: CompetitionsPlanningTabProps) {
   const [selectedCompetition, setSelectedCompetition] = useState<Competition | null>(null);
 
@@ -44,14 +47,17 @@ export function CompetitionsPlanningTab({
 
   return (
     <div className="space-y-6">
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-        <Input
-          placeholder="Sök tävlingar..."
-          value={searchTerm}
-          onChange={(e) => onSearchChange(e.target.value)}
-          className="pl-10"
-        />
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+          <Input
+            placeholder="Sök tävlingar..."
+            value={searchTerm}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <AddCompetitionDialog onAdd={onAddCompetition} />
       </div>
 
       <div className="grid gap-4">
