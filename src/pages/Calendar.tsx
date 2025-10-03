@@ -202,13 +202,13 @@ const Calendar = () => {
   const getEventColor = (type: string) => {
     switch (type) {
       case "competition":
-        return "bg-blue-500/10 text-blue-600 border-blue-500/20";
+        return "bg-gradient-to-br from-primary/20 to-primary/10 border-primary/30 hover:from-primary/30 hover:to-primary/20";
       case "health":
-        return "bg-red-500/10 text-red-600 border-red-500/20";
+        return "bg-gradient-to-br from-destructive/20 to-destructive/10 border-destructive/30 hover:from-destructive/30 hover:to-destructive/20";
       case "reminder":
-        return "bg-green-500/10 text-green-600 border-green-500/20";
+        return "bg-gradient-to-br from-accent/20 to-accent/10 border-accent/30 hover:from-accent/30 hover:to-accent/20";
       default:
-        return "bg-primary/10 text-primary border-primary/20";
+        return "bg-gradient-to-br from-primary/20 to-primary/10 border-primary/30";
     }
   };
 
@@ -223,101 +223,126 @@ const Calendar = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-8">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 pb-8">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-2 glow-text">Kalender</h1>
-          <p className="text-muted-foreground mb-4">
+        <div className="mb-8 text-center">
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <CalendarIcon className="w-10 h-10 text-primary" />
+            <h1 className="text-5xl font-bold text-foreground glow-text">Kalender</h1>
+          </div>
+          <p className="text-muted-foreground text-lg mb-6">
             Se alla dina tävlingar, hälsohändelser och påminnelser
           </p>
-          <Select value={selectedHorseId} onValueChange={setSelectedHorseId}>
-            <SelectTrigger className="w-[200px] bg-card z-50">
-              <SelectValue placeholder="Filtrera per häst" />
-            </SelectTrigger>
-            <SelectContent className="z-[100] bg-card">
-              <SelectItem value="all">Alla hästar</SelectItem>
-              {horses.map((horse) => (
-                <SelectItem key={horse.id} value={horse.id}>
-                  {horse.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex justify-center">
+            <Select value={selectedHorseId} onValueChange={setSelectedHorseId}>
+              <SelectTrigger className="w-[280px] bg-card border-2 h-12 text-base font-semibold z-50">
+                <SelectValue placeholder="Filtrera per häst" />
+              </SelectTrigger>
+              <SelectContent className="z-[100] bg-card">
+                <SelectItem value="all">Alla hästar</SelectItem>
+                {horses.map((horse) => (
+                  <SelectItem key={horse.id} value={horse.id}>
+                    {horse.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {/* Legend & Stats Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Card className="p-4 bg-gradient-to-br from-blue-500/10 to-blue-600/10 border-blue-500/20 hover-scale">
-            <div className="flex items-center gap-3 mb-2">
-              <Trophy className="w-5 h-5 text-blue-600" />
-              <h3 className="font-semibold text-foreground">Tävlingar</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card className="p-6 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-2 border-primary/30 hover-scale shadow-lg hover:shadow-xl transition-all">
+            <div className="flex items-center gap-4 mb-3">
+              <div className="p-3 rounded-xl bg-primary/20 border border-primary/30">
+                <Trophy className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="font-bold text-lg text-foreground">Tävlingar</h3>
             </div>
-            <p className="text-3xl font-bold text-blue-600">
+            <p className="text-4xl font-bold text-primary">
               {events.filter((e) => e.type === "competition").length}
             </p>
           </Card>
 
-          <Card className="p-4 bg-gradient-to-br from-red-500/10 to-red-600/10 border-red-500/20 hover-scale">
-            <div className="flex items-center gap-3 mb-2">
-              <Activity className="w-5 h-5 text-red-600" />
-              <h3 className="font-semibold text-foreground">Hälsologgar</h3>
+          <Card className="p-6 bg-gradient-to-br from-destructive/10 via-destructive/5 to-transparent border-2 border-destructive/30 hover-scale shadow-lg hover:shadow-xl transition-all">
+            <div className="flex items-center gap-4 mb-3">
+              <div className="p-3 rounded-xl bg-destructive/20 border border-destructive/30">
+                <Activity className="w-6 h-6 text-destructive" />
+              </div>
+              <h3 className="font-bold text-lg text-foreground">Hälsologgar</h3>
             </div>
-            <p className="text-3xl font-bold text-red-600">
+            <p className="text-4xl font-bold text-destructive">
               {events.filter((e) => e.type === "health").length}
             </p>
           </Card>
 
-          <Card className="p-4 bg-gradient-to-br from-green-500/10 to-green-600/10 border-green-500/20 hover-scale">
-            <div className="flex items-center gap-3 mb-2">
-              <Bell className="w-5 h-5 text-green-600" />
-              <h3 className="font-semibold text-foreground">Påminnelser</h3>
+          <Card className="p-6 bg-gradient-to-br from-accent/10 via-accent/5 to-transparent border-2 border-accent/30 hover-scale shadow-lg hover:shadow-xl transition-all">
+            <div className="flex items-center gap-4 mb-3">
+              <div className="p-3 rounded-xl bg-accent/20 border border-accent/30">
+                <Bell className="w-6 h-6 text-accent-foreground" />
+              </div>
+              <h3 className="font-bold text-lg text-foreground">Påminnelser</h3>
             </div>
-            <p className="text-3xl font-bold text-green-600">
+            <p className="text-4xl font-bold text-accent-foreground">
               {events.filter((e) => e.type === "reminder").length}
             </p>
           </Card>
         </div>
 
         {/* Calendar - Full Width */}
-        <Card className="p-8 bg-gradient-to-br from-primary/5 via-card to-accent/5 border-2 shadow-xl hover:shadow-2xl transition-all">
-          <div className="flex justify-center">
+        <Card className="p-10 bg-gradient-to-br from-card via-card to-primary/5 border-2 shadow-2xl hover:shadow-3xl transition-all backdrop-blur-sm">
+          <div className="flex justify-center mb-6">
             <CalendarComponent
               mode="single"
               selected={date}
               onSelect={(newDate) => newDate && handleDayClick(newDate)}
               onDayClick={handleDayClick}
-              className="rounded-lg pointer-events-auto scale-110 origin-center"
+              className="rounded-2xl pointer-events-auto"
               modifiers={{
                 hasEvent: datesWithEvents,
               }}
               modifiersClassNames={{
-                hasEvent: "bg-gradient-to-br from-primary/40 to-primary/20 font-bold ring-2 ring-primary shadow-lg scale-105 hover:scale-110",
+                hasEvent: "bg-gradient-to-br from-primary/50 to-primary/30 font-bold ring-2 ring-primary shadow-lg hover:ring-4 hover:shadow-xl transition-all",
               }}
             />
           </div>
           
           {/* Quick Event List Below Calendar */}
           {selectedDayEvents.length > 0 && (
-            <div className="mt-8 pt-6 border-t border-border">
-              <h3 className="text-lg font-semibold mb-4">
-                Händelser {date && format(date, "PPP", { locale: sv })}
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="mt-8 pt-8 border-t-2 border-primary/20">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 rounded-lg bg-primary/10">
+                  <CalendarIcon className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold text-foreground">
+                  Händelser {date && format(date, "d MMMM yyyy", { locale: sv })}
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {selectedDayEvents.map((event) => (
                   <Card
                     key={event.id}
-                    className={`p-4 border hover-scale ${getEventColor(event.type)}`}
+                    className={`p-5 border-2 hover-scale transition-all shadow-md hover:shadow-lg ${getEventColor(event.type)}`}
                   >
                     <div className="flex items-start gap-3">
-                      <div className="mt-1">{getEventIcon(event.type)}</div>
+                      <div className="mt-1 p-2 rounded-lg bg-background/50">
+                        {getEventIcon(event.type)}
+                      </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold mb-1 truncate">{event.title}</h4>
-                        {event.horseName && (
-                          <p className="text-xs text-muted-foreground truncate">
-                            <Heart className="w-3 h-3 inline mr-1" />
-                            {event.horseName}
+                        <h4 className="font-bold text-base mb-2 truncate">{event.title}</h4>
+                        {event.description && (
+                          <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                            {event.description}
                           </p>
+                        )}
+                        {event.horseName && (
+                          <div className="flex items-center gap-2 px-2 py-1 rounded-lg bg-background/50 w-fit">
+                            <Heart className="w-3 h-3 text-primary" />
+                            <p className="text-xs font-semibold text-foreground">
+                              {event.horseName}
+                            </p>
+                          </div>
                         )}
                       </div>
                     </div>
