@@ -14,46 +14,46 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
       captionLayout="dropdown-buttons"
       fromYear={1900}
       toYear={2050}
-      className={cn("p-3 pointer-events-auto", className)}
+      className={cn("p-6 pointer-events-auto", className)}
       classNames={{
-        months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-        month: "space-y-3",
-        caption: "flex justify-center pt-2 relative items-center mb-4 z-10 w-full",
+        months: "flex flex-col sm:flex-row space-y-6 sm:space-x-8 sm:space-y-0",
+        month: "space-y-6",
+        caption: "flex justify-center pt-3 relative items-center mb-6 z-10 w-full",
         caption_label: "hidden",
-        caption_dropdowns: "flex gap-3 items-center justify-center z-20",
-        dropdown_month: "px-4 py-2 text-sm font-bold border-2 rounded-xl hover:bg-primary hover:text-primary-foreground transition-all bg-card shadow-lg cursor-pointer relative z-30 min-w-[120px]",
-        dropdown_year: "px-4 py-2 text-sm font-bold border-2 rounded-xl hover:bg-primary hover:text-primary-foreground transition-all bg-card shadow-lg cursor-pointer relative z-30 min-w-[100px]",
+        caption_dropdowns: "flex gap-4 items-center justify-center z-20",
+        dropdown_month: "px-6 py-3 text-base font-bold border-2 rounded-2xl hover:bg-primary hover:text-primary-foreground hover:scale-105 transition-all bg-gradient-to-br from-card to-card/80 shadow-xl cursor-pointer relative z-30 min-w-[140px] backdrop-blur-sm",
+        dropdown_year: "px-6 py-3 text-base font-bold border-2 rounded-2xl hover:bg-primary hover:text-primary-foreground hover:scale-105 transition-all bg-gradient-to-br from-card to-card/80 shadow-xl cursor-pointer relative z-30 min-w-[120px] backdrop-blur-sm",
         dropdown: "w-full h-full opacity-100 cursor-pointer appearance-none bg-transparent text-center font-bold pointer-events-auto",
-        nav: "space-x-1 flex items-center",
+        nav: "space-x-2 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
-          "h-9 w-9 bg-card p-0 border-2 hover:bg-primary hover:text-primary-foreground hover:scale-125 transition-all shadow-lg font-bold",
+          "h-11 w-11 bg-gradient-to-br from-card to-card/80 p-0 border-2 hover:bg-primary hover:text-primary-foreground hover:scale-110 transition-all shadow-xl font-bold rounded-xl backdrop-blur-sm",
         ),
-        nav_button_previous: "absolute left-2 top-3",
-        nav_button_next: "absolute right-2 top-3",
-        table: "w-full border-collapse space-y-1 mt-2",
-        head_row: "flex mb-1",
-        head_cell: "text-muted-foreground rounded-md w-9 font-bold text-xs uppercase tracking-wide",
-        row: "flex w-full mt-1",
-        cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+        nav_button_previous: "absolute left-3 top-4",
+        nav_button_next: "absolute right-3 top-4",
+        table: "w-full border-collapse space-y-2 mt-4",
+        head_row: "flex mb-3",
+        head_cell: "text-muted-foreground rounded-xl w-12 h-12 font-bold text-sm uppercase tracking-wider flex items-center justify-center",
+        row: "flex w-full mt-2 gap-1",
+        cell: "h-12 w-12 text-center text-base p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-xl [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-xl last:[&:has([aria-selected])]:rounded-r-xl focus-within:relative focus-within:z-20",
         day: cn(
           buttonVariants({ variant: "ghost" }), 
-          "h-9 w-9 p-0 font-semibold text-sm aria-selected:opacity-100 hover:scale-110 transition-all rounded-xl hover:bg-primary/20 hover:shadow-md"
+          "h-12 w-12 p-0 font-bold text-base aria-selected:opacity-100 hover:scale-110 transition-all duration-200 rounded-xl hover:bg-primary/20 hover:shadow-lg hover:border hover:border-primary/30"
         ),
         day_range_end: "day-range-end",
         day_selected:
-          "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground shadow-lg scale-105 ring-2 ring-primary/50",
-        day_today: "bg-gradient-to-br from-accent to-accent/60 text-accent-foreground font-bold ring-2 ring-accent-foreground/20 shadow-md",
+          "bg-gradient-to-br from-primary to-primary/80 text-primary-foreground hover:from-primary hover:to-primary/90 hover:text-primary-foreground focus:from-primary focus:to-primary/80 focus:text-primary-foreground shadow-xl scale-105 ring-2 ring-primary/50 border-2 border-primary/30",
+        day_today: "bg-gradient-to-br from-accent to-accent/70 text-accent-foreground font-extrabold ring-2 ring-accent/40 shadow-lg border-2 border-accent/30",
         day_outside:
-          "day-outside text-muted-foreground/30 opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
-        day_disabled: "text-muted-foreground opacity-30",
+          "day-outside text-muted-foreground/30 opacity-40 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
+        day_disabled: "text-muted-foreground/20 opacity-20 cursor-not-allowed",
         day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
         day_hidden: "invisible",
         ...classNames,
       }}
       components={{
-        IconLeft: ({ ..._props }) => <ChevronLeft className="h-4 w-4" />,
-        IconRight: ({ ..._props }) => <ChevronRight className="h-4 w-4" />,
+        IconLeft: ({ ..._props }) => <ChevronLeft className="h-5 w-5" />,
+        IconRight: ({ ..._props }) => <ChevronRight className="h-5 w-5" />,
       }}
       {...props}
     />
