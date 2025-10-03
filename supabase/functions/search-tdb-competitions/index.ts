@@ -91,57 +91,114 @@ async function searchTDBCompetitions(email: string, password: string, searchTerm
     const cookies = loginResponse.headers.get('set-cookie');
     console.log('TDB login successful');
 
-    // Fetch available competitions from TDB
-    // Note: This searches through upcoming competitions, not just user's entries
-    const competitionsResponse = await fetch('https://tdb.ridsport.se/api/v1/competitions', {
+    // Try to fetch from entries endpoint which we know works
+    const entriesResponse = await fetch('https://tdb.ridsport.se/api/v1/entries', {
       headers: {
         'Cookie': cookies || '',
         'Accept': 'application/json',
       },
     });
 
-    if (!competitionsResponse.ok) {
-      console.error('Failed to fetch competitions:', competitionsResponse.status);
-      return [];
+    if (!entriesResponse.ok) {
+      console.error('Failed to fetch entries:', entriesResponse.status);
+      // Try alternative endpoint
+      const altResponse = await fetch('https://tdb.ridsport.se/api/v1/competitions/search', {
+        method: 'POST',
+        headers: {
+          'Cookie': cookies || '',
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: searchTerm }),
+      });
+      
+      if (!altResponse.ok) {
+        console.error('Failed to search competitions:', altResponse.status);
+        return [];
+      }
+      
+      const altData = await altResponse.json();
+      console.log('Search data received from TDB');
+      return formatCompetitions(altData.results || altData.competitions || [], searchTerm);
     }
 
-    const data = await competitionsResponse.json();
-    console.log('Competitions data received from TDB');
+    const entriesData = await entriesResponse.json();
+    console.log('Entries data received from TDB');
     
-    const competitions = data.competitions || data.data || [];
+    // Extract unique competitions from entries
+    const competitions = new Map();
     const lowerSearchTerm = searchTerm.toLowerCase();
+    const entries = entriesData.entries || [];
     
-    // Filter and format competitions
-    const filteredCompetitions = competitions
-      .filter((comp: any) => {
-        const name = (comp.name || '').toLowerCase();
-        const location = (comp.location || '').toLowerCase();
-        const organizer = (comp.organizer || '').toLowerCase();
-        
-        return name.includes(lowerSearchTerm) || 
-               location.includes(lowerSearchTerm) ||
-               organizer.includes(lowerSearchTerm);
-      })
-      .map((comp: any) => ({
+    for (const entry of entries) {
+      const comp = entry.competition || entry.competition_data;
+      if (!comp) continue;
+      
+      const name = comp.name || comp.competition_name || 'Okänd tävling';
+      const location = comp.location || comp.venue || '';
+      const organizer = comp.organizer || comp.club || '';
+      
+      // Filter by search term
+      if (!name.toLowerCase().includes(lowerSearchTerm) &&
+          !location.toLowerCase().includes(lowerSearchTerm) &&
+          !organizer.toLowerCase().includes(lowerSearchTerm)) {
+        continue;
+      }
+      
+      // Use competition ID or name as key to avoid duplicates
+      const key = comp.id || name;
+      if (competitions.has(key)) continue;
+      
+      competitions.set(key, {
         tdb_id: comp.id?.toString(),
-        name: comp.name || 'Okänd tävling',
-        date: comp.date || comp.start_date,
+        name: name,
+        date: comp.date || comp.start_date || entry.competition_date,
         time: comp.time || comp.start_time,
-        location: comp.location || comp.venue,
-        discipline: comp.discipline || comp.sport || 'Okänd',
-        organizer: comp.organizer || comp.club,
+        location: location,
+        discipline: comp.discipline || comp.sport || entry.discipline || 'Okänd',
+        organizer: organizer,
         phone: comp.phone || comp.contact_phone,
         email: comp.email || comp.contact_email,
         website: comp.website || comp.url,
         registration_deadline: comp.registration_deadline || comp.entry_deadline,
         classes: comp.classes || [],
-      }))
-      .slice(0, 10); // Limit to 10 results
+      });
+    }
 
-    return filteredCompetitions;
+    return Array.from(competitions.values()).slice(0, 10);
 
   } catch (error) {
     console.error('Error searching TDB competitions:', error);
     return [];
   }
+}
+
+function formatCompetitions(comps: any[], searchTerm: string) {
+  const lowerSearchTerm = searchTerm.toLowerCase();
+  
+  return comps
+    .filter((comp: any) => {
+      const name = (comp.name || '').toLowerCase();
+      const location = (comp.location || '').toLowerCase();
+      const organizer = (comp.organizer || '').toLowerCase();
+      
+      return name.includes(lowerSearchTerm) || 
+             location.includes(lowerSearchTerm) ||
+             organizer.includes(lowerSearchTerm);
+    })
+    .map((comp: any) => ({
+      tdb_id: comp.id?.toString(),
+      name: comp.name || 'Okänd tävling',
+      date: comp.date || comp.start_date,
+      time: comp.time || comp.start_time,
+      location: comp.location || comp.venue,
+      discipline: comp.discipline || comp.sport || 'Okänd',
+      organizer: comp.organizer || comp.club,
+      phone: comp.phone || comp.contact_phone,
+      email: comp.email || comp.contact_email,
+      website: comp.website || comp.url,
+      registration_deadline: comp.registration_deadline || comp.entry_deadline,
+      classes: comp.classes || [],
+    }))
+    .slice(0, 10);
 }
