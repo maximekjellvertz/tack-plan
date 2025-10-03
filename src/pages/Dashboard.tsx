@@ -7,7 +7,6 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-horse.jpg";
 import { DailyTipCard } from "@/components/DailyTipCard";
-import { WeeklySummary } from "@/components/WeeklySummary";
 import { useBadgeManager } from "@/hooks/useBadgeManager";
 
 const Dashboard = () => {
@@ -21,7 +20,6 @@ const Dashboard = () => {
   });
   const { checkBadges } = useBadgeManager(user?.id);
   const [recentHealthLogs, setRecentHealthLogs] = useState<any[]>([]);
-  const [upcomingCompetitions, setUpcomingCompetitions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -52,10 +50,8 @@ const Dashboard = () => {
       const [horsesRes, competitionsRes, healthLogsRes, remindersRes, recentLogsRes, badgesRes] = await Promise.all([
         supabase.from("horses").select("id", { count: "exact", head: true }),
         supabase.from("competitions")
-          .select("*", { count: "exact" })
-          .gte("date", new Date().toISOString().split("T")[0])
-          .order("date", { ascending: true })
-          .limit(3),
+          .select("id", { count: "exact", head: true })
+          .gte("date", new Date().toISOString().split("T")[0]),
         supabase.from("health_logs").select("id", { count: "exact", head: true }),
         supabase.from("reminders")
           .select("id", { count: "exact", head: true })
@@ -75,7 +71,6 @@ const Dashboard = () => {
         badges: badgesRes.count || 0,
       });
 
-      setUpcomingCompetitions(competitionsRes.data || []);
       setRecentHealthLogs(recentLogsRes.data || []);
       
       // Check for new badges when dashboard loads
@@ -138,16 +133,18 @@ const Dashboard = () => {
               <div className="h-full bg-primary rounded-full w-full animate-pulse" />
             </div>
           </Card>
-          <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group" style={{ animationDelay: "100ms" }}>
-            <Calendar className="w-8 h-8 text-secondary mb-3 transition-transform group-hover:scale-110" />
-            <h3 className="text-3xl font-bold text-foreground transition-all group-hover:text-secondary">
-              {loading ? "..." : stats.competitions}
-            </h3>
-            <p className="text-muted-foreground">Kommande tävlingar</p>
-            <div className="mt-2 h-1 bg-secondary/20 rounded-full overflow-hidden">
-              <div className="h-full bg-secondary rounded-full w-full animate-pulse" />
-            </div>
-          </Card>
+          <Link to="/competitions" className="block">
+            <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "100ms" }}>
+              <Calendar className="w-8 h-8 text-secondary mb-3 transition-transform group-hover:scale-110" />
+              <h3 className="text-3xl font-bold text-foreground transition-all group-hover:text-secondary">
+                {loading ? "..." : stats.competitions}
+              </h3>
+              <p className="text-muted-foreground">Kommande tävlingar</p>
+              <div className="mt-2 h-1 bg-secondary/20 rounded-full overflow-hidden">
+                <div className="h-full bg-secondary rounded-full w-full animate-pulse" />
+              </div>
+            </Card>
+          </Link>
           <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group" style={{ animationDelay: "200ms" }}>
             <FileText className="w-8 h-8 text-accent mb-3 transition-transform group-hover:scale-110" />
             <h3 className="text-3xl font-bold text-foreground transition-all group-hover:text-accent">
@@ -185,62 +182,14 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <section className="max-w-7xl mx-auto px-4 py-16">
-        {/* Weekly Summary - Larger and more prominent */}
-        <div className="mb-12">
-          <WeeklySummary />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Daily Tip */}
-          <div className="lg:col-span-1">
+          <div>
             <DailyTipCard />
-          </div>
-          {/* Upcoming Competitions */}
-          <div className="lg:col-span-1">
-            <Card className="p-6 bg-gradient-to-br from-card to-muted/30 hover-scale animate-fade-in h-full">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-foreground glow-text">Kommande tävlingar</h2>
-              <Link to="/competitions">
-                <Button variant="ghost" size="sm" className="hover-scale">Se alla</Button>
-              </Link>
-            </div>
-            <div className="space-y-4">
-              {loading ? (
-                <div className="p-4 bg-background rounded-lg border border-border text-center">
-                  <p className="text-muted-foreground">Laddar tävlingar...</p>
-                </div>
-              ) : upcomingCompetitions.length === 0 ? (
-                <div className="p-4 bg-background rounded-lg border border-border text-center">
-                  <p className="text-muted-foreground">Inga kommande tävlingar</p>
-                  <Link to="/competitions">
-                    <Button variant="link" size="sm" className="mt-2">
-                      Anslut TDB för att synka tävlingar
-                    </Button>
-                  </Link>
-                </div>
-              ) : (
-                upcomingCompetitions.map((comp, index) => (
-                  <div 
-                    key={comp.id} 
-                    className="p-4 bg-background rounded-lg border border-border hover:border-primary transition-all hover-scale animate-fade-in"
-                    style={{ animationDelay: `${index * 100}ms` }}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="font-semibold text-foreground">{comp.name}</p>
-                        <p className="text-sm text-muted-foreground">{comp.discipline}</p>
-                      </div>
-                      <span className="text-sm text-primary font-medium">{comp.date}</span>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-            </Card>
           </div>
 
           {/* Recent Health Logs */}
-          <div className="lg:col-span-1">
+          <div>
             <Card className="p-6 bg-gradient-to-br from-card to-muted/30 hover-scale animate-fade-in h-full">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-foreground glow-text">Senaste loggarna</h2>
