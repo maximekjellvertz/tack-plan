@@ -102,6 +102,7 @@ export type Database = {
           date: string
           discipline: string
           email: string | null
+          horse_id: string | null
           id: string
           location: string
           name: string
@@ -128,6 +129,7 @@ export type Database = {
           date: string
           discipline: string
           email?: string | null
+          horse_id?: string | null
           id?: string
           location: string
           name: string
@@ -154,6 +156,7 @@ export type Database = {
           date?: string
           discipline?: string
           email?: string | null
+          horse_id?: string | null
           id?: string
           location?: string
           name?: string
@@ -173,7 +176,15 @@ export type Database = {
           venue_map_url?: string | null
           website?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "competitions_horse_id_fkey"
+            columns: ["horse_id"]
+            isOneToOne: false
+            referencedRelation: "horses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       goals: {
         Row: {
