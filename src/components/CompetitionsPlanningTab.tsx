@@ -2,10 +2,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Trophy, Search } from "lucide-react";
+import { Calendar, MapPin, Trophy, Search, Trash2 } from "lucide-react";
 import { CompetitionDetailsDialog } from "./CompetitionDetailsDialog";
 import { AddCompetitionDialog } from "./AddCompetitionDialog";
 import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Competition {
   id: string | number;
@@ -27,6 +37,7 @@ interface CompetitionsPlanningTabProps {
   onSearchChange: (value: string) => void;
   onAddToCalendar: (competition: Competition) => void;
   onAddCompetition: (competition: any) => void;
+  onDeleteCompetition: (competitionId: string | number) => void;
 }
 
 export function CompetitionsPlanningTab({
@@ -35,8 +46,10 @@ export function CompetitionsPlanningTab({
   onSearchChange,
   onAddToCalendar,
   onAddCompetition,
+  onDeleteCompetition,
 }: CompetitionsPlanningTabProps) {
   const [selectedCompetition, setSelectedCompetition] = useState<Competition | null>(null);
+  const [competitionToDelete, setCompetitionToDelete] = useState<Competition | null>(null);
 
   const filteredCompetitions = competitions.filter(
     (comp) =>
@@ -113,6 +126,14 @@ export function CompetitionsPlanningTab({
                     >
                       Visa detaljer
                     </Button>
+                    <Button
+                      onClick={() => setCompetitionToDelete(competition)}
+                      variant="outline"
+                      size="sm"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               </CardContent>
@@ -128,6 +149,32 @@ export function CompetitionsPlanningTab({
           onOpenChange={(open) => !open && setSelectedCompetition(null)}
         />
       )}
+
+      <AlertDialog open={!!competitionToDelete} onOpenChange={(open) => !open && setCompetitionToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Radera tävling</AlertDialogTitle>
+            <AlertDialogDescription>
+              Är du säker på att du vill radera tävlingen "{competitionToDelete?.name}"? 
+              Denna åtgärd går inte att ångra.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Avbryt</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (competitionToDelete) {
+                  onDeleteCompetition(competitionToDelete.id);
+                  setCompetitionToDelete(null);
+                }
+              }}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              Radera
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

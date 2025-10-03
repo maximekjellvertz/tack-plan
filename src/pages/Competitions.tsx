@@ -105,6 +105,31 @@ const Competitions = () => {
     }
   };
 
+  const handleDeleteCompetition = async (competitionId: string | number) => {
+    try {
+      const { error } = await supabase
+        .from("competitions")
+        .delete()
+        .eq("id", String(competitionId));
+
+      if (error) throw error;
+
+      toast({
+        title: "Tävling raderad",
+        description: "Tävlingen har tagits bort.",
+      });
+
+      fetchCompetitions();
+    } catch (error) {
+      console.error("Error deleting competition:", error);
+      toast({
+        title: "Kunde inte radera tävling",
+        description: "Försök igen senare",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (!user) {
     return null;
   }
@@ -181,6 +206,7 @@ const Competitions = () => {
               onSearchChange={setSearchTerm}
               onAddToCalendar={handleAddToCalendar}
               onAddCompetition={handleAddCompetition}
+              onDeleteCompetition={handleDeleteCompetition}
             />
           </TabsContent>
 
