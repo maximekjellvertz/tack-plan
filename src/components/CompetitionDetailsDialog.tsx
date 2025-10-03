@@ -16,6 +16,10 @@ interface Competition {
   time?: string;
   classes?: any[];
   registration_status?: string;
+  organizer?: string;
+  phone?: string;
+  email?: string;
+  website?: string;
 }
 
 interface CompetitionDetailsDialogProps {
@@ -75,13 +79,15 @@ export const CompetitionDetailsDialog = ({
                   <p className="font-medium">{competition.date}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <Clock className="w-5 h-5 text-primary" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Tid</p>
-                  <p className="font-medium">09:00 - 17:00</p>
+              {competition.time && (
+                <div className="flex items-center gap-3">
+                  <Clock className="w-5 h-5 text-primary" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Tid</p>
+                    <p className="font-medium">{competition.time}</p>
+                  </div>
                 </div>
-              </div>
+              )}
               <div className="flex items-center gap-3">
                 <MapPin className="w-5 h-5 text-primary" />
                 <div>
@@ -104,75 +110,63 @@ export const CompetitionDetailsDialog = ({
             </div>
           </div>
 
-          {/* Klasser */}
-          <div className="space-y-3">
-            <h3 className="font-semibold text-lg">Klasser</h3>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between p-3 bg-secondary/10 rounded-lg">
-                <div>
-                  <p className="font-medium">Klass 1: Lätt A</p>
-                  <p className="text-sm text-muted-foreground">09:00 - Höjd: 90 cm</p>
-                </div>
-                <Badge variant="outline">450 kr</Badge>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-secondary/10 rounded-lg">
-                <div>
-                  <p className="font-medium">Klass 2: Medel A</p>
-                  <p className="text-sm text-muted-foreground">11:00 - Höjd: 110 cm</p>
-                </div>
-                <Badge variant="outline">500 kr</Badge>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-secondary/10 rounded-lg">
-                <div>
-                  <p className="font-medium">Klass 3: Medel B</p>
-                  <p className="text-sm text-muted-foreground">13:30 - Höjd: 120 cm</p>
-                </div>
-                <Badge variant="outline">550 kr</Badge>
+          {/* Klasser - only show if classes exist */}
+          {competition.classes && competition.classes.length > 0 && (
+            <div className="space-y-3">
+              <h3 className="font-semibold text-lg">Klasser</h3>
+              <div className="space-y-2">
+                {competition.classes.map((classItem: any, index: number) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-secondary/10 rounded-lg">
+                    <div>
+                      <p className="font-medium">{classItem.name || `Klass ${index + 1}`}</p>
+                      {classItem.time && (
+                        <p className="text-sm text-muted-foreground">{classItem.time}</p>
+                      )}
+                    </div>
+                    {classItem.fee && (
+                      <Badge variant="outline">{classItem.fee} kr</Badge>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
+          )}
 
-          {/* Kontakt */}
-          <div className="space-y-3">
-            <h3 className="font-semibold text-lg">Kontakt</h3>
-            <div className="space-y-2">
-              <div className="flex items-center gap-3">
-                <Users className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm">Arrangör: {competition.location} Ridklubb</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Phone className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm">070-123 45 67</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm">tavling@exempel.se</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Globe className="w-4 h-4 text-muted-foreground" />
-                <a href="#" className="text-sm text-primary hover:underline">www.tavling.se</a>
+          {/* Kontakt - only show if contact info exists */}
+          {(competition.organizer || competition.phone || competition.email || competition.website) && (
+            <div className="space-y-3">
+              <h3 className="font-semibold text-lg">Kontakt</h3>
+              <div className="space-y-2">
+                {competition.organizer && (
+                  <div className="flex items-center gap-3">
+                    <Users className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm">Arrangör: {competition.organizer}</span>
+                  </div>
+                )}
+                {competition.phone && (
+                  <div className="flex items-center gap-3">
+                    <Phone className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm">{competition.phone}</span>
+                  </div>
+                )}
+                {competition.email && (
+                  <div className="flex items-center gap-3">
+                    <Mail className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm">{competition.email}</span>
+                  </div>
+                )}
+                {competition.website && (
+                  <div className="flex items-center gap-3">
+                    <Globe className="w-4 h-4 text-muted-foreground" />
+                    <a href={competition.website} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">
+                      {competition.website}
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
+          )}
 
-          {/* Anmälan */}
-          <div className="space-y-3">
-            <h3 className="font-semibold text-lg">Anmälan</h3>
-            <p className="text-sm text-muted-foreground">
-              Anmälan öppnar 14 dagar före tävlingen och stänger 3 dagar före. 
-              Anmäl dig via Tävlingsdatabasen (TDB).
-            </p>
-          </div>
-
-          {/* Åtgärder */}
-          <div className="flex gap-3">
-            <Button className="flex-1 bg-primary hover:bg-primary/90">
-              Öppna i TDB
-            </Button>
-            <Button variant="outline" className="flex-1">
-              Dela tävling
-            </Button>
-          </div>
         </div>
       </DialogContent>
     </Dialog>
