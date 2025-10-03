@@ -2,13 +2,15 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, ExternalLink, Trash2, BookOpen, Sparkles, FileText } from "lucide-react";
+import { Plus, ExternalLink, Trash2, BookOpen, Sparkles, FileText, Link, Tag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -125,51 +127,108 @@ export function RulesInfoTab() {
             Lägg till regel/info
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-primary" />
-              Ny regel eller information
-            </DialogTitle>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-background to-muted/30">
+          <DialogHeader className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <DialogTitle className="text-2xl">Lägg till regel eller information</DialogTitle>
+                <DialogDescription>
+                  Spara länkar och anteckningar om tävlingsregler
+                </DialogDescription>
+              </div>
+            </div>
           </DialogHeader>
-          <div className="space-y-4">
-            <div>
+          
+          <div className="space-y-5 mt-4">
+            <div className="space-y-2">
+              <Label htmlFor="title" className="text-sm font-semibold flex items-center gap-2">
+                <FileText className="h-4 w-4 text-primary" />
+                Titel *
+              </Label>
               <Input
+                id="title"
                 placeholder="T.ex. 'Tävlingsreglemente Hoppning'"
                 value={newRule.title}
                 onChange={(e) => setNewRule({ ...newRule, title: e.target.value })}
+                className="border-2 focus:border-primary"
               />
             </div>
-            <Select
-              value={newRule.category}
-              onValueChange={(value) => setNewRule({ ...newRule, category: value })}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {CATEGORIES.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Textarea
-              placeholder="Dina anteckningar (valfritt)"
-              value={newRule.content}
-              onChange={(e) => setNewRule({ ...newRule, content: e.target.value })}
-              rows={4}
-            />
-            <Input
-              placeholder="Länk till dokument (valfritt)"
-              value={newRule.url}
-              onChange={(e) => setNewRule({ ...newRule, url: e.target.value })}
-            />
-            <Button onClick={createRule} className="w-full">
-              <Plus className="h-4 w-4 mr-2" />
-              Spara
-            </Button>
+
+            <div className="space-y-2">
+              <Label htmlFor="category" className="text-sm font-semibold flex items-center gap-2">
+                <Tag className="h-4 w-4 text-primary" />
+                Kategori
+              </Label>
+              <Select
+                value={newRule.category}
+                onValueChange={(value) => setNewRule({ ...newRule, category: value })}
+              >
+                <SelectTrigger id="category" className="border-2">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {CATEGORIES.map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="content" className="text-sm font-semibold flex items-center gap-2">
+                <BookOpen className="h-4 w-4 text-primary" />
+                Anteckningar
+              </Label>
+              <Textarea
+                id="content"
+                placeholder="Dina egna anteckningar eller sammanfattningar (valfritt)"
+                value={newRule.content}
+                onChange={(e) => setNewRule({ ...newRule, content: e.target.value })}
+                rows={5}
+                className="border-2 focus:border-primary resize-none"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="url" className="text-sm font-semibold flex items-center gap-2">
+                <Link className="h-4 w-4 text-primary" />
+                Länk
+              </Label>
+              <Input
+                id="url"
+                type="url"
+                placeholder="https://exempel.se/dokument.pdf (valfritt)"
+                value={newRule.url}
+                onChange={(e) => setNewRule({ ...newRule, url: e.target.value })}
+                className="border-2 focus:border-primary"
+              />
+            </div>
+
+            <div className="flex gap-3 justify-end pt-4 border-t">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => {
+                  setIsCreateDialogOpen(false);
+                  setNewRule({ title: "", content: "", url: "", category: "Allmänt" });
+                }}
+              >
+                Avbryt
+              </Button>
+              <Button 
+                onClick={createRule} 
+                disabled={!newRule.title.trim()}
+                className="bg-gradient-to-r from-primary to-secondary hover:opacity-90"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Spara regel
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
