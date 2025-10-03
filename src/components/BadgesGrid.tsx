@@ -54,12 +54,28 @@ const getBadgeColor = (type: string) => {
 export const BadgesGrid = ({ badges }: BadgesGridProps) => {
   if (badges.length === 0) {
     return (
-      <Card className="p-8 text-center">
-        <Award className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-        <p className="text-muted-foreground">Inga badges ännu</p>
-        <p className="text-sm text-muted-foreground mt-1">
-          Fortsätt träna och tävla för att samla badges!
+      <Card className="p-12 text-center bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10 border-2">
+        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center mx-auto mb-6 shadow-lg animate-pulse">
+          <Award className="w-10 h-10 text-primary" />
+        </div>
+        <p className="text-foreground font-bold text-xl mb-3">Inga badges ännu</p>
+        <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">
+          Fortsätt träna, tävla och uppnå dina mål för att samla badges! 🏆
         </p>
+        <div className="mt-6 flex items-center justify-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2 bg-background/50 rounded-full px-4 py-2">
+            <Trophy className="w-4 h-4 text-yellow-600" />
+            <span className="text-sm text-muted-foreground">Tävlingar</span>
+          </div>
+          <div className="flex items-center gap-2 bg-background/50 rounded-full px-4 py-2">
+            <Target className="w-4 h-4 text-blue-600" />
+            <span className="text-sm text-muted-foreground">Träningspass</span>
+          </div>
+          <div className="flex items-center gap-2 bg-background/50 rounded-full px-4 py-2">
+            <Heart className="w-4 h-4 text-green-600" />
+            <span className="text-sm text-muted-foreground">Hälsologgar</span>
+          </div>
+        </div>
       </Card>
     );
   }
