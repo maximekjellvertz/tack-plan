@@ -290,68 +290,83 @@ const Calendar = () => {
           </Card>
         </div>
 
-        {/* Calendar - Full Width */}
-        <Card className="p-10 bg-gradient-to-br from-card via-card to-primary/5 border-2 shadow-2xl hover:shadow-3xl transition-all backdrop-blur-sm">
-          <div className="flex justify-center mb-6">
-            <CalendarComponent
-              mode="single"
-              selected={date}
-              onSelect={(newDate) => newDate && handleDayClick(newDate)}
-              onDayClick={handleDayClick}
-              className="rounded-2xl pointer-events-auto"
-              modifiers={{
-                hasEvent: datesWithEvents,
-              }}
-              modifiersClassNames={{
-                hasEvent: "bg-gradient-to-br from-primary/50 to-primary/30 font-bold ring-2 ring-primary shadow-lg hover:ring-4 hover:shadow-xl transition-all",
-              }}
-            />
-          </div>
-          
-          {/* Quick Event List Below Calendar */}
-          {selectedDayEvents.length > 0 && (
-            <div className="mt-8 pt-8 border-t-2 border-primary/20">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <CalendarIcon className="w-5 h-5 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold text-foreground">
-                  Händelser {date && format(date, "d MMMM yyyy", { locale: sv })}
-                </h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {selectedDayEvents.map((event) => (
-                  <Card
-                    key={event.id}
-                    className={`p-5 border-2 hover-scale transition-all shadow-md hover:shadow-lg ${getEventColor(event.type)}`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="mt-1 p-2 rounded-lg bg-background/50">
-                        {getEventIcon(event.type)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-base mb-2 truncate">{event.title}</h4>
-                        {event.description && (
-                          <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
-                            {event.description}
-                          </p>
-                        )}
-                        {event.horseName && (
-                          <div className="flex items-center gap-2 px-2 py-1 rounded-lg bg-background/50 w-fit">
-                            <Heart className="w-3 h-3 text-primary" />
-                            <p className="text-xs font-semibold text-foreground">
-                              {event.horseName}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
+        {/* Calendar & Events Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Calendar Card */}
+          <Card className="p-8 bg-gradient-to-br from-card via-card to-primary/5 border-2 shadow-2xl hover:shadow-3xl transition-all backdrop-blur-sm h-fit">
+            <div className="flex justify-center">
+              <CalendarComponent
+                mode="single"
+                selected={date}
+                onSelect={(newDate) => newDate && handleDayClick(newDate)}
+                onDayClick={handleDayClick}
+                className="rounded-2xl pointer-events-auto"
+                modifiers={{
+                  hasEvent: datesWithEvents,
+                }}
+                modifiersClassNames={{
+                  hasEvent: "bg-gradient-to-br from-primary/50 to-primary/30 font-bold ring-2 ring-primary shadow-lg hover:ring-4 hover:shadow-xl transition-all",
+                }}
+              />
             </div>
-          )}
-        </Card>
+          </Card>
+
+          {/* Events Card */}
+          <Card className="p-8 bg-gradient-to-br from-card via-card to-accent/5 border-2 shadow-2xl backdrop-blur-sm">
+            {selectedDayEvents.length > 0 ? (
+              <div>
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <CalendarIcon className="w-5 h-5 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-bold text-foreground">
+                    Händelser {date && format(date, "d MMMM yyyy", { locale: sv })}
+                  </h3>
+                </div>
+                <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+                  {selectedDayEvents.map((event) => (
+                    <Card
+                      key={event.id}
+                      className={`p-5 border-2 hover-scale transition-all shadow-md hover:shadow-lg ${getEventColor(event.type)}`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="mt-1 p-2 rounded-lg bg-background/50 shrink-0">
+                          {getEventIcon(event.type)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-bold text-base mb-2">{event.title}</h4>
+                          {event.description && (
+                            <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
+                              {event.description}
+                            </p>
+                          )}
+                          {event.horseName && (
+                            <div className="flex items-center gap-2 px-2 py-1 rounded-lg bg-background/50 w-fit">
+                              <Heart className="w-3 h-3 text-primary" />
+                              <p className="text-xs font-semibold text-foreground">
+                                {event.horseName}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center">
+                <div className="p-4 rounded-full bg-muted/50 mb-4">
+                  <CalendarIcon className="w-12 h-12 text-muted-foreground" />
+                </div>
+                <h3 className="text-xl font-bold text-foreground mb-2">Inga händelser</h3>
+                <p className="text-muted-foreground">
+                  Välj ett datum i kalendern för att se händelser
+                </p>
+              </div>
+            )}
+          </Card>
+        </div>
 
       </div>
     </div>
