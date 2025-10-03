@@ -98,10 +98,13 @@ const Dashboard = () => {
         <div className="relative h-full flex items-center justify-center text-center px-4">
           <div className="max-w-3xl">
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">
-              Hoofprints
+              Välkommen tillbaka!
             </h1>
-            <p className="text-xl text-white/90 mb-8 drop-shadow-md">
-              Every horse writes a story, we're here to keep it
+            <p className="text-xl text-white/90 mb-2 drop-shadow-md">
+              {user?.email}
+            </p>
+            <p className="text-lg text-white/80 mb-8 drop-shadow-md">
+              Här är en översikt av dina hästar och aktiviteter
             </p>
             <Link to="/horses">
               <Button size="lg" className="bg-primary hover:bg-primary/90">
@@ -160,19 +163,19 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <section className="max-w-7xl mx-auto px-4 py-16">
-        {/* Daily Tip */}
-        <div className="mb-8">
-          <DailyTipCard />
-        </div>
-
-        {/* Weekly Summary */}
-        <div className="mb-8">
+        {/* Weekly Summary - Larger and more prominent */}
+        <div className="mb-12">
           <WeeklySummary />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+          {/* Daily Tip */}
+          <div className="lg:col-span-1">
+            <DailyTipCard />
+          </div>
           {/* Upcoming Competitions */}
-          <Card className="p-6 bg-gradient-to-br from-card to-muted/30 hover-scale animate-fade-in">
+          <div className="lg:col-span-1">
+            <Card className="p-6 bg-gradient-to-br from-card to-muted/30 hover-scale animate-fade-in h-full">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-foreground glow-text">Kommande tävlingar</h2>
               <Link to="/competitions">
@@ -211,10 +214,12 @@ const Dashboard = () => {
                 ))
               )}
             </div>
-          </Card>
+            </Card>
+          </div>
 
           {/* Recent Health Logs */}
-          <Card className="p-6 bg-gradient-to-br from-card to-muted/30 hover-scale animate-fade-in">
+          <div className="lg:col-span-1">
+            <Card className="p-6 bg-gradient-to-br from-card to-muted/30 hover-scale animate-fade-in h-full">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-foreground glow-text">Senaste loggarna</h2>
               <Link to="/health-log">
@@ -258,7 +263,8 @@ const Dashboard = () => {
                 ))
               )}
             </div>
-          </Card>
+            </Card>
+          </div>
         </div>
       </section>
 
