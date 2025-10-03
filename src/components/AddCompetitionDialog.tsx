@@ -34,10 +34,6 @@ export const AddCompetitionDialog = ({ onAdd }: AddCompetitionDialogProps) => {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [horses, setHorses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchingTDB, setSearchingTDB] = useState(false);
-  const [tdbSearchTerm, setTdbSearchTerm] = useState("");
-  const [tdbCompetitions, setTdbCompetitions] = useState<any[]>([]);
-  const [showTdbSearch, setShowTdbSearch] = useState(false);
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: "",
@@ -81,79 +77,6 @@ export const AddCompetitionDialog = ({ onAdd }: AddCompetitionDialogProps) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const searchTDBCompetitions = async () => {
-    if (!tdbSearchTerm || tdbSearchTerm.length < 2) {
-      toast({
-        title: "Sökterm för kort",
-        description: "Skriv minst 2 tecken för att söka",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      setSearchingTDB(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { data, error } = await supabase.functions.invoke('search-tdb-competitions', {
-        body: { searchTerm: tdbSearchTerm, userId: user.id }
-      });
-
-      if (error) throw error;
-
-      if (data.needsCredentials) {
-        toast({
-          title: "TDB-inloggning krävs",
-          description: "Du behöver koppla ditt TDB-konto i inställningarna",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      setTdbCompetitions(data.competitions || []);
-      if (data.competitions.length === 0) {
-        toast({
-          title: "Inga tävlingar hittades",
-          description: "Försök med en annan sökterm",
-        });
-      }
-    } catch (error) {
-      console.error("Error searching TDB:", error);
-      toast({
-        title: "Kunde inte söka tävlingar",
-        description: "Kontrollera att ditt TDB-konto är kopplat",
-        variant: "destructive",
-      });
-    } finally {
-      setSearchingTDB(false);
-    }
-  };
-
-  const selectTDBCompetition = (comp: any) => {
-    setFormData({
-      name: comp.name || "",
-      location: comp.location || "",
-      discipline: comp.discipline || "Hoppning",
-      horse_id: formData.horse_id,
-      time: comp.time || "",
-      organizer: comp.organizer || "",
-      website: comp.website || "",
-      email: comp.email || "",
-      phone: comp.phone || "",
-    });
-    if (comp.date) {
-      setSelectedDate(new Date(comp.date));
-    }
-    setShowTdbSearch(false);
-    setTdbCompetitions([]);
-    setTdbSearchTerm("");
-    toast({
-      title: "Tävling vald",
-      description: "Informationen har fyllts i automatiskt",
-    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -215,86 +138,17 @@ export const AddCompetitionDialog = ({ onAdd }: AddCompetitionDialogProps) => {
           </div>
         </DialogHeader>
         
-        {/* TDB Search Section */}
-        <div className="space-y-3 mb-6 p-4 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-lg border-2 border-dashed">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Search className="w-4 h-4 text-primary" />
-              <h3 className="font-semibold text-sm">Sök bland TDB-tävlingar</h3>
+        {/* Info about TDB sync */}
+        <div className="mb-6 p-4 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-lg border-2 border-dashed">
+          <div className="flex items-start gap-3">
+            <Sparkles className="w-5 h-5 text-primary mt-0.5" />
+            <div className="flex-1">
+              <h3 className="font-semibold text-sm mb-1">Tips!</h3>
+              <p className="text-sm text-muted-foreground">
+                För att automatiskt importera dina anmälda tävlingar från TDB, använd <strong>TDB-inställningar</strong> knappen uppe till höger på Tävlingssidan.
+              </p>
             </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowTdbSearch(!showTdbSearch)}
-            >
-              {showTdbSearch ? "Dölj" : "Visa"}
-            </Button>
           </div>
-          
-          {showTdbSearch && (
-            <div className="space-y-3 animate-fade-in">
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Sök tävlingsnamn, plats eller arrangör..."
-                  value={tdbSearchTerm}
-                  onChange={(e) => setTdbSearchTerm(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && searchTDBCompetitions()}
-                  className="flex-1"
-                />
-                <Button
-                  type="button"
-                  onClick={searchTDBCompetitions}
-                  disabled={searchingTDB}
-                  className="gap-2"
-                >
-                  {searchingTDB ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Söker...
-                    </>
-                  ) : (
-                    <>
-                      <Search className="w-4 h-4" />
-                      Sök
-                    </>
-                  )}
-                </Button>
-              </div>
-              
-              {tdbCompetitions.length > 0 && (
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {tdbCompetitions.map((comp, index) => (
-                    <Card
-                      key={index}
-                      className="p-3 cursor-pointer hover:bg-primary/5 transition-colors"
-                      onClick={() => selectTDBCompetition(comp)}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1">
-                          <p className="font-semibold text-sm">{comp.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {comp.location} • {comp.date && format(new Date(comp.date), "d MMM yyyy", { locale: sv })}
-                          </p>
-                        </div>
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="ghost"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            selectTDBCompetition(comp);
-                          }}
-                        >
-                          Välj
-                        </Button>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
