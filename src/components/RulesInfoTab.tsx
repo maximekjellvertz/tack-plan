@@ -197,6 +197,23 @@ export function RulesInfoTab() {
     }
   };
 
+  const openPdf = async (pdf: RulePdf) => {
+    try {
+      const { data, error } = await supabase.storage
+        .from('rule-pdfs')
+        .createSignedUrl(pdf.file_path, 3600); // 1 hour expiry
+
+      if (error) throw error;
+
+      if (data?.signedUrl) {
+        window.open(data.signedUrl, '_blank');
+      }
+    } catch (error) {
+      console.error('Open PDF error:', error);
+      toast({ title: "Fel", description: "Kunde inte öppna PDF", variant: "destructive" });
+    }
+  };
+
   const deletePdf = async (pdf: RulePdf) => {
     try {
       const { error: storageError } = await supabase.storage
@@ -433,14 +450,24 @@ export function RulesInfoTab() {
                               </p>
                             </div>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => deletePdf(pdf)}
-                            className="hover:bg-destructive/10 hover:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => openPdf(pdf)}
+                              className="hover:bg-primary/10"
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => deletePdf(pdf)}
+                              className="hover:bg-destructive/10 hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
                       ))}
                     </div>
