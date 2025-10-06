@@ -201,12 +201,14 @@ export function RulesInfoTab() {
     try {
       const { data, error } = await supabase.storage
         .from('rule-pdfs')
-        .createSignedUrl(pdf.file_path, 3600); // 1 hour expiry
+        .createSignedUrl(pdf.file_path, 3600);
 
       if (error) throw error;
 
       if (data?.signedUrl) {
-        window.open(data.signedUrl, '_blank');
+        // Build full URL - signedUrl is relative, needs Supabase URL
+        const fullUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1${data.signedUrl}`;
+        window.open(fullUrl, '_blank');
       }
     } catch (error) {
       console.error('Open PDF error:', error);
