@@ -203,22 +203,25 @@ export function RulesInfoTab() {
         .from('rule-pdfs')
         .download(pdf.file_path);
 
-      if (error) {
-        console.error('Download error:', error);
-        throw error;
-      }
+      if (error) throw error;
 
       if (data) {
+        // Create download link
         const blob = new Blob([data], { type: 'application/pdf' });
         const url = URL.createObjectURL(blob);
-        window.open(url, '_blank');
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = pdf.file_name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
         
-        // Clean up after a delay to allow the browser to open it
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        toast({ title: "PDF laddas ner", description: "Filen laddas ner till din dator" });
       }
     } catch (error) {
       console.error('Open PDF error:', error);
-      toast({ title: "Fel", description: "Kunde inte öppna PDF", variant: "destructive" });
+      toast({ title: "Fel", description: "Kunde inte ladda ner PDF", variant: "destructive" });
     }
   };
 
