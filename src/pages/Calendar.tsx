@@ -141,14 +141,17 @@ const Calendar = () => {
       // Fetch reminders
       let remindersQuery = supabase
         .from("reminders")
-        .select("id, title, date, description, horse_name, completed");
+        .select("id, title, date, description, horse_name, horse_id, completed");
 
       if (selectedHorseId !== "all") {
+        console.log('Filtering reminders by horse_id:', selectedHorseId);
         remindersQuery = remindersQuery.eq("horse_id", selectedHorseId);
       }
 
       const { data: reminders, error: remindersError } = await remindersQuery;
       if (remindersError) throw remindersError;
+
+      console.log('Fetched reminders:', reminders);
 
       reminders?.forEach((reminder) => {
         allEvents.push({

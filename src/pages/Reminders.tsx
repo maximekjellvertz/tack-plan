@@ -487,6 +487,8 @@ export const addTreatmentReminders = async (
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    console.log('Creating reminders with horseId:', horseId, 'horse:', horse);
+
     const reminders = [];
     for (let i = 0; i < durationDays; i++) {
       const date = new Date(startDate);
@@ -503,6 +505,8 @@ export const addTreatmentReminders = async (
         completed: false,
       });
     }
+
+    console.log('Inserting reminders:', reminders);
 
     const { error } = await supabase.from("reminders").insert(reminders);
 
