@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-horse.jpg";
 import { DailyTipCard } from "@/components/DailyTipCard";
 import { useBadgeManager } from "@/hooks/useBadgeManager";
+import { OnboardingDialog } from "@/components/OnboardingDialog";
 
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
@@ -21,6 +22,7 @@ const Dashboard = () => {
   const { checkBadges } = useBadgeManager(user?.id);
   const [recentHealthLogs, setRecentHealthLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,8 +32,21 @@ const Dashboard = () => {
   useEffect(() => {
     if (user) {
       fetchDashboardData();
+      checkOnboardingStatus();
     }
   }, [user]);
+
+  const checkOnboardingStatus = () => {
+    const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
+    if (!hasSeenOnboarding) {
+      setShowOnboarding(true);
+    }
+  };
+
+  const handleOnboardingComplete = () => {
+    localStorage.setItem("hasSeenOnboarding", "true");
+    setShowOnboarding(false);
+  };
 
   const checkUser = async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -90,6 +105,8 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <OnboardingDialog open={showOnboarding} onComplete={handleOnboardingComplete} />
+      
       {/* Hero Section */}
       <section className="relative h-[400px] overflow-hidden">
         <div className="absolute inset-0">

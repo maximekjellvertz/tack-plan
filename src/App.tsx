@@ -14,6 +14,7 @@ import Goals from "./pages/Goals";
 import Badges from "./pages/Badges";
 import Auth from "./pages/Auth";
 import About from "./pages/About";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import Navigation from "./components/Navigation";
 import Calendar from "./pages/Calendar";
@@ -39,6 +40,7 @@ const App = () => (
           <Route path="/reminders" element={<><Navigation /><Reminders /></>} />
           <Route path="/goals" element={<><Navigation /><Goals /></>} />
           <Route path="/badges" element={<><Navigation /><Badges /></>} />
+          <Route path="/settings" element={<><Navigation /><Settings /></>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

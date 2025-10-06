@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Heart, Calendar, FileText, Home, Bell, LogOut, Menu, Target, Trophy, Info } from "lucide-react";
+import { Heart, Calendar, FileText, Home, Bell, LogOut, Menu, Target, Trophy, Info, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { TooltipWrapper } from "@/components/TooltipWrapper";
 
 const navItems = [
   { name: "Hem", path: "/dashboard", icon: Home },
@@ -16,6 +17,7 @@ const navItems = [
   { name: "Hälsologg", path: "/health-log", icon: FileText },
   { name: "Mål", path: "/goals", icon: Target },
   { name: "Påminnelser", path: "/reminders", icon: Bell },
+  { name: "Inställningar", path: "/settings", icon: Settings },
   { name: "Om oss", path: "/about", icon: Info },
 ];
 
@@ -116,32 +118,47 @@ const Navigation = () => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
               
+              const tooltips: { [key: string]: string } = {
+                "/dashboard": "Se en översikt av dina hästar och aktiviteter",
+                "/horses": "Hantera dina hästar och deras profiler",
+                "/calendar": "Se alla dina händelser och lägg till schemaaktiviteter",
+                "/competitions": "Sök och hantera tävlingar",
+                "/health-log": "Dokumentera hälsohändelser och behandlingar",
+                "/goals": "Sätt mål och följ din utveckling",
+                "/reminders": "Skapa påminnelser för viktiga uppgifter",
+                "/settings": "Hantera konto och preferenser",
+                "/about": "Information om Hoofprints",
+              };
+              
               return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={cn(
-                    "flex items-center gap-2 px-4 py-2 rounded-lg transition-colors",
-                    isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                  )}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span className="font-medium">{item.name}</span>
-                </Link>
+                <TooltipWrapper key={item.path} content={tooltips[item.path] || item.name}>
+                  <Link
+                    to={item.path}
+                    className={cn(
+                      "flex items-center gap-2 px-4 py-2 rounded-lg transition-colors",
+                      isActive
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    )}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span className="font-medium">{item.name}</span>
+                  </Link>
+                </TooltipWrapper>
               );
             })}
             {user && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleLogout}
-                className="ml-2 text-muted-foreground hover:text-foreground"
-              >
-                <LogOut className="w-4 h-4 mr-2" />
-                Logga ut
-              </Button>
+              <TooltipWrapper content="Logga ut från ditt konto">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="ml-2 text-muted-foreground hover:text-foreground"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logga ut
+                </Button>
+              </TooltipWrapper>
             )}
           </div>
         </div>
