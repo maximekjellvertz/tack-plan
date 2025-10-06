@@ -493,7 +493,7 @@ export const addTreatmentReminders = async (
       
       reminders.push({
         user_id: user.id,
-        title: treatment,
+        title: `${horse} ${treatment}`,
         description: `Dag ${i + 1} av ${durationDays}`,
         date: date.toISOString().split('T')[0],
         horse_name: horse,
