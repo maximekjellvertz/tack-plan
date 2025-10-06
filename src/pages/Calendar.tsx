@@ -224,9 +224,7 @@ const Calendar = () => {
     
     setSelectedDayEvents(sortedEvents);
     setDate(selectedDate);
-    if (dayEvents.length > 0) {
-      setDialogOpen(true);
-    }
+    setDialogOpen(true);
   };
 
   const getEventIcon = (type: string) => {
