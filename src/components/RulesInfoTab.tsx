@@ -203,11 +203,15 @@ export function RulesInfoTab() {
         .from('rule-pdfs')
         .createSignedUrl(pdf.file_path, 3600);
 
-      if (error) throw error;
+      if (error) {
+        console.error('SignedUrl error:', error);
+        throw error;
+      }
 
       if (data?.signedUrl) {
         // Build full URL - signedUrl is relative, needs Supabase URL
         const fullUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1${data.signedUrl}`;
+        console.log('Opening PDF URL:', fullUrl);
         window.open(fullUrl, '_blank');
       }
     } catch (error) {
