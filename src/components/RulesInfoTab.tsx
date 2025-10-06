@@ -201,17 +201,12 @@ export function RulesInfoTab() {
     try {
       const { data, error } = await supabase.storage
         .from('rule-pdfs')
-        .download(pdf.file_path);
+        .createSignedUrl(pdf.file_path, 3600); // 1 hour expiry
 
       if (error) throw error;
 
-      if (data) {
-        const blob = new Blob([data], { type: 'application/pdf' });
-        const url = URL.createObjectURL(blob);
-        window.open(url, '_blank');
-        
-        // Clean up the URL after a delay
-        setTimeout(() => URL.revokeObjectURL(url), 100);
+      if (data?.signedUrl) {
+        window.open(data.signedUrl, '_blank');
       }
     } catch (error) {
       console.error('Open PDF error:', error);
