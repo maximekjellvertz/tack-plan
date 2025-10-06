@@ -1,1 +1,13 @@
 project_id = "sfpzeneiqlkmiloivdcg"
+
+[functions.search-tdb-horse]
+verify_jwt = false
+
+[functions.search-tdb-competitions]
+verify_jwt = false
+
+[functions.sync-tdb-competitions]
+verify_jwt = false
+
+[functions.search-rule-pdfs]
+verify_jwt = false
