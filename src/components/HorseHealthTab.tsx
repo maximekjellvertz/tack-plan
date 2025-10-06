@@ -26,6 +26,7 @@ interface HealthLog {
 
 interface HorseHealthTabProps {
   horseName: string;
+  horseId?: string;
   healthLogs: HealthLog[];
   loadingHealthLogs: boolean;
   onAddHealthLog: (log: any) => void;
@@ -35,6 +36,7 @@ interface HorseHealthTabProps {
 
 export const HorseHealthTab = ({
   horseName,
+  horseId,
   healthLogs,
   loadingHealthLogs,
   onAddHealthLog,
@@ -89,7 +91,7 @@ export const HorseHealthTab = ({
           <Heart className="w-6 h-6 text-primary" />
           <h3 className="text-xl font-semibold">Hälsologg</h3>
         </div>
-        <AddHealthLogToHorseDialog horseName={horseName} onAdd={onAddHealthLog} />
+        <AddHealthLogToHorseDialog horseName={horseName} horseId={horseId} onAdd={onAddHealthLog} />
       </div>
 
       {sortedHealthLogs.length > 0 && (
@@ -170,7 +172,7 @@ export const HorseHealthTab = ({
           title="Inga hälsoanteckningar än"
           motivationalText="En frisk häst är en lycklig häst"
           description={`Börja logga hälsohändelser för ${horseName} för att hålla koll på veterinärbesök och behandlingar.`}
-          action={<AddHealthLogToHorseDialog horseName={horseName} onAdd={onAddHealthLog} />}
+          action={<AddHealthLogToHorseDialog horseName={horseName} horseId={horseId} onAdd={onAddHealthLog} />}
         />
       )}
 

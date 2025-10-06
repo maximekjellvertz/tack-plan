@@ -1135,6 +1135,7 @@ const HorseDetails = () => {
           <TabsContent value="health" className="mt-6">
             <HorseHealthTab
               horseName={horse.name}
+              horseId={horse.id}
               healthLogs={healthLogs}
               loadingHealthLogs={loadingHealthLogs}
               onAddHealthLog={handleAddHealthLog}

@@ -480,7 +480,8 @@ export const addTreatmentReminders = async (
   horse: string,
   treatment: string,
   startDate: string,
-  durationDays: number
+  durationDays: number,
+  horseId?: string
 ) => {
   try {
     const { data: { user } } = await supabase.auth.getUser();
@@ -497,6 +498,7 @@ export const addTreatmentReminders = async (
         description: `Dag ${i + 1} av ${durationDays}`,
         date: date.toISOString().split('T')[0],
         horse_name: horse,
+        horse_id: horseId || null,
         type: "treatment",
         completed: false,
       });

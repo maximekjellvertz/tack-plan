@@ -133,7 +133,8 @@ export const AddHealthLogDialog = ({ onLogAdded }: AddHealthLogDialogProps) => {
           selectedHorse.name,
           formData.treatment || formData.event,
           today,
-          days
+          days,
+          selectedHorse.id
         );
       }
       

@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 
 interface AddHealthLogToHorseDialogProps {
   horseName: string;
+  horseId?: string;
   onAdd: (log: {
     event: string;
     severity: string;
@@ -28,7 +29,7 @@ interface AddHealthLogToHorseDialogProps {
 
 const severities = ["Lätt", "Medel", "Allvarlig", "Normal"];
 
-export const AddHealthLogToHorseDialog = ({ horseName, onAdd }: AddHealthLogToHorseDialogProps) => {
+export const AddHealthLogToHorseDialog = ({ horseName, horseId, onAdd }: AddHealthLogToHorseDialogProps) => {
   const [open, setOpen] = useState(false);
   const [images, setImages] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>();
@@ -109,7 +110,8 @@ export const AddHealthLogToHorseDialog = ({ horseName, onAdd }: AddHealthLogToHo
         horseName,
         formData.treatment || formData.event,
         today,
-        days
+        days,
+        horseId
       );
     }
     
