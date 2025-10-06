@@ -1,6 +1,8 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+// @ts-ignore
+import { extractText } from "https://esm.sh/unpdf@0.12.1";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -89,17 +91,23 @@ serve(async (req) => {
 
         // Convert blob to ArrayBuffer
         const arrayBuffer = await fileData.arrayBuffer();
-        const uint8Array = new Uint8Array(arrayBuffer);
-
-        // Simple text extraction - look for text content in PDF
-        // Note: This is a basic approach. For production, consider using a PDF parsing library
-        const text = new TextDecoder().decode(uint8Array);
+        
+        // Parse PDF using unpdf
+        console.log(`Extracting text from ${pdf.file_name}`);
+        const { text } = await extractText(new Uint8Array(arrayBuffer));
+        
+        // Join text array if needed
+        const extractedText = Array.isArray(text) ? text.join('\n') : text;
         
         allPdfText += `\n\n--- Från fil: ${pdf.file_name} (Kategori: ${pdf.category}) ---\n`;
-        allPdfText += text.substring(0, 50000); // Limit per PDF to avoid token limits
+        allPdfText += extractedText.substring(0, 50000); // Limit per PDF to avoid token limits
+        
+        console.log(`Extracted ${extractedText.length} characters from ${pdf.file_name}`);
         
       } catch (error) {
         console.error(`Error processing ${pdf.file_name}:`, error);
+        // Add error details to help debug
+        console.error('Error details:', error);
       }
     }
 
@@ -112,7 +120,7 @@ serve(async (req) => {
       );
     }
 
-    console.log('Extracted text length:', allPdfText.length);
+    console.log('Total extracted text length:', allPdfText.length);
 
     // Call Lovable AI to answer the question
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
@@ -126,11 +134,11 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'Du är en hjälpsam assistent som hjälper till att hitta information i regeldokument för hästsport. Svara alltid på svenska. Om du inte kan hitta relevant information i dokumenten, säg det tydligt. Referera gärna till vilken fil informationen kommer ifrån.'
+            content: 'Du är en expert på hästsportregler som hjälper användare att hitta information i deras regeldokument. Svara alltid på svenska. Ge tydliga och konkreta svar baserade på dokumenten. Om informationen inte finns i dokumenten, säg det tydligt. När du hittar relevant information, referera gärna till vilken fil den kommer ifrån.'
           },
           {
             role: 'user',
-            content: `Här är innehållet från användarens regel-PDFer:\n\n${allPdfText}\n\nAnvändarens fråga: ${question}`
+            content: `Här är innehållet från användarens regel-PDFer:\n\n${allPdfText}\n\nAnvändarens fråga: ${question}\n\nVänligen svara baserat på informationen i dokumenten ovan.`
           }
         ],
       }),
