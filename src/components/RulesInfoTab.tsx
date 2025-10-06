@@ -201,18 +201,20 @@ export function RulesInfoTab() {
     try {
       const { data, error } = await supabase.storage
         .from('rule-pdfs')
-        .createSignedUrl(pdf.file_path, 3600);
+        .download(pdf.file_path);
 
       if (error) {
-        console.error('SignedUrl error:', error);
+        console.error('Download error:', error);
         throw error;
       }
 
-      if (data?.signedUrl) {
-        // Build full URL - signedUrl is relative, needs Supabase URL
-        const fullUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1${data.signedUrl}`;
-        console.log('Opening PDF URL:', fullUrl);
-        window.open(fullUrl, '_blank');
+      if (data) {
+        const blob = new Blob([data], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        
+        // Clean up after a delay to allow the browser to open it
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
       }
     } catch (error) {
       console.error('Open PDF error:', error);
