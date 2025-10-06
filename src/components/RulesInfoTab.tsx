@@ -206,7 +206,8 @@ export function RulesInfoTab() {
       if (error) throw error;
 
       if (data?.signedUrl) {
-        window.open(data.signedUrl, '_blank');
+        const fullUrl = `${import.meta.env.VITE_SUPABASE_URL}/storage/v1${data.signedUrl}`;
+        window.open(fullUrl, '_blank');
       }
     } catch (error) {
       console.error('Open PDF error:', error);
