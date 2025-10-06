@@ -186,6 +186,48 @@ export type Database = {
           },
         ]
       }
+      daily_schedule: {
+        Row: {
+          activity_type: string
+          created_at: string
+          date: string
+          duration: number | null
+          horse_id: string
+          horse_name: string
+          id: string
+          notes: string | null
+          time: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activity_type: string
+          created_at?: string
+          date: string
+          duration?: number | null
+          horse_id: string
+          horse_name: string
+          id?: string
+          notes?: string | null
+          time: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activity_type?: string
+          created_at?: string
+          date?: string
+          duration?: number | null
+          horse_id?: string
+          horse_name?: string
+          id?: string
+          notes?: string | null
+          time?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       goals: {
         Row: {
           auto_calculate: boolean

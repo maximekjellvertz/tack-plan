@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Calendar as CalendarIcon, Heart, Activity, Bell, Trophy } from "lucide-react";
+import { Calendar as CalendarIcon, Heart, Activity, Bell, Trophy, Clock, Plus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -23,12 +23,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { AddDailyScheduleDialog } from "@/components/AddDailyScheduleDialog";
 
 interface CalendarEvent {
   id: string;
-  type: "competition" | "health" | "reminder";
+  type: "competition" | "health" | "reminder" | "schedule";
   title: string;
   date: Date;
+  time?: string;
   description?: string;
   horseName?: string;
   severity?: string;
@@ -47,6 +49,7 @@ const Calendar = () => {
   const [selectedHorseId, setSelectedHorseId] = useState<string>("all");
   const [selectedDayEvents, setSelectedDayEvents] = useState<CalendarEvent[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [addScheduleDialogOpen, setAddScheduleDialogOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
@@ -95,6 +98,30 @@ const Calendar = () => {
     try {
       setLoading(true);
       const allEvents: CalendarEvent[] = [];
+
+      // Fetch daily schedule
+      let scheduleQuery = supabase
+        .from("daily_schedule")
+        .select("id, activity_type, date, time, horse_name, duration, notes");
+
+      if (selectedHorseId !== "all") {
+        scheduleQuery = scheduleQuery.eq("horse_id", selectedHorseId);
+      }
+
+      const { data: schedules, error: scheduleError } = await scheduleQuery;
+      if (scheduleError) throw scheduleError;
+
+      schedules?.forEach((schedule) => {
+        allEvents.push({
+          id: schedule.id,
+          type: "schedule",
+          title: schedule.activity_type,
+          date: new Date(schedule.date),
+          time: schedule.time,
+          horseName: schedule.horse_name,
+          description: schedule.notes || `Varaktighet: ${schedule.duration} min`,
+        });
+      });
 
       // Fetch competitions
       let competitionsQuery = supabase
@@ -179,7 +206,23 @@ const Calendar = () => {
     const dayEvents = events.filter((event) =>
       isSameDay(event.date, selectedDate)
     );
-    setSelectedDayEvents(dayEvents);
+    
+    // Sort events: schedule events first by time, then other events
+    const sortedEvents = dayEvents.sort((a, b) => {
+      // Schedule events always come first
+      if (a.type === "schedule" && b.type !== "schedule") return -1;
+      if (a.type !== "schedule" && b.type === "schedule") return 1;
+      
+      // If both are schedule events, sort by time
+      if (a.type === "schedule" && b.type === "schedule") {
+        return (a.time || "").localeCompare(b.time || "");
+      }
+      
+      // Other events maintain their order
+      return 0;
+    });
+    
+    setSelectedDayEvents(sortedEvents);
     setDate(selectedDate);
     if (dayEvents.length > 0) {
       setDialogOpen(true);
@@ -188,6 +231,8 @@ const Calendar = () => {
 
   const getEventIcon = (type: string) => {
     switch (type) {
+      case "schedule":
+        return <Clock className="w-4 h-4" />;
       case "competition":
         return <Trophy className="w-4 h-4" />;
       case "health":
@@ -201,6 +246,8 @@ const Calendar = () => {
 
   const getEventColor = (type: string) => {
     switch (type) {
+      case "schedule":
+        return "bg-gradient-to-br from-blue-500/20 to-blue-400/10 border-blue-400/30 hover:from-blue-500/30 hover:to-blue-400/20";
       case "competition":
         return "bg-gradient-to-br from-primary/20 to-primary/10 border-primary/30 hover:from-primary/30 hover:to-primary/20";
       case "health":
@@ -323,6 +370,16 @@ const Calendar = () => {
                     Händelser {date && format(date, "d MMMM yyyy", { locale: sv })}
                   </h3>
                 </div>
+                <div className="flex justify-end mb-4">
+                  <Button
+                    onClick={() => setAddScheduleDialogOpen(true)}
+                    size="sm"
+                    className="gap-2"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Lägg till aktivitet
+                  </Button>
+                </div>
                 <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
                   {selectedDayEvents.map((event) => (
                     <Card
@@ -334,7 +391,14 @@ const Calendar = () => {
                           {getEventIcon(event.type)}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-bold text-base mb-2">{event.title}</h4>
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <h4 className="font-bold text-base">{event.title}</h4>
+                            {event.time && (
+                              <Badge variant="outline" className="shrink-0 font-mono">
+                                {event.time.substring(0, 5)}
+                              </Badge>
+                            )}
+                          </div>
                           {event.description && (
                             <p className="text-sm text-muted-foreground mb-2 line-clamp-2">
                               {event.description}
@@ -368,6 +432,13 @@ const Calendar = () => {
           </Card>
         </div>
 
+        <AddDailyScheduleDialog
+          open={addScheduleDialogOpen}
+          onOpenChange={setAddScheduleDialogOpen}
+          selectedDate={date || new Date()}
+          horses={horses}
+          onScheduleAdded={fetchEvents}
+        />
       </div>
     </div>
   );
