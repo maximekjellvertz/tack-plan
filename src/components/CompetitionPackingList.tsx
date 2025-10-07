@@ -5,15 +5,28 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, Package } from "lucide-react";
+import { Plus, Trash2, Package, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface PackingListItem {
   id: string;
   name: string;
   category: string;
   is_checked: boolean;
+}
+
+interface Template {
+  id: string;
+  name: string;
 }
 
 interface CompetitionPackingListProps {
@@ -24,13 +37,16 @@ const CATEGORIES = ["Häst", "Ryttare", "Utrustning", "Övrigt"];
 
 export const CompetitionPackingList = ({ competitionId }: CompetitionPackingListProps) => {
   const [items, setItems] = useState<PackingListItem[]>([]);
+  const [templates, setTemplates] = useState<Template[]>([]);
   const [newItemName, setNewItemName] = useState("");
   const [newItemCategory, setNewItemCategory] = useState<string>("Häst");
   const [loading, setLoading] = useState(true);
+  const [showTemplateDialog, setShowTemplateDialog] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     fetchItems();
+    fetchTemplates();
   }, [competitionId]);
 
   const fetchItems = async () => {
@@ -54,6 +70,77 @@ export const CompetitionPackingList = ({ competitionId }: CompetitionPackingList
       });
     } finally {
       setLoading(false);
+    }
+  };
+  const fetchTemplates = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("packing_list_templates")
+        .select("id, name")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setTemplates(data || []);
+    } catch (error) {
+      console.error("Error fetching templates:", error);
+    }
+  };
+
+  const copyFromTemplate = async (templateId: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      // Fetch items from template
+      const { data: templateItems, error: fetchError } = await supabase
+        .from("packing_list_items")
+        .select("name, category")
+        .eq("template_id", templateId);
+
+      if (fetchError) throw fetchError;
+
+      if (!templateItems || templateItems.length === 0) {
+        toast({
+          title: "Tom mall",
+          description: "Den valda mallen har inga items än",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Copy items to competition
+      const itemsToInsert = templateItems.map(item => ({
+        name: item.name,
+        category: item.category,
+        competition_id: String(competitionId),
+        user_id: user.id,
+        is_checked: false,
+      }));
+
+      const { error: insertError } = await supabase
+        .from("packing_list_items")
+        .insert(itemsToInsert);
+
+      if (insertError) throw insertError;
+
+      toast({
+        title: "Packlista kopierad!",
+        description: `${templateItems.length} artiklar har lagts till`,
+      });
+
+      setShowTemplateDialog(false);
+      fetchItems();
+    } catch (error) {
+      console.error("Error copying template:", error);
+      toast({
+        title: "Kunde inte kopiera mall",
+        description: "Försök igen senare",
+        variant: "destructive",
+      });
     }
   };
 
@@ -184,12 +271,46 @@ export const CompetitionPackingList = ({ competitionId }: CompetitionPackingList
         </Card>
       )}
 
-      {/* Add new item */}
+      {/* Add new item or copy from template */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Lägg till artikel</CardTitle>
+          <CardTitle className="text-lg">Lägg till artiklar</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          {/* Copy from template button */}
+          {templates.length > 0 && items.length === 0 && (
+            <Dialog open={showTemplateDialog} onOpenChange={setShowTemplateDialog}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="w-full gap-2">
+                  <Copy className="w-4 h-4" />
+                  Använd befintlig packlista-mall
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Välj packlista-mall</DialogTitle>
+                  <DialogDescription>
+                    Kopiera items från en befintlig mall till denna tävling
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-2 mt-4">
+                  {templates.map((template) => (
+                    <Button
+                      key={template.id}
+                      variant="outline"
+                      className="w-full justify-start gap-2"
+                      onClick={() => copyFromTemplate(template.id)}
+                    >
+                      <Package className="w-4 h-4" />
+                      {template.name}
+                    </Button>
+                  ))}
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
+
+          {/* Manual add item */}
           <div className="flex gap-2">
             <Input
               placeholder="T.ex. Sadel, Hjälm, Hövätska..."
