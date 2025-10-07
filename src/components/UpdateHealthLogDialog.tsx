@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { getUserName } from "@/hooks/useUserProfile";
 
 interface HealthLog {
   id: string;
@@ -20,7 +21,7 @@ interface HealthLog {
 
 interface UpdateHealthLogDialogProps {
   log: HealthLog;
-  onUpdate: (id: string, updates: Partial<HealthLog>) => void;
+  onUpdate: (id: string, updates: Partial<HealthLog> & { updated_by_name?: string }) => void;
 }
 
 const statuses = ["Pågående", "Klar", "Uppmärksamhet"];
@@ -35,10 +36,16 @@ export const UpdateHealthLogDialog = ({ log, onUpdate }: UpdateHealthLogDialogPr
     notes: log.notes || "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    onUpdate(log.id, formData);
+    // Get user name for updated_by_name
+    const userName = await getUserName();
+    
+    onUpdate(log.id, {
+      ...formData,
+      updated_by_name: userName,
+    });
     
     toast.success("Hälsologg uppdaterad!", {
       description: `${log.event} för ${log.horse_name} har uppdaterats`,

@@ -13,6 +13,7 @@ import { celebrateGoalCompletion } from "@/lib/confetti";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { getUserName } from "@/hooks/useUserProfile";
 
 interface AddCompetitionDialogProps {
   horseName: string;
@@ -23,6 +24,7 @@ interface AddCompetitionDialogProps {
     discipline: string;
     class: string;
     notes: string;
+    created_by_name?: string;
   }) => void;
 }
 
@@ -60,7 +62,7 @@ export const AddCompetitionToHorseDialog = ({ horseName, onAdd }: AddCompetition
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.name || !formData.date) {
@@ -68,7 +70,13 @@ export const AddCompetitionToHorseDialog = ({ horseName, onAdd }: AddCompetition
       return;
     }
 
-    onAdd(formData);
+    // Get user name for created_by_name
+    const userName = await getUserName();
+
+    onAdd({
+      ...formData,
+      created_by_name: userName,
+    });
     
     celebrateGoalCompletion();
     

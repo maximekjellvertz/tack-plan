@@ -14,6 +14,7 @@ import { celebrateGoalCompletion } from "@/lib/confetti";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { getUserName } from "@/hooks/useUserProfile";
 
 interface AddHealthLogToHorseDialogProps {
   horseName: string;
@@ -24,6 +25,7 @@ interface AddHealthLogToHorseDialogProps {
     treatment: string;
     notes: string;
     images?: string[];
+    created_by_name?: string;
   }) => void;
 }
 
@@ -86,7 +88,7 @@ export const AddHealthLogToHorseDialog = ({ horseName, horseId, onAdd }: AddHeal
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.event) {
@@ -94,12 +96,16 @@ export const AddHealthLogToHorseDialog = ({ horseName, horseId, onAdd }: AddHeal
       return;
     }
 
+    // Get user name for created_by_name
+    const userName = await getUserName();
+
     onAdd({
       event: formData.event,
       severity: formData.severity || "Lätt",
       treatment: formData.treatment,
       notes: formData.notes,
       images: images.length > 0 ? images : undefined,
+      created_by_name: userName,
     });
     
     // Create reminders if treatment days specified
