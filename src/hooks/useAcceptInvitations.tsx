@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export const useAcceptInvitations = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   
   useEffect(() => {
     const acceptPendingInvitations = async () => {
@@ -47,12 +48,21 @@ export const useAcceptInvitations = () => {
 
           console.log("Invitations activated successfully");
 
-          toast.success(`${pendingInvites.length} inbjudan(ar) aktiverad(e)! Du har nu tillgång till delade hästar.`);
+          toast.success(`Välkommen! Du har nu tillgång till ${pendingInvites.length} delad(e) konto(n).`, {
+            duration: 4000,
+          });
           
-          // Navigate to horses page to show shared horses
-          setTimeout(() => {
-            navigate("/horses");
-          }, 1500);
+          // If on auth page, redirect to horses
+          if (location.pathname === "/auth" || location.pathname === "/") {
+            setTimeout(() => {
+              navigate("/horses");
+            }, 1000);
+          } else {
+            // Reload current page to show shared data
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
+          }
         }
       } catch (error) {
         console.error("Error accepting invitations:", error);
@@ -61,5 +71,5 @@ export const useAcceptInvitations = () => {
     };
 
     acceptPendingInvitations();
-  }, [navigate]);
+  }, [navigate, location]);
 };
