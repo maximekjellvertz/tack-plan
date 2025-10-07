@@ -259,15 +259,15 @@ const Goals = () => {
   return (
     <div className="min-h-screen bg-background animate-fade-in">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-3">
+        <div className="mb-6 md:mb-8">
+          <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
             <div className="relative">
               <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse" />
-              <Target className="w-10 h-10 text-primary relative" />
+              <Target className="w-8 h-8 md:w-10 md:h-10 text-primary relative" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold text-foreground">Mål & Milstolpar</h1>
-              <p className="text-sm text-muted-foreground mt-1">Sätt mål och följ din hästs resa mot nya höjder</p>
+              <h1 className="text-3xl md:text-4xl font-bold text-foreground">Mål & Milstolpar</h1>
+              <p className="text-xs md:text-sm text-muted-foreground mt-1">Sätt mål och följ din hästs resa mot nya höjder</p>
             </div>
           </div>
         </div>

@@ -108,7 +108,7 @@ const Dashboard = () => {
       <OnboardingDialog open={showOnboarding} onComplete={handleOnboardingComplete} />
       
       {/* Hero Section */}
-      <section className="relative h-[400px] overflow-hidden">
+      <section className="relative h-[300px] md:h-[400px] overflow-hidden">
         <div className="absolute inset-0">
           <img 
             src={heroImage} 
@@ -119,17 +119,17 @@ const Dashboard = () => {
         </div>
         <div className="relative h-full flex items-center justify-center text-center px-4">
           <div className="max-w-3xl">
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">
+            <h1 className="text-3xl md:text-6xl font-bold text-white mb-3 md:mb-4 drop-shadow-lg">
               Välkommen tillbaka!
             </h1>
-            <p className="text-xl text-white/90 mb-2 drop-shadow-md">
+            <p className="text-base md:text-xl text-white/90 mb-2 drop-shadow-md">
               {user?.email}
             </p>
-            <p className="text-lg text-white/80 mb-8 drop-shadow-md">
+            <p className="text-sm md:text-lg text-white/80 mb-6 md:mb-8 drop-shadow-md">
               Här är en översikt av dina hästar och aktiviteter
             </p>
             <Link to="/horses">
-              <Button size="lg" className="bg-primary hover:bg-primary/90">
+              <Button size="default" className="md:h-11 md:px-8 bg-primary hover:bg-primary/90">
                 Gå till mina hästar
               </Button>
             </Link>
@@ -138,12 +138,12 @@ const Dashboard = () => {
       </section>
 
       {/* Quick Stats */}
-      <section className="max-w-7xl mx-auto px-4 -mt-16 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <section className="max-w-7xl mx-auto px-4 -mt-12 md:-mt-16 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
           <Link to="/horses" className="block">
-            <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "0ms" }}>
-              <Heart className="w-8 h-8 text-primary mb-3 transition-transform group-hover:scale-110" />
-              <h3 className="text-3xl font-bold text-foreground transition-all group-hover:text-primary">
+            <Card className="p-4 md:p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "0ms" }}>
+              <Heart className="w-6 h-6 md:w-8 md:h-8 text-primary mb-2 md:mb-3 transition-transform group-hover:scale-110" />
+              <h3 className="text-2xl md:text-3xl font-bold text-foreground transition-all group-hover:text-primary">
                 {loading ? "..." : stats.horses}
               </h3>
               <p className="text-muted-foreground">Hästar</p>
@@ -153,9 +153,9 @@ const Dashboard = () => {
             </Card>
           </Link>
           <Link to="/competitions" className="block">
-            <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "100ms" }}>
-              <Calendar className="w-8 h-8 text-secondary mb-3 transition-transform group-hover:scale-110" />
-              <h3 className="text-3xl font-bold text-foreground transition-all group-hover:text-secondary">
+            <Card className="p-4 md:p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "100ms" }}>
+              <Calendar className="w-6 h-6 md:w-8 md:h-8 text-secondary mb-2 md:mb-3 transition-transform group-hover:scale-110" />
+              <h3 className="text-2xl md:text-3xl font-bold text-foreground transition-all group-hover:text-secondary">
                 {loading ? "..." : stats.competitions}
               </h3>
               <p className="text-muted-foreground">Kommande tävlingar</p>
@@ -165,9 +165,9 @@ const Dashboard = () => {
             </Card>
           </Link>
           <Link to="/health-log" className="block">
-            <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "200ms" }}>
-              <FileText className="w-8 h-8 text-accent mb-3 transition-transform group-hover:scale-110" />
-              <h3 className="text-3xl font-bold text-foreground transition-all group-hover:text-accent">
+            <Card className="p-4 md:p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "200ms" }}>
+              <FileText className="w-6 h-6 md:w-8 md:h-8 text-accent mb-2 md:mb-3 transition-transform group-hover:scale-110" />
+              <h3 className="text-2xl md:text-3xl font-bold text-foreground transition-all group-hover:text-accent">
                 {loading ? "..." : stats.healthLogs}
               </h3>
               <p className="text-muted-foreground">Loggade händelser</p>
@@ -177,9 +177,9 @@ const Dashboard = () => {
             </Card>
           </Link>
           <Link to="/badges" className="block">
-            <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "300ms" }}>
-              <Award className="w-8 h-8 text-primary mb-3 transition-transform group-hover:scale-110" />
-              <h3 className="text-3xl font-bold text-foreground transition-all group-hover:text-primary">
+            <Card className="p-4 md:p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "300ms" }}>
+              <Award className="w-6 h-6 md:w-8 md:h-8 text-primary mb-2 md:mb-3 transition-transform group-hover:scale-110" />
+              <h3 className="text-2xl md:text-3xl font-bold text-foreground transition-all group-hover:text-primary">
                 {loading ? "..." : stats.badges}
               </h3>
               <p className="text-muted-foreground">Tjänade badges</p>
@@ -189,9 +189,9 @@ const Dashboard = () => {
             </Card>
           </Link>
           <Link to="/reminders" className="block">
-            <Card className="p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "400ms" }}>
-              <Bell className="w-8 h-8 text-primary mb-3 transition-transform group-hover:scale-110" />
-              <h3 className="text-3xl font-bold text-foreground transition-all group-hover:text-primary">
+            <Card className="p-4 md:p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "400ms" }}>
+              <Bell className="w-6 h-6 md:w-8 md:h-8 text-primary mb-2 md:mb-3 transition-transform group-hover:scale-110" />
+              <h3 className="text-2xl md:text-3xl font-bold text-foreground transition-all group-hover:text-primary">
                 {loading ? "..." : stats.reminders}
               </h3>
               <p className="text-muted-foreground">Aktiva påminnelser</p>
@@ -204,7 +204,7 @@ const Dashboard = () => {
       </section>
 
       {/* Main Content */}
-      <section className="max-w-7xl mx-auto px-4 py-16">
+      <section className="max-w-7xl mx-auto px-4 py-8 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Daily Tip */}
           <div>

@@ -271,12 +271,12 @@ const Calendar = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 pb-8">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header */}
-        <div className="mb-8 text-center">
-          <div className="flex items-center justify-center gap-3 mb-3">
-            <CalendarIcon className="w-10 h-10 text-primary" />
-            <h1 className="text-5xl font-bold text-foreground glow-text">Kalender</h1>
+        <div className="mb-6 md:mb-8 text-center">
+          <div className="flex items-center justify-center gap-2 md:gap-3 mb-2 md:mb-3">
+            <CalendarIcon className="w-8 h-8 md:w-10 md:h-10 text-primary" />
+            <h1 className="text-3xl md:text-5xl font-bold text-foreground glow-text">Kalender</h1>
           </div>
-          <p className="text-muted-foreground text-lg mb-6">
+          <p className="text-muted-foreground text-sm md:text-lg mb-4 md:mb-6">
             Se alla dina tävlingar, hälsohändelser och påminnelser
           </p>
           <div className="flex justify-center">
@@ -297,39 +297,39 @@ const Calendar = () => {
         </div>
 
         {/* Legend & Stats Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="p-6 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-2 border-primary/30 hover-scale shadow-lg hover:shadow-xl transition-all">
-            <div className="flex items-center gap-4 mb-3">
-              <div className="p-3 rounded-xl bg-primary/20 border border-primary/30">
-                <Trophy className="w-6 h-6 text-primary" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-8">
+          <Card className="p-4 md:p-6 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border-2 border-primary/30 hover-scale shadow-lg hover:shadow-xl transition-all">
+            <div className="flex items-center gap-3 md:gap-4 mb-2 md:mb-3">
+              <div className="p-2 md:p-3 rounded-xl bg-primary/20 border border-primary/30">
+                <Trophy className="w-5 h-5 md:w-6 md:h-6 text-primary" />
               </div>
-              <h3 className="font-bold text-lg text-foreground">Tävlingar</h3>
+              <h3 className="font-bold text-base md:text-lg text-foreground">Tävlingar</h3>
             </div>
-            <p className="text-4xl font-bold text-primary">
+            <p className="text-3xl md:text-4xl font-bold text-primary">
               {events.filter((e) => e.type === "competition").length}
             </p>
           </Card>
 
-          <Card className="p-6 bg-gradient-to-br from-destructive/10 via-destructive/5 to-transparent border-2 border-destructive/30 hover-scale shadow-lg hover:shadow-xl transition-all">
-            <div className="flex items-center gap-4 mb-3">
-              <div className="p-3 rounded-xl bg-destructive/20 border border-destructive/30">
-                <Activity className="w-6 h-6 text-destructive" />
+          <Card className="p-4 md:p-6 bg-gradient-to-br from-destructive/10 via-destructive/5 to-transparent border-2 border-destructive/30 hover-scale shadow-lg hover:shadow-xl transition-all">
+            <div className="flex items-center gap-3 md:gap-4 mb-2 md:mb-3">
+              <div className="p-2 md:p-3 rounded-xl bg-destructive/20 border border-destructive/30">
+                <Activity className="w-5 h-5 md:w-6 md:h-6 text-destructive" />
               </div>
-              <h3 className="font-bold text-lg text-foreground">Hälsologgar</h3>
+              <h3 className="font-bold text-base md:text-lg text-foreground">Hälsologgar</h3>
             </div>
-            <p className="text-4xl font-bold text-destructive">
+            <p className="text-3xl md:text-4xl font-bold text-destructive">
               {events.filter((e) => e.type === "health").length}
             </p>
           </Card>
 
-          <Card className="p-6 bg-gradient-to-br from-accent/10 via-accent/5 to-transparent border-2 border-accent/30 hover-scale shadow-lg hover:shadow-xl transition-all">
-            <div className="flex items-center gap-4 mb-3">
-              <div className="p-3 rounded-xl bg-accent/20 border border-accent/30">
-                <Bell className="w-6 h-6 text-accent-foreground" />
+          <Card className="p-4 md:p-6 bg-gradient-to-br from-accent/10 via-accent/5 to-transparent border-2 border-accent/30 hover-scale shadow-lg hover:shadow-xl transition-all">
+            <div className="flex items-center gap-3 md:gap-4 mb-2 md:mb-3">
+              <div className="p-2 md:p-3 rounded-xl bg-accent/20 border border-accent/30">
+                <Bell className="w-5 h-5 md:w-6 md:h-6 text-accent-foreground" />
               </div>
-              <h3 className="font-bold text-lg text-foreground">Påminnelser</h3>
+              <h3 className="font-bold text-base md:text-lg text-foreground">Påminnelser</h3>
             </div>
-            <p className="text-4xl font-bold text-accent-foreground">
+            <p className="text-3xl md:text-4xl font-bold text-accent-foreground">
               {events.filter((e) => e.type === "reminder").length}
             </p>
           </Card>

@@ -191,7 +191,7 @@ const Horses = () => {
                   className="overflow-hidden hover:shadow-elevated transition-all hover-scale animate-fade-in"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center relative overflow-hidden">
+                  <div className="h-40 md:h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center relative overflow-hidden">
                     {horse.image_url ? (
                       <img
                         src={horse.image_url}
@@ -202,32 +202,32 @@ const Horses = () => {
                       <Heart className="w-24 h-24 text-primary/40" />
                     )}
                     {/* Progress Rings */}
-                    <div className="absolute top-4 right-4 flex gap-2 bg-background/80 backdrop-blur-sm p-2 rounded-lg">
-                      <div className="relative">
-                        <ProgressRing progress={stats.trainingProgress} size={60} strokeWidth={5} />
+                    <div className="absolute top-2 right-2 md:top-4 md:right-4 flex gap-1 md:gap-2 bg-background/80 backdrop-blur-sm p-1.5 md:p-2 rounded-lg">
+                      <div className="relative w-[50px] h-[50px] md:w-[60px] md:h-[60px]">
+                        <ProgressRing progress={stats.trainingProgress} size={50} strokeWidth={4} />
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <TrendingUp className="w-5 h-5 text-primary" />
+                          <TrendingUp className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                         </div>
                       </div>
-                      <div className="relative">
+                      <div className="relative w-[50px] h-[50px] md:w-[60px] md:h-[60px]">
                         <ProgressRing 
                           progress={stats.healthScore} 
-                          size={60} 
-                          strokeWidth={5}
+                          size={50}
+                          strokeWidth={4}
                           color="hsl(var(--secondary))"
                         />
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <Activity className="w-5 h-5 text-secondary" />
+                          <Activity className="w-4 h-4 md:w-5 md:h-5 text-secondary" />
                         </div>
                       </div>
                     </div>
                   </div>
-                <div className="p-6">
+                <div className="p-4 md:p-6">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
-                      <h3 className="text-2xl font-bold text-foreground">{horse.name}</h3>
+                      <h3 className="text-xl md:text-2xl font-bold text-foreground">{horse.name}</h3>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 md:gap-2">
                       <Badge variant="secondary">{horse.level}</Badge>
                       <EditHorseDialog horse={horse} onHorseUpdated={fetchHorses} />
                       <AlertDialog>

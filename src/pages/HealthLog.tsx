@@ -180,32 +180,32 @@ const HealthLog = () => {
         </div>
 
         {/* Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <Card className="p-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mb-6 md:mb-8">
+          <Card className="p-4 md:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground mb-1">Pågående</p>
-                <p className="text-3xl font-bold text-foreground">{ongoingCount}</p>
+                <p className="text-xs md:text-sm text-muted-foreground mb-1">Pågående</p>
+                <p className="text-2xl md:text-3xl font-bold text-foreground">{ongoingCount}</p>
               </div>
-              <Clock className="w-8 h-8 text-primary" />
+              <Clock className="w-6 h-6 md:w-8 md:h-8 text-primary" />
             </div>
           </Card>
-          <Card className="p-6">
+          <Card className="p-4 md:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground mb-1">Avslutade</p>
-                <p className="text-3xl font-bold text-foreground">{completedCount}</p>
+                <p className="text-xs md:text-sm text-muted-foreground mb-1">Avslutade</p>
+                <p className="text-2xl md:text-3xl font-bold text-foreground">{completedCount}</p>
               </div>
-              <CheckCircle className="w-8 h-8 text-secondary" />
+              <CheckCircle className="w-6 h-6 md:w-8 md:h-8 text-secondary" />
             </div>
           </Card>
-          <Card className="p-6">
+          <Card className="p-4 md:p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground mb-1">Uppföljning</p>
-                <p className="text-3xl font-bold text-foreground">{attentionCount}</p>
+                <p className="text-xs md:text-sm text-muted-foreground mb-1">Uppföljning</p>
+                <p className="text-2xl md:text-3xl font-bold text-foreground">{attentionCount}</p>
               </div>
-              <AlertCircle className="w-8 h-8 text-destructive" />
+              <AlertCircle className="w-6 h-6 md:w-8 md:h-8 text-destructive" />
             </div>
           </Card>
         </div>
