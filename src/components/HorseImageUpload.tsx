@@ -47,11 +47,11 @@ export const HorseImageUpload = ({
         return;
       }
 
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
         toast({
           title: "Filen är för stor",
-          description: "Maximal filstorlek är 5MB",
+          description: "Maximal filstorlek är 10MB",
           variant: "destructive",
         });
         return;
@@ -173,7 +173,7 @@ export const HorseImageUpload = ({
         <DialogHeader>
           <DialogTitle>Hästens bild</DialogTitle>
           <DialogDescription>
-            Ladda upp en bild på din häst (max 5MB)
+            Ladda upp en bild på din häst (max 10MB)
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
@@ -185,7 +185,7 @@ export const HorseImageUpload = ({
                   Klicka för att välja en bild
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  JPG, PNG eller WebP (max 5MB)
+                  JPG, PNG eller WebP (max 10MB)
                 </p>
               </div>
               <input
