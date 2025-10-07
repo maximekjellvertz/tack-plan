@@ -4,6 +4,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Footer from "@/components/Footer";
 import heroHorse from "@/assets/hero-horse.jpg";
+import horseProfile1 from "@/assets/horse-profile-1.jpg";
+import horseProfile2 from "@/assets/horse-profile-2.jpg";
+import horseProfile3 from "@/assets/horse-profile-3.jpg";
 import { Heart, Calendar, FileText, Target, Award, Trophy, CheckCircle2, Sparkles, TrendingUp, Activity, Bell } from "lucide-react";
 import { StatsCard } from "@/components/StatsCard";
 import { ProgressRing } from "@/components/ProgressRing";
@@ -177,8 +180,8 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Example Horse Card 1 */}
             <Card className="overflow-hidden hover-scale animate-fade-in">
-              <div className="h-48 bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center relative">
-                <Heart className="w-24 h-24 text-primary/40" />
+              <div className="h-48 bg-cover bg-center relative" style={{ backgroundImage: `url(${horseProfile1})` }}>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                 <div className="absolute top-4 right-4 flex gap-2 bg-background/80 backdrop-blur-sm p-2 rounded-lg">
                   <div className="relative w-[60px] h-[60px]">
                     <ProgressRing progress={75} size={60} strokeWidth={4} />
@@ -217,8 +220,8 @@ const Index = () => {
 
             {/* Example Horse Card 2 */}
             <Card className="overflow-hidden hover-scale animate-fade-in" style={{ animationDelay: "100ms" }}>
-              <div className="h-48 bg-gradient-to-br from-secondary/20 to-accent/20 flex items-center justify-center relative">
-                <Heart className="w-24 h-24 text-secondary/40" />
+              <div className="h-48 bg-cover bg-center relative" style={{ backgroundImage: `url(${horseProfile2})` }}>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                 <div className="absolute top-4 right-4 flex gap-2 bg-background/80 backdrop-blur-sm p-2 rounded-lg">
                   <div className="relative w-[60px] h-[60px]">
                     <ProgressRing progress={60} size={60} strokeWidth={4} />
@@ -257,8 +260,8 @@ const Index = () => {
 
             {/* Example Horse Card 3 */}
             <Card className="overflow-hidden hover-scale animate-fade-in" style={{ animationDelay: "200ms" }}>
-              <div className="h-48 bg-gradient-to-br from-accent/20 to-primary/20 flex items-center justify-center relative">
-                <Heart className="w-24 h-24 text-accent/40" />
+              <div className="h-48 bg-cover bg-center relative" style={{ backgroundImage: `url(${horseProfile3})` }}>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                 <div className="absolute top-4 right-4 flex gap-2 bg-background/80 backdrop-blur-sm p-2 rounded-lg">
                   <div className="relative w-[60px] h-[60px]">
                     <ProgressRing progress={85} size={60} strokeWidth={4} />
