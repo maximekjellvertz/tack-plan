@@ -154,7 +154,9 @@ const HealthLog = () => {
 
       if (error) throw error;
 
-      await fetchHealthLogs();
+      // Update state immediately by filtering out the deleted log
+      setHealthLogs((prev) => prev.filter((log) => log.id !== id));
+      
       toast({
         title: "Raderat",
         description: "Hälsologg har raderats",
