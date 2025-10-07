@@ -29,8 +29,8 @@ export const LandingNav = () => {
     { label: "Dashboard", id: "dashboard" },
     { label: "Hästar", id: "horses" },
     { label: "Hälsa", id: "health" },
+    { label: "Kalender", id: "calendar" },
     { label: "Tävling", id: "competitions" },
-    { label: "Mål", id: "goals" },
   ];
 
   return (

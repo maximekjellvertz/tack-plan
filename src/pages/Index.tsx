@@ -71,7 +71,7 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
             <StatsCard
               title="Hästar"
               value={3}
@@ -104,6 +104,60 @@ const Index = () => {
               gradient="from-primary/20 to-primary/10"
               delay={300}
             />
+          </div>
+
+          {/* Today's Schedule Preview */}
+          <div className="max-w-4xl mx-auto">
+            <Card className="p-6 bg-gradient-to-br from-card to-muted/30">
+              <div className="flex items-center gap-3 mb-6">
+                <Calendar className="w-6 h-6 text-primary" />
+                <h3 className="text-2xl font-bold text-foreground">Dagens schema</h3>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-start gap-4 p-4 bg-background rounded-lg border-l-4 border-primary">
+                  <div className="text-center min-w-[60px]">
+                    <p className="text-xs text-muted-foreground">08:00</p>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Badge variant="secondary">Träning</Badge>
+                      <Badge variant="outline">Fiona</Badge>
+                    </div>
+                    <p className="font-semibold text-foreground">Dressyrträning</p>
+                    <p className="text-sm text-muted-foreground">Ridskola Norra, 60 min</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4 p-4 bg-background rounded-lg border-l-4 border-secondary">
+                  <div className="text-center min-w-[60px]">
+                    <p className="text-xs text-muted-foreground">14:00</p>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Badge variant="destructive">Veterinär</Badge>
+                      <Badge variant="outline">Thunder</Badge>
+                    </div>
+                    <p className="font-semibold text-foreground">Kontroll efter skada</p>
+                    <p className="text-sm text-muted-foreground">Veterinär Anna Svensson</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4 p-4 bg-background rounded-lg border-l-4 border-accent">
+                  <div className="text-center min-w-[60px]">
+                    <p className="text-xs text-muted-foreground">16:30</p>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Badge>Hovslagare</Badge>
+                      <Badge variant="outline">Luna</Badge>
+                    </div>
+                    <p className="font-semibold text-foreground">Ombeläggning</p>
+                    <p className="text-sm text-muted-foreground">Erik Johansson</p>
+                  </div>
+                </div>
+              </div>
+            </Card>
           </div>
         </div>
       </section>
@@ -328,6 +382,116 @@ const Index = () => {
                 </div>
               </Card>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Calendar Feature - Everything in One Place */}
+      <section id="calendar" className="py-16 md:py-24 bg-background">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Calendar className="w-8 h-8 text-primary" />
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                Allt i en gemensam kalender
+              </h2>
+            </div>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Alla aktiviteter, påminnelser och händelser samlas på ett ställe. Få full översikt och missa aldrig något.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-12 items-center mb-12">
+            <div>
+              <h3 className="text-2xl font-bold text-foreground mb-6">
+                En kalender för allt
+              </h3>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold text-foreground">Tävlingar & starter</p>
+                    <p className="text-sm text-muted-foreground">Se alla kommande tävlingar med starttider</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold text-foreground">Träningspass</p>
+                    <p className="text-sm text-muted-foreground">Planera och följ upp all träning</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold text-foreground">Veterinär & hovslagare</p>
+                    <p className="text-sm text-muted-foreground">Boka och kom ihåg alla besök</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold text-foreground">Vaccinationer & behandlingar</p>
+                    <p className="text-sm text-muted-foreground">Få påminnelser i god tid</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold text-foreground">Anmälningsdeadlines</p>
+                    <p className="text-sm text-muted-foreground">Missa aldrig sista anmälningsdag</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold text-foreground">Egna påminnelser</p>
+                    <p className="text-sm text-muted-foreground">Lägg till vad du vill hålla koll på</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Card className="p-6 bg-gradient-to-br from-card to-muted/30">
+              <div className="flex items-center justify-between mb-6">
+                <h4 className="text-xl font-bold text-foreground">Vecka 24, 2025</h4>
+                <Badge variant="secondary">8 händelser</Badge>
+              </div>
+
+              <div className="space-y-3">
+                <div className="p-3 bg-background rounded-lg border-l-4 border-primary">
+                  <div className="flex justify-between items-start mb-1">
+                    <p className="text-sm font-semibold">Mån 9 Jun - 08:00</p>
+                    <Badge variant="secondary" className="text-xs">Träning</Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Dressyrträning - Fiona</p>
+                </div>
+
+                <div className="p-3 bg-background rounded-lg border-l-4 border-destructive">
+                  <div className="flex justify-between items-start mb-1">
+                    <p className="text-sm font-semibold">Tis 10 Jun - 14:00</p>
+                    <Badge variant="destructive" className="text-xs">Veterinär</Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Kontroll - Thunder</p>
+                </div>
+
+                <div className="p-3 bg-background rounded-lg border-l-4 border-accent">
+                  <div className="flex justify-between items-start mb-1">
+                    <p className="text-sm font-semibold">Ons 11 Jun</p>
+                    <Badge variant="outline" className="text-xs">Deadline</Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Anmälan SM Dressyr</p>
+                </div>
+
+                <div className="p-3 bg-background rounded-lg border-l-4 border-secondary">
+                  <div className="flex justify-between items-start mb-1">
+                    <p className="text-sm font-semibold">Lör 14 Jun - Heldag</p>
+                    <Badge className="text-xs">Tävling</Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Regional Dressyr - Fiona</p>
+                </div>
+              </div>
+            </Card>
           </div>
         </div>
       </section>
