@@ -7,7 +7,7 @@ import heroHorse from "@/assets/hero-horse.jpg";
 import horseProfile1 from "@/assets/horse-profile-1.jpg";
 import horseProfile2 from "@/assets/horse-profile-2.jpg";
 import horseProfile3 from "@/assets/horse-profile-3.jpg";
-import { Heart, Calendar, FileText, Target, Award, Trophy, CheckCircle2, Sparkles, TrendingUp, Activity, Bell } from "lucide-react";
+import { Heart, Calendar, FileText, Target, Award, Trophy, CheckCircle2, Sparkles, TrendingUp, Activity, Bell, ArrowRight, UserPlus, Plus, BarChart } from "lucide-react";
 import { StatsCard } from "@/components/StatsCard";
 import { ProgressRing } from "@/components/ProgressRing";
 import { Progress } from "@/components/ui/progress";
@@ -751,6 +751,203 @@ const Index = () => {
                 <p className="text-foreground text-lg">Dela information enkelt med tränare och veterinärer</p>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section id="how-it-works" className="py-16 md:py-24 bg-background">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Hur det fungerar
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Kom igång på mindre än 5 minuter
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-4 gap-8 relative">
+            {/* Step 1 */}
+            <div className="relative animate-fade-in">
+              <div className="text-center">
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                  1
+                </div>
+                <UserPlus className="w-12 h-12 text-primary mx-auto mb-4" />
+                <h3 className="text-xl font-bold mb-3 text-foreground">Skapa konto</h3>
+                <p className="text-muted-foreground">Registrera dig gratis med din e-post. Inga kreditkort krävs.</p>
+              </div>
+              <ArrowRight className="hidden md:block absolute top-10 -right-4 w-8 h-8 text-primary/30" />
+            </div>
+
+            {/* Step 2 */}
+            <div className="relative animate-fade-in" style={{ animationDelay: "100ms" }}>
+              <div className="text-center">
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                  2
+                </div>
+                <Plus className="w-12 h-12 text-primary mx-auto mb-4" />
+                <h3 className="text-xl font-bold mb-3 text-foreground">Lägg till hästar</h3>
+                <p className="text-muted-foreground">Registrera dina hästar med namn, ras, ålder och andra detaljer.</p>
+              </div>
+              <ArrowRight className="hidden md:block absolute top-10 -right-4 w-8 h-8 text-primary/30" />
+            </div>
+
+            {/* Step 3 */}
+            <div className="relative animate-fade-in" style={{ animationDelay: "200ms" }}>
+              <div className="text-center">
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                  3
+                </div>
+                <Calendar className="w-12 h-12 text-primary mx-auto mb-4" />
+                <h3 className="text-xl font-bold mb-3 text-foreground">Börja logga</h3>
+                <p className="text-muted-foreground">Lägg till träningspass, hälsologgar, tävlingar och mål.</p>
+              </div>
+              <ArrowRight className="hidden md:block absolute top-10 -right-4 w-8 h-8 text-primary/30" />
+            </div>
+
+            {/* Step 4 */}
+            <div className="relative animate-fade-in" style={{ animationDelay: "300ms" }}>
+              <div className="text-center">
+                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                  4
+                </div>
+                <BarChart className="w-12 h-12 text-primary mx-auto mb-4" />
+                <h3 className="text-xl font-bold mb-3 text-foreground">Följ utveckling</h3>
+                <p className="text-muted-foreground">Se statistik, framsteg och få påminnelser för viktiga händelser.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Visual Demo Section */}
+      <section className="py-16 md:py-24 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Se hur det ser ut
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Exempel på några av funktionerna du får tillgång till
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Animated Card 1 - Stats */}
+            <Card className="p-6 hover-scale animate-fade-in overflow-hidden relative">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/20 to-transparent rounded-full blur-3xl" />
+              <div className="relative">
+                <Badge className="mb-4">Översikt</Badge>
+                <h3 className="text-2xl font-bold mb-4 text-foreground">Snabb överblick</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg animate-fade-in" style={{ animationDelay: "100ms" }}>
+                    <span className="text-sm font-medium">Träningspass denna vecka</span>
+                    <span className="text-2xl font-bold text-primary">12</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg animate-fade-in" style={{ animationDelay: "200ms" }}>
+                    <span className="text-sm font-medium">Kommande tävlingar</span>
+                    <span className="text-2xl font-bold text-secondary">3</span>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg animate-fade-in" style={{ animationDelay: "300ms" }}>
+                    <span className="text-sm font-medium">Avklarade mål</span>
+                    <span className="text-2xl font-bold text-accent">8</span>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Animated Card 2 - Progress */}
+            <Card className="p-6 hover-scale animate-fade-in overflow-hidden relative" style={{ animationDelay: "100ms" }}>
+              <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-secondary/20 to-transparent rounded-full blur-3xl" />
+              <div className="relative">
+                <Badge className="mb-4">Träningsframsteg</Badge>
+                <h3 className="text-2xl font-bold mb-4 text-foreground">Fiona - Dressyr M</h3>
+                <div className="space-y-4">
+                  <div className="animate-fade-in" style={{ animationDelay: "200ms" }}>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span>Utförandegrad</span>
+                      <span className="font-semibold">85%</span>
+                    </div>
+                    <Progress value={85} className="h-3" />
+                  </div>
+                  <div className="animate-fade-in" style={{ animationDelay: "300ms" }}>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span>Kondition</span>
+                      <span className="font-semibold">92%</span>
+                    </div>
+                    <Progress value={92} className="h-3" />
+                  </div>
+                  <div className="animate-fade-in" style={{ animationDelay: "400ms" }}>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span>Teknisk utveckling</span>
+                      <span className="font-semibold">78%</span>
+                    </div>
+                    <Progress value={78} className="h-3" />
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Animated Card 3 - Calendar Preview */}
+            <Card className="p-6 hover-scale animate-fade-in overflow-hidden relative" style={{ animationDelay: "200ms" }}>
+              <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-br from-accent/20 to-transparent rounded-full blur-3xl" />
+              <div className="relative">
+                <Badge className="mb-4">Kalender</Badge>
+                <h3 className="text-2xl font-bold mb-4 text-foreground">Kommande vecka</h3>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3 p-2 bg-muted/50 rounded animate-fade-in" style={{ animationDelay: "300ms" }}>
+                    <div className="w-2 h-2 rounded-full bg-primary" />
+                    <span className="text-sm">Mån - Dressyrträning</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-2 bg-muted/50 rounded animate-fade-in" style={{ animationDelay: "400ms" }}>
+                    <div className="w-2 h-2 rounded-full bg-secondary" />
+                    <span className="text-sm">Ons - Veterinärkontroll</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-2 bg-muted/50 rounded animate-fade-in" style={{ animationDelay: "500ms" }}>
+                    <div className="w-2 h-2 rounded-full bg-accent" />
+                    <span className="text-sm">Lör - Tävling i Göteborg</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-2 bg-muted/50 rounded animate-fade-in" style={{ animationDelay: "600ms" }}>
+                    <div className="w-2 h-2 rounded-full bg-primary" />
+                    <span className="text-sm">Sön - Hoppträning</span>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Animated Card 4 - Health Tracking */}
+            <Card className="p-6 hover-scale animate-fade-in overflow-hidden relative" style={{ animationDelay: "300ms" }}>
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-br from-primary/20 to-transparent rounded-full blur-3xl" />
+              <div className="relative">
+                <Badge className="mb-4">Hälsologg</Badge>
+                <h3 className="text-2xl font-bold mb-4 text-foreground">Thunder - Senaste loggar</h3>
+                <div className="space-y-3">
+                  <div className="p-3 bg-muted/50 rounded-lg animate-fade-in" style={{ animationDelay: "400ms" }}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-medium">Vaccination</span>
+                      <span className="text-xs text-muted-foreground">15 mars</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Influensa + Stelkramp</p>
+                  </div>
+                  <div className="p-3 bg-muted/50 rounded-lg animate-fade-in" style={{ animationDelay: "500ms" }}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-medium">Hovslagare</span>
+                      <span className="text-xs text-muted-foreground">8 mars</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Nya skor fram</p>
+                  </div>
+                  <div className="p-3 bg-muted/50 rounded-lg animate-fade-in" style={{ animationDelay: "600ms" }}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm font-medium">Maskinkur</span>
+                      <span className="text-xs text-muted-foreground">1 mars</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Equest Pramox</p>
+                  </div>
+                </div>
+              </div>
+            </Card>
           </div>
         </div>
       </section>
