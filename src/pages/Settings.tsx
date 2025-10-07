@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Settings as SettingsIcon, HelpCircle, Sparkles, Users } from "lucide-react";
 import { OnboardingDialog } from "@/components/OnboardingDialog";
 import { ShareAccessDialog } from "@/components/ShareAccessDialog";
@@ -15,7 +16,10 @@ const Settings = () => {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [horses, setHorses] = useState<Array<{ id: string; name: string }>>([]);
   const [sharedAccess, setSharedAccess] = useState<any[]>([]);
-  const [isOwner, setIsOwner] = useState(true); // Track if user owns any horses (is account owner)
+  const [isOwner, setIsOwner] = useState(true);
+  const [fullName, setFullName] = useState("");
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [isSavingName, setIsSavingName] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,6 +39,17 @@ const Settings = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+
+      // Load user profile
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+      
+      if (profileData) {
+        setFullName(profileData.full_name);
+      }
 
       // Load horses owned by this user
       const { data: horsesData } = await supabase
@@ -121,6 +136,34 @@ const Settings = () => {
     toast.success("Guiden avslutad!");
   };
 
+  const handleSaveName = async () => {
+    if (!fullName.trim()) {
+      toast.error("Namnet kan inte vara tomt");
+      return;
+    }
+
+    setIsSavingName(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from("profiles")
+        .update({ full_name: fullName.trim() })
+        .eq("id", user.id);
+
+      if (error) throw error;
+
+      toast.success("Namn uppdaterat!");
+      setIsEditingName(false);
+    } catch (error: any) {
+      console.error("Error updating name:", error);
+      toast.error("Kunde inte uppdatera namn");
+    } finally {
+      setIsSavingName(false);
+    }
+  };
+
   if (!user) return null;
 
   return (
@@ -152,6 +195,47 @@ const Settings = () => {
               Konto
             </h2>
             <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Namn</label>
+                {isEditingName ? (
+                  <div className="flex gap-2 mt-1">
+                    <Input
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder="Ditt namn"
+                      className="flex-1"
+                    />
+                    <Button 
+                      onClick={handleSaveName} 
+                      disabled={isSavingName}
+                      size="sm"
+                    >
+                      {isSavingName ? "Sparar..." : "Spara"}
+                    </Button>
+                    <Button 
+                      onClick={() => {
+                        setIsEditingName(false);
+                        loadData();
+                      }} 
+                      variant="outline"
+                      size="sm"
+                    >
+                      Avbryt
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <p className="text-lg text-foreground">{fullName || "Inget namn angivet"}</p>
+                    <Button 
+                      onClick={() => setIsEditingName(true)} 
+                      variant="ghost" 
+                      size="sm"
+                    >
+                      Redigera
+                    </Button>
+                  </div>
+                )}
+              </div>
               <div>
                 <label className="text-sm font-medium text-muted-foreground">E-post</label>
                 <p className="text-lg text-foreground">{user.email}</p>
