@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Footer from "@/components/Footer";
 import heroHorse from "@/assets/hero-horse.jpg";
@@ -8,31 +8,22 @@ import { Heart, Calendar, FileText, Target, Award, Trophy, CheckCircle2, Sparkle
 import { StatsCard } from "@/components/StatsCard";
 import { ProgressRing } from "@/components/ProgressRing";
 import { Progress } from "@/components/ui/progress";
+import { LandingNav } from "@/components/LandingNav";
 
 const Index = () => {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen w-full bg-background">
+      <LandingNav />
+      
       {/* Hero Section */}
-      <section className="relative min-h-[600px] md:min-h-[700px] flex items-center">
+      <section id="hero" className="relative min-h-[600px] md:min-h-[700px] flex items-center pt-16 md:pt-20">
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${heroHorse})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/40" />
-        
-        {/* Login Button - Top Right */}
-        <div className="absolute top-4 right-4 md:top-6 md:right-6 z-20">
-          <Button 
-            onClick={() => navigate("/auth")}
-            size="sm"
-            variant="ghost"
-            className="bg-white/90 backdrop-blur-sm text-foreground hover:bg-white md:h-11 md:px-8"
-          >
-            Logga in
-          </Button>
-        </div>
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 py-20">
           <div className="max-w-3xl">
@@ -69,7 +60,7 @@ const Index = () => {
       </section>
 
       {/* Dashboard Preview Section */}
-      <section className="py-16 md:py-24 bg-muted/30">
+      <section id="dashboard" className="py-16 md:py-24 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
@@ -118,7 +109,7 @@ const Index = () => {
       </section>
 
       {/* Horse Profile Preview */}
-      <section className="py-16 md:py-24 bg-background">
+      <section id="horses" className="py-16 md:py-24 bg-background">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
@@ -254,7 +245,7 @@ const Index = () => {
       </section>
 
       {/* Goals Preview */}
-      <section className="py-16 md:py-24 bg-muted/30">
+      <section id="goals" className="py-16 md:py-24 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
@@ -296,7 +287,7 @@ const Index = () => {
       </section>
 
       {/* Features Highlight */}
-      <section className="py-16 md:py-24 bg-background">
+      <section id="features" className="py-16 md:py-24 bg-background">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
