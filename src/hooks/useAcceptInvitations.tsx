@@ -5,15 +5,18 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 export const useAcceptInvitations = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   
   useEffect(() => {
+    let isProcessing = false;
+    
     const acceptPendingInvitations = async () => {
+      // Prevent multiple simultaneous executions
+      if (isProcessing) return;
+      isProcessing = true;
+
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user?.email) return;
-
-        console.log("Checking for pending invitations for:", user.email);
 
         // Check for pending invitations
         const { data: pendingInvites, error: fetchError } = await supabase
@@ -24,45 +27,48 @@ export const useAcceptInvitations = () => {
 
         if (fetchError) {
           console.error("Error fetching invitations:", fetchError);
-          throw fetchError;
+          return;
         }
 
-        console.log("Pending invites found:", pendingInvites);
-
-        if (pendingInvites && pendingInvites.length > 0) {
-          // Accept all pending invitations
-          const { error: updateError } = await supabase
-            .from("shared_access")
-            .update({
-              collaborator_id: user.id,
-              status: "active",
-              accepted_at: new Date().toISOString()
-            })
-            .eq("collaborator_email", user.email.toLowerCase())
-            .eq("status", "pending");
-
-          if (updateError) {
-            console.error("Error updating invitations:", updateError);
-            throw updateError;
-          }
-
-          console.log("Invitations activated successfully");
-
-          toast.success(`Välkommen! Du har nu tillgång till ${pendingInvites.length} delad(e) konto(n).`, {
-            duration: 4000,
-          });
-          
-          // Only redirect if on auth page, otherwise just navigate to horses without reload
-          setTimeout(() => {
-            navigate("/horses", { replace: true });
-          }, 1000);
+        // Only process if there are actually pending invitations
+        if (!pendingInvites || pendingInvites.length === 0) {
+          return;
         }
+
+        console.log("Found pending invites, activating:", pendingInvites.length);
+
+        // Accept all pending invitations
+        const { error: updateError } = await supabase
+          .from("shared_access")
+          .update({
+            collaborator_id: user.id,
+            status: "active",
+            accepted_at: new Date().toISOString()
+          })
+          .eq("collaborator_email", user.email.toLowerCase())
+          .eq("status", "pending");
+
+        if (updateError) {
+          console.error("Error updating invitations:", updateError);
+          toast.error("Kunde inte aktivera inbjudningar");
+          return;
+        }
+
+        toast.success(`Välkommen! Du har nu tillgång till ${pendingInvites.length} delad(e) konto(n).`, {
+          duration: 4000,
+        });
+        
+        // Navigate to horses page to see shared data
+        setTimeout(() => {
+          navigate("/horses", { replace: true });
+        }, 1000);
       } catch (error) {
         console.error("Error accepting invitations:", error);
-        toast.error("Kunde inte aktivera inbjudningar");
+      } finally {
+        isProcessing = false;
       }
     };
 
     acceptPendingInvitations();
-  }, [navigate, location]);
+  }, []); // Only run once on mount
 };
