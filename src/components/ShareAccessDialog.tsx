@@ -26,6 +26,12 @@ export const ShareAccessDialog = ({ open, onOpenChange, horses, onSuccess }: Sha
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log("=== ShareAccessDialog Submit ===");
+    console.log("Email:", email);
+    console.log("Role:", role);
+    console.log("Access Type:", accessType);
+    console.log("Selected Horses:", selectedHorses);
+    
     if (!email.trim()) {
       toast.error("Ange en e-postadress");
       return;
@@ -40,22 +46,37 @@ export const ShareAccessDialog = ({ open, onOpenChange, horses, onSuccess }: Sha
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Inte inloggad");
+      if (!user) {
+        console.error("No user found");
+        throw new Error("Inte inloggad");
+      }
 
-      const { error } = await supabase
+      console.log("Current user ID:", user.id);
+
+      const insertData = {
+        owner_id: user.id,
+        collaborator_email: email.trim().toLowerCase(),
+        role,
+        access_type: accessType,
+        horse_ids: accessType === "specific_horses" ? selectedHorses : null,
+        status: "pending" as const
+      };
+
+      console.log("Inserting data:", insertData);
+
+      const { data, error } = await supabase
         .from("shared_access")
-        .insert({
-          owner_id: user.id,
-          collaborator_email: email.trim().toLowerCase(),
-          role,
-          access_type: accessType,
-          horse_ids: accessType === "specific_horses" ? selectedHorses : null,
-          status: "pending"
-        });
+        .insert([insertData])
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Insert error:", error);
+        throw error;
+      }
 
-      toast.success("Inbjudan skickad!");
+      console.log("Insert successful:", data);
+
+      toast.success("Inbjudan skickad! Personen får tillgång när de loggar in.");
       setEmail("");
       setRole("viewer");
       setAccessType("full_account");
