@@ -15,6 +15,7 @@ const Settings = () => {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [horses, setHorses] = useState<Array<{ id: string; name: string }>>([]);
   const [sharedAccess, setSharedAccess] = useState<any[]>([]);
+  const [isOwner, setIsOwner] = useState(true); // Track if user owns any horses (is account owner)
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,18 +33,27 @@ const Settings = () => {
 
   const loadData = async () => {
     try {
-      // Load horses
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Load horses owned by this user
       const { data: horsesData } = await supabase
         .from("horses")
-        .select("id, name")
+        .select("id, name, user_id")
         .order("name");
       
-      if (horsesData) setHorses(horsesData);
+      if (horsesData) {
+        setHorses(horsesData);
+        // Check if user owns any horses (is account owner)
+        const ownsHorses = horsesData.some(horse => horse.user_id === user.id);
+        setIsOwner(ownsHorses);
+      }
 
-      // Load shared access
+      // Load shared access (only owners can see this)
       const { data: sharedData } = await supabase
         .from("shared_access")
         .select("*")
+        .eq("owner_id", user.id)
         .order("invited_at", { ascending: false });
       
       if (sharedData) setSharedAccess(sharedData);
@@ -169,14 +179,24 @@ const Settings = () => {
                   <Sparkles className="w-4 h-4" />
                   Aktivera inbjudningar
                 </Button>
-                <Button onClick={() => setShowShareDialog(true)} className="gap-2 w-full sm:w-auto">
-                  <Users className="w-4 h-4" />
-                  Bjud in person
-                </Button>
+                {isOwner && (
+                  <Button onClick={() => setShowShareDialog(true)} className="gap-2 w-full sm:w-auto">
+                    <Users className="w-4 h-4" />
+                    Bjud in person
+                  </Button>
+                )}
               </div>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              Ge andra personer tillgång till dina hästar och data. Du kan dela hela kontot eller välja specifika hästar.
+              {isOwner ? (
+                <>
+                  Ge andra personer tillgång till dina hästar och data. Du kan dela hela kontot eller välja specifika hästar.
+                </>
+              ) : (
+                <>
+                  Du har blivit inbjuden till detta konto. Du kan se och hantera delad data baserat på de rättigheter du har fått.
+                </>
+              )}
               {user.email && (
                 <>
                   <br />
@@ -186,11 +206,13 @@ const Settings = () => {
                 </>
               )}
             </p>
-            <SharedAccessList
-              sharedAccess={sharedAccess}
-              horses={horses}
-              onUpdate={loadData}
-            />
+            {isOwner && (
+              <SharedAccessList
+                sharedAccess={sharedAccess}
+                horses={horses}
+                onUpdate={loadData}
+              />
+            )}
           </Card>
 
           {/* Help & Guide Section */}
