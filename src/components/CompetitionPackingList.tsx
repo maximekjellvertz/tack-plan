@@ -277,13 +277,13 @@ export const CompetitionPackingList = ({ competitionId }: CompetitionPackingList
           <CardTitle className="text-lg">Lägg till artiklar</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Copy from template button */}
-          {templates.length > 0 && items.length === 0 && (
+          {/* Copy from template button - always visible if templates exist */}
+          {templates.length > 0 && (
             <Dialog open={showTemplateDialog} onOpenChange={setShowTemplateDialog}>
               <DialogTrigger asChild>
                 <Button variant="outline" className="w-full gap-2">
                   <Copy className="w-4 h-4" />
-                  Använd befintlig packlista-mall
+                  Kopiera från packlista-mall
                 </Button>
               </DialogTrigger>
               <DialogContent>
