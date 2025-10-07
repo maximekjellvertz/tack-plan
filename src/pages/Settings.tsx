@@ -52,6 +52,56 @@ const Settings = () => {
     }
   };
 
+  const handleActivateInvitations = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user?.email) {
+        toast.error("Ingen användare inloggad");
+        return;
+      }
+
+      console.log("Manually checking for invitations for:", user.email);
+
+      // Check for pending invitations
+      const { data: pendingInvites, error: fetchError } = await supabase
+        .from("shared_access")
+        .select("*")
+        .eq("collaborator_email", user.email.toLowerCase())
+        .eq("status", "pending");
+
+      if (fetchError) throw fetchError;
+
+      console.log("Found pending invites:", pendingInvites);
+
+      if (!pendingInvites || pendingInvites.length === 0) {
+        toast.info("Inga väntande inbjudningar hittades");
+        return;
+      }
+
+      // Accept all pending invitations
+      const { error: updateError } = await supabase
+        .from("shared_access")
+        .update({
+          collaborator_id: user.id,
+          status: "active",
+          accepted_at: new Date().toISOString()
+        })
+        .eq("collaborator_email", user.email.toLowerCase())
+        .eq("status", "pending");
+
+      if (updateError) throw updateError;
+
+      toast.success(`${pendingInvites.length} inbjudan(ar) aktiverad(e)! Laddar om...`);
+      
+      setTimeout(() => {
+        window.location.href = "/horses";
+      }, 1500);
+    } catch (error: any) {
+      console.error("Error activating invitations:", error);
+      toast.error("Kunde inte aktivera inbjudningar: " + error.message);
+    }
+  };
+
   const handleRestartOnboarding = () => {
     setShowOnboarding(true);
   };
@@ -110,13 +160,31 @@ const Settings = () => {
                 <Users className="w-6 h-6 text-primary" />
                 Delad tillgång
               </h2>
-              <Button onClick={() => setShowShareDialog(true)} className="gap-2 w-full sm:w-auto">
-                <Users className="w-4 h-4" />
-                Bjud in person
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                <Button 
+                  onClick={handleActivateInvitations} 
+                  variant="outline" 
+                  className="gap-2 w-full sm:w-auto"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  Aktivera inbjudningar
+                </Button>
+                <Button onClick={() => setShowShareDialog(true)} className="gap-2 w-full sm:w-auto">
+                  <Users className="w-4 h-4" />
+                  Bjud in person
+                </Button>
+              </div>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
               Ge andra personer tillgång till dina hästar och data. Du kan dela hela kontot eller välja specifika hästar.
+              {user.email && (
+                <>
+                  <br />
+                  <span className="text-xs">
+                    Om du blivit inbjuden till ett annat konto, klicka på "Aktivera inbjudningar" för att få tillgång.
+                  </span>
+                </>
+              )}
             </p>
             <SharedAccessList
               sharedAccess={sharedAccess}
