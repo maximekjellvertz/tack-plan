@@ -10,7 +10,6 @@ import { DailyTipCard } from "@/components/DailyTipCard";
 import { TodaysScheduleCard } from "@/components/TodaysScheduleCard";
 import { useBadgeManager } from "@/hooks/useBadgeManager";
 import { OnboardingDialog } from "@/components/OnboardingDialog";
-import { useAcceptInvitations } from "@/hooks/useAcceptInvitations";
 import { useDashboardPreferences } from "@/hooks/useDashboardPreferences";
 import { DashboardCustomizeDialog } from "@/components/DashboardCustomizeDialog";
 
@@ -24,7 +23,6 @@ const Dashboard = () => {
     badges: 0,
   });
   const { checkBadges } = useBadgeManager(user?.id);
-  useAcceptInvitations();
   const [recentHealthLogs, setRecentHealthLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
