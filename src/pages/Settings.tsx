@@ -91,11 +91,11 @@ const Settings = () => {
 
       if (updateError) throw updateError;
 
-      toast.success(`${pendingInvites.length} inbjudan(ar) aktiverad(e)! Laddar om...`);
+      toast.success(`${pendingInvites.length} inbjudan(ar) aktiverad(e)!`);
       
       setTimeout(() => {
-        window.location.href = "/horses";
-      }, 1500);
+        navigate("/horses", { replace: true });
+      }, 1000);
     } catch (error: any) {
       console.error("Error activating invitations:", error);
       toast.error("Kunde inte aktivera inbjudningar: " + error.message);

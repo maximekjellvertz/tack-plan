@@ -52,17 +52,10 @@ export const useAcceptInvitations = () => {
             duration: 4000,
           });
           
-          // If on auth page, redirect to horses
-          if (location.pathname === "/auth" || location.pathname === "/") {
-            setTimeout(() => {
-              navigate("/horses");
-            }, 1000);
-          } else {
-            // Reload current page to show shared data
-            setTimeout(() => {
-              window.location.reload();
-            }, 1000);
-          }
+          // Only redirect if on auth page, otherwise just navigate to horses without reload
+          setTimeout(() => {
+            navigate("/horses", { replace: true });
+          }, 1000);
         }
       } catch (error) {
         console.error("Error accepting invitations:", error);
