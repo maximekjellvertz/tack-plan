@@ -9,6 +9,7 @@ import heroImage from "@/assets/hero-horse.jpg";
 import { DailyTipCard } from "@/components/DailyTipCard";
 import { useBadgeManager } from "@/hooks/useBadgeManager";
 import { OnboardingDialog } from "@/components/OnboardingDialog";
+import { useAcceptInvitations } from "@/hooks/useAcceptInvitations";
 
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
@@ -20,6 +21,7 @@ const Dashboard = () => {
     badges: 0,
   });
   const { checkBadges } = useBadgeManager(user?.id);
+  useAcceptInvitations();
   const [recentHealthLogs, setRecentHealthLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);

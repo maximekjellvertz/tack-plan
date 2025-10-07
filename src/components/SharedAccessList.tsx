@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Users, Trash2, Mail, CheckCircle, Clock, Eye, Edit, Shield } from "lucide-react";
+import { Mail, Shield, Trash2, Clock, CheckCircle2, XCircle } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,107 +27,76 @@ interface SharedAccess {
   accepted_at: string | null;
 }
 
-export const SharedAccessList = () => {
-  const [sharedAccess, setSharedAccess] = useState<SharedAccess[]>([]);
-  const [horses, setHorses] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(true);
+interface SharedAccessListProps {
+  sharedAccess: SharedAccess[];
+  horses: Array<{ id: string; name: string }>;
+  onUpdate: () => void;
+}
+
+export const SharedAccessList = ({ sharedAccess, horses, onUpdate }: SharedAccessListProps) => {
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const fetchSharedAccess = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+  const handleDelete = async () => {
+    if (!deleteId) return;
 
-      const { data, error } = await supabase
-        .from("shared_access")
-        .select("*")
-        .eq("owner_id", user.id)
-        .order("invited_at", { ascending: false });
-
-      if (error) throw error;
-      setSharedAccess(data || []);
-
-      // Fetch horse names
-      const { data: horsesData } = await supabase
-        .from("horses")
-        .select("id, name")
-        .eq("user_id", user.id);
-
-      if (horsesData) {
-        const horseMap = horsesData.reduce((acc, horse) => {
-          acc[horse.id] = horse.name;
-          return acc;
-        }, {} as Record<string, string>);
-        setHorses(horseMap);
-      }
-    } catch (error: any) {
-      console.error("Error fetching shared access:", error);
-      toast.error("Kunde inte hämta delningar");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchSharedAccess();
-  }, []);
-
-  const handleRevoke = async (id: string) => {
+    setIsDeleting(true);
     try {
       const { error } = await supabase
         .from("shared_access")
-        .update({ status: "revoked" })
-        .eq("id", id);
+        .delete()
+        .eq("id", deleteId);
 
       if (error) throw error;
-      toast.success("Tillgång återkallad");
-      fetchSharedAccess();
+
+      toast.success("Tillgång borttagen");
+      onUpdate();
+      setDeleteId(null);
     } catch (error: any) {
-      console.error("Error revoking access:", error);
-      toast.error("Kunde inte återkalla tillgång");
-    }
-    setDeleteId(null);
-  };
-
-  const getRoleIcon = (role: string) => {
-    switch (role) {
-      case "viewer": return <Eye className="w-4 h-4" />;
-      case "editor": return <Edit className="w-4 h-4" />;
-      case "manager": return <Shield className="w-4 h-4" />;
-      default: return null;
+      console.error("Error deleting access:", error);
+      toast.error("Kunde inte ta bort tillgång");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
-  const getRoleLabel = (role: string) => {
-    switch (role) {
-      case "viewer": return "Viewer";
-      case "editor": return "Editor";
-      case "manager": return "Manager";
-      default: return role;
+  const getRoleBadge = (role: string) => {
+    const variants: Record<string, { label: string; variant: "default" | "secondary" | "outline" }> = {
+      viewer: { label: "Viewer", variant: "secondary" },
+      editor: { label: "Editor", variant: "default" },
+      manager: { label: "Manager", variant: "outline" },
+    };
+    const config = variants[role] || variants.viewer;
+    return <Badge variant={config.variant}>{config.label}</Badge>;
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "pending":
+        return <Clock className="w-4 h-4 text-yellow-500" />;
+      case "active":
+        return <CheckCircle2 className="w-4 h-4 text-green-500" />;
+      case "revoked":
+        return <XCircle className="w-4 h-4 text-red-500" />;
+      default:
+        return null;
     }
   };
 
-  const getAccessDescription = (access: SharedAccess) => {
-    if (access.access_type === "full_account") {
-      return "Alla hästar";
-    }
-    if (access.horse_ids && access.horse_ids.length > 0) {
-      return access.horse_ids.map(id => horses[id] || "Okänd häst").join(", ");
-    }
-    return "Ingen häst vald";
+  const getHorseNames = (horseIds: string[] | null) => {
+    if (!horseIds || horseIds.length === 0) return null;
+    return horseIds
+      .map(id => horses.find(h => h.id === id)?.name)
+      .filter(Boolean)
+      .join(", ");
   };
-
-  if (loading) {
-    return <div className="text-center py-8 text-muted-foreground">Laddar...</div>;
-  }
 
   if (sharedAccess.length === 0) {
     return (
-      <Card className="p-8 text-center bg-gradient-to-br from-card to-muted/30">
-        <Users className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-        <h3 className="text-lg font-semibold mb-2">Ingen delad tillgång ännu</h3>
-        <p className="text-sm text-muted-foreground">
-          Klicka på "Dela tillgång" för att bjuda in personer till ditt konto
+      <Card className="p-8 text-center">
+        <Shield className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+        <p className="text-muted-foreground">
+          Du har inte delat tillgång med någon än
         </p>
       </Card>
     );
@@ -137,55 +106,47 @@ export const SharedAccessList = () => {
     <>
       <div className="space-y-3">
         {sharedAccess.map((access) => (
-          <Card key={access.id} className="p-4 bg-gradient-to-br from-card to-muted/20">
+          <Card key={access.id} className="p-4">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 space-y-2">
                 <div className="flex items-center gap-2">
                   <Mail className="w-4 h-4 text-muted-foreground" />
                   <span className="font-medium">{access.collaborator_email}</span>
-                  {access.status === "pending" && (
-                    <Badge variant="outline" className="gap-1">
-                      <Clock className="w-3 h-3" />
-                      Väntar
+                  {getStatusIcon(access.status)}
+                </div>
+                
+                <div className="flex flex-wrap gap-2 items-center text-sm">
+                  {getRoleBadge(access.role)}
+                  
+                  {access.access_type === "full_account" ? (
+                    <Badge variant="outline">Hela kontot</Badge>
+                  ) : (
+                    <Badge variant="outline">
+                      {access.horse_ids?.length || 0} häst(ar)
                     </Badge>
                   )}
-                  {access.status === "active" && (
-                    <Badge variant="outline" className="gap-1 border-green-500 text-green-600">
-                      <CheckCircle className="w-3 h-3" />
-                      Aktiv
-                    </Badge>
-                  )}
-                  {access.status === "revoked" && (
-                    <Badge variant="outline" className="gap-1 border-red-500 text-red-600">
-                      Återkallad
-                    </Badge>
-                  )}
+                  
+                  <span className="text-muted-foreground">
+                    {access.status === "pending" ? "Väntar på accept" : 
+                     access.status === "active" ? "Aktiv" : "Återkallad"}
+                  </span>
                 </div>
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    {getRoleIcon(access.role)}
-                    <span>{getRoleLabel(access.role)}</span>
-                  </div>
-                  <span>•</span>
-                  <span>{getAccessDescription(access)}</span>
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  Inbjuden {new Date(access.invited_at).toLocaleDateString("sv-SE")}
-                  {access.accepted_at && (
-                    <> • Accepterad {new Date(access.accepted_at).toLocaleDateString("sv-SE")}</>
-                  )}
-                </div>
+
+                {access.access_type === "specific_horses" && access.horse_ids && (
+                  <p className="text-xs text-muted-foreground">
+                    Hästar: {getHorseNames(access.horse_ids) || "Inga hästar valda"}
+                  </p>
+                )}
               </div>
-              {access.status !== "revoked" && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setDeleteId(access.id)}
-                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              )}
+
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setDeleteId(access.id)}
+                className="text-destructive hover:text-destructive"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
             </div>
           </Card>
         ))}
@@ -194,15 +155,20 @@ export const SharedAccessList = () => {
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Återkalla tillgång?</AlertDialogTitle>
+            <AlertDialogTitle>Ta bort tillgång?</AlertDialogTitle>
             <AlertDialogDescription>
-              Personen kommer inte längre kunna se eller redigera din data. Du kan bjuda in dem igen senare.
+              Denna person kommer inte längre att ha tillgång till dina hästar och data.
+              Denna åtgärd kan inte ångras.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Avbryt</AlertDialogCancel>
-            <AlertDialogAction onClick={() => deleteId && handleRevoke(deleteId)}>
-              Återkalla tillgång
+            <AlertDialogCancel disabled={isDeleting}>Avbryt</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? "Tar bort..." : "Ta bort"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
