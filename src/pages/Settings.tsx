@@ -191,19 +191,17 @@ const Settings = () => {
               {isOwner ? (
                 <>
                   Ge andra personer tillgång till dina hästar och data. Du kan dela hela kontot eller välja specifika hästar.
+                  {user.email && (
+                    <>
+                      <br />
+                      <span className="text-xs">
+                        Om du blivit inbjuden till ett annat konto, klicka på "Aktivera inbjudningar" för att få tillgång.
+                      </span>
+                    </>
+                  )}
                 </>
               ) : (
-                <>
-                  Du har blivit inbjuden till detta konto. Du kan se och hantera delad data baserat på de rättigheter du har fått.
-                </>
-              )}
-              {user.email && (
-                <>
-                  <br />
-                  <span className="text-xs">
-                    Om du blivit inbjuden till ett annat konto, klicka på "Aktivera inbjudningar" för att få tillgång.
-                  </span>
-                </>
+                "Du har tillgång till detta konto genom en delad inbjudan. Du kan se all delad data men inte bjuda in fler personer."
               )}
             </p>
             {isOwner && (
