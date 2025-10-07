@@ -164,14 +164,16 @@ const Dashboard = () => {
 
       {/* Daily Tip Banner */}
       {isWidgetVisible("daily_tip") && (
-        <section className="max-w-7xl mx-auto px-4 -mt-8 md:-mt-12 mb-4 relative z-20">
+        <section className="max-w-7xl mx-auto px-4 -mt-10 md:-mt-14 mb-6 md:mb-8 relative z-20">
           <DailyTipBanner />
         </section>
       )}
 
       {/* Quick Stats */}
       {isWidgetVisible("quick_stats") && (
-      <section className="max-w-7xl mx-auto px-4 -mt-4 md:-mt-6 relative z-10">
+      <section className="max-w-7xl mx-auto px-4 relative z-10"
+        style={{ marginTop: isWidgetVisible("daily_tip") ? "0" : "-3rem" }}
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
           <Link to="/horses" className="block">
             <Card className="p-4 md:p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "0ms" }}>
