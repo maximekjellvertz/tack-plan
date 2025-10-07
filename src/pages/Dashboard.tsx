@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-horse.jpg";
 import { DailyTipCard } from "@/components/DailyTipCard";
+import { TodaysScheduleCard } from "@/components/TodaysScheduleCard";
 import { useBadgeManager } from "@/hooks/useBadgeManager";
 import { OnboardingDialog } from "@/components/OnboardingDialog";
 import { useAcceptInvitations } from "@/hooks/useAcceptInvitations";
@@ -231,6 +232,13 @@ const Dashboard = () => {
       {/* Main Content */}
       <section className="max-w-7xl mx-auto px-4 py-8 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          {/* Todays Schedule */}
+          {isWidgetVisible("todays_schedule") && (
+          <div>
+            <TodaysScheduleCard />
+          </div>
+          )}
+          
           {/* Daily Tip */}
           {isWidgetVisible("daily_tip") && (
           <div>

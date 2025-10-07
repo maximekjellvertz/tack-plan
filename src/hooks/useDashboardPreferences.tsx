@@ -17,6 +17,12 @@ const DEFAULT_WIDGETS: DashboardWidget[] = [
     isVisible: true,
   },
   {
+    id: "todays_schedule",
+    label: "Dagens schema",
+    description: "Visar dagens planerade aktiviteter från kalendern",
+    isVisible: true,
+  },
+  {
     id: "daily_tip",
     label: "Dagens tips",
     description: "Daglig inspiration och tips",
