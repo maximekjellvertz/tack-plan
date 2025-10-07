@@ -12,12 +12,14 @@ import heroImage from "@/assets/hero-horse.jpg";
 const authSchema = z.object({
   email: z.string().trim().email({ message: "Ogiltig e-postadress" }),
   password: z.string().min(6, { message: "Lösenordet måste vara minst 6 tecken" }),
+  fullName: z.string().trim().min(2, { message: "Namnet måste vara minst 2 tecken" }).optional(),
 });
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -26,7 +28,11 @@ const Auth = () => {
     e.preventDefault();
     
     try {
-      const validation = authSchema.safeParse({ email, password });
+      const validation = authSchema.safeParse({ 
+        email, 
+        password, 
+        fullName: isLogin ? undefined : fullName 
+      });
       if (!validation.success) {
         toast({
           title: "Ogiltiga uppgifter",
@@ -64,6 +70,9 @@ const Auth = () => {
           password,
           options: {
             emailRedirectTo: `${window.location.origin}/`,
+            data: {
+              full_name: fullName,
+            },
           },
         });
 
@@ -132,6 +141,20 @@ const Auth = () => {
             </h2>
 
             <form onSubmit={handleAuth} className="space-y-4">
+              {!isLogin && (
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">Namn</Label>
+                  <Input
+                    id="fullName"
+                    type="text"
+                    placeholder="Ditt namn"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    required
+                  />
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="email">E-post</Label>
                 <Input

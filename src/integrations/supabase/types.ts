@@ -99,6 +99,7 @@ export type Database = {
           accommodation_info: string | null
           classes: Json | null
           created_at: string
+          created_by_name: string | null
           date: string
           discipline: string
           email: string | null
@@ -118,6 +119,7 @@ export type Database = {
           travel_departure_time: string | null
           travel_notes: string | null
           updated_at: string
+          updated_by_name: string | null
           user_id: string
           venue_map_url: string | null
           website: string | null
@@ -126,6 +128,7 @@ export type Database = {
           accommodation_info?: string | null
           classes?: Json | null
           created_at?: string
+          created_by_name?: string | null
           date: string
           discipline: string
           email?: string | null
@@ -145,6 +148,7 @@ export type Database = {
           travel_departure_time?: string | null
           travel_notes?: string | null
           updated_at?: string
+          updated_by_name?: string | null
           user_id: string
           venue_map_url?: string | null
           website?: string | null
@@ -153,6 +157,7 @@ export type Database = {
           accommodation_info?: string | null
           classes?: Json | null
           created_at?: string
+          created_by_name?: string | null
           date?: string
           discipline?: string
           email?: string | null
@@ -172,6 +177,7 @@ export type Database = {
           travel_departure_time?: string | null
           travel_notes?: string | null
           updated_at?: string
+          updated_by_name?: string | null
           user_id?: string
           venue_map_url?: string | null
           website?: string | null
@@ -190,6 +196,7 @@ export type Database = {
         Row: {
           activity_type: string
           created_at: string
+          created_by_name: string | null
           date: string
           duration: number | null
           horse_id: string
@@ -198,11 +205,13 @@ export type Database = {
           notes: string | null
           time: string
           updated_at: string
+          updated_by_name: string | null
           user_id: string
         }
         Insert: {
           activity_type: string
           created_at?: string
+          created_by_name?: string | null
           date: string
           duration?: number | null
           horse_id: string
@@ -211,11 +220,13 @@ export type Database = {
           notes?: string | null
           time: string
           updated_at?: string
+          updated_by_name?: string | null
           user_id: string
         }
         Update: {
           activity_type?: string
           created_at?: string
+          created_by_name?: string | null
           date?: string
           duration?: number | null
           horse_id?: string
@@ -224,6 +235,7 @@ export type Database = {
           notes?: string | null
           time?: string
           updated_at?: string
+          updated_by_name?: string | null
           user_id?: string
         }
         Relationships: []
@@ -263,6 +275,7 @@ export type Database = {
           auto_calculate: boolean
           completed_at: string | null
           created_at: string
+          created_by_name: string | null
           description: string | null
           goal_type: string
           horse_id: string | null
@@ -272,12 +285,14 @@ export type Database = {
           target_date: string | null
           title: string
           updated_at: string
+          updated_by_name: string | null
           user_id: string
         }
         Insert: {
           auto_calculate?: boolean
           completed_at?: string | null
           created_at?: string
+          created_by_name?: string | null
           description?: string | null
           goal_type?: string
           horse_id?: string | null
@@ -287,12 +302,14 @@ export type Database = {
           target_date?: string | null
           title: string
           updated_at?: string
+          updated_by_name?: string | null
           user_id: string
         }
         Update: {
           auto_calculate?: boolean
           completed_at?: string | null
           created_at?: string
+          created_by_name?: string | null
           description?: string | null
           goal_type?: string
           horse_id?: string | null
@@ -302,6 +319,7 @@ export type Database = {
           target_date?: string | null
           title?: string
           updated_at?: string
+          updated_by_name?: string | null
           user_id?: string
         }
         Relationships: [
@@ -317,6 +335,7 @@ export type Database = {
       health_logs: {
         Row: {
           created_at: string
+          created_by_name: string | null
           event: string
           horse_id: string | null
           horse_name: string
@@ -327,10 +346,12 @@ export type Database = {
           status: string
           treatment: string
           updated_at: string
+          updated_by_name: string | null
           user_id: string
         }
         Insert: {
           created_at?: string
+          created_by_name?: string | null
           event: string
           horse_id?: string | null
           horse_name: string
@@ -341,10 +362,12 @@ export type Database = {
           status?: string
           treatment: string
           updated_at?: string
+          updated_by_name?: string | null
           user_id: string
         }
         Update: {
           created_at?: string
+          created_by_name?: string | null
           event?: string
           horse_id?: string | null
           horse_name?: string
@@ -355,6 +378,7 @@ export type Database = {
           status?: string
           treatment?: string
           updated_at?: string
+          updated_by_name?: string | null
           user_id?: string
         }
         Relationships: [
@@ -571,10 +595,32 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          created_at: string
+          full_name: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          full_name: string
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       reminders: {
         Row: {
           completed: boolean
           created_at: string
+          created_by_name: string | null
           date: string
           description: string | null
           horse_id: string | null
@@ -584,11 +630,13 @@ export type Database = {
           title: string
           type: string
           updated_at: string
+          updated_by_name: string | null
           user_id: string
         }
         Insert: {
           completed?: boolean
           created_at?: string
+          created_by_name?: string | null
           date: string
           description?: string | null
           horse_id?: string | null
@@ -598,11 +646,13 @@ export type Database = {
           title: string
           type?: string
           updated_at?: string
+          updated_by_name?: string | null
           user_id: string
         }
         Update: {
           completed?: boolean
           created_at?: string
+          created_by_name?: string | null
           date?: string
           description?: string | null
           horse_id?: string | null
@@ -612,6 +662,7 @@ export type Database = {
           title?: string
           type?: string
           updated_at?: string
+          updated_by_name?: string | null
           user_id?: string
         }
         Relationships: [
@@ -732,6 +783,7 @@ export type Database = {
       training_sessions: {
         Row: {
           created_at: string
+          created_by_name: string | null
           date: string
           duration: string | null
           horse_id: string
@@ -741,10 +793,12 @@ export type Database = {
           notes: string | null
           type: string
           updated_at: string
+          updated_by_name: string | null
           user_id: string
         }
         Insert: {
           created_at?: string
+          created_by_name?: string | null
           date: string
           duration?: string | null
           horse_id: string
@@ -754,10 +808,12 @@ export type Database = {
           notes?: string | null
           type: string
           updated_at?: string
+          updated_by_name?: string | null
           user_id: string
         }
         Update: {
           created_at?: string
+          created_by_name?: string | null
           date?: string
           duration?: string | null
           horse_id?: string
@@ -767,6 +823,7 @@ export type Database = {
           notes?: string | null
           type?: string
           updated_at?: string
+          updated_by_name?: string | null
           user_id?: string
         }
         Relationships: []

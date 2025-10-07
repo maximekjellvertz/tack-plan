@@ -108,6 +108,13 @@ export const AddHealthLogDialog = ({ onLogAdded }: AddHealthLogDialogProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Get user's full name
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+
       const selectedHorse = horses.find(h => h.id === formData.horse);
       if (!selectedHorse) return;
 
@@ -121,6 +128,7 @@ export const AddHealthLogDialog = ({ onLogAdded }: AddHealthLogDialogProps) => {
         notes: formData.notes,
         images: images.length > 0 ? images : [],
         status: "Pågående",
+        created_by_name: profile?.full_name || "Okänd användare",
       });
 
       if (error) throw error;

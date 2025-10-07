@@ -22,6 +22,8 @@ interface HealthLog {
   treatment: string;
   notes: string | null;
   images: any;
+  created_by_name?: string;
+  updated_by_name?: string;
 }
 
 interface HorseHealthTabProps {
@@ -159,6 +161,11 @@ export const HorseHealthTab = ({
                       <p className="text-muted-foreground">
                         <strong>Behandling:</strong> {log.treatment}
                       </p>
+                      {log.created_by_name && (
+                        <p className="text-xs text-muted-foreground">
+                          Skapad av: {log.created_by_name}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
