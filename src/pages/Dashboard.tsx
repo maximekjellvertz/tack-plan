@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-horse.jpg";
 import { DailyTipCard } from "@/components/DailyTipCard";
+import { DailyTipBanner } from "@/components/DailyTipBanner";
 import { TodaysScheduleCard } from "@/components/TodaysScheduleCard";
 import { useBadgeManager } from "@/hooks/useBadgeManager";
 import { OnboardingDialog } from "@/components/OnboardingDialog";
@@ -161,6 +162,13 @@ const Dashboard = () => {
         </div>
       </section>
 
+      {/* Daily Tip Banner */}
+      {isWidgetVisible("daily_tip") && (
+        <section className="max-w-7xl mx-auto px-4 -mt-8 md:-mt-12 relative z-10 mb-4 md:mb-6">
+          <DailyTipBanner />
+        </section>
+      )}
+
       {/* Quick Stats */}
       {isWidgetVisible("quick_stats") && (
       <section className="max-w-7xl mx-auto px-4 -mt-12 md:-mt-16 relative z-10">
@@ -236,13 +244,6 @@ const Dashboard = () => {
           {isWidgetVisible("todays_schedule") && (
           <div>
             <TodaysScheduleCard />
-          </div>
-          )}
-          
-          {/* Daily Tip */}
-          {isWidgetVisible("daily_tip") && (
-          <div>
-            <DailyTipCard />
           </div>
           )}
 
