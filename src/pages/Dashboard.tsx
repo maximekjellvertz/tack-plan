@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Heart, FileText, Bell, TrendingUp, Award } from "lucide-react";
+import { Calendar, Heart, FileText, Bell, TrendingUp, Award, Settings } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,6 +10,8 @@ import { DailyTipCard } from "@/components/DailyTipCard";
 import { useBadgeManager } from "@/hooks/useBadgeManager";
 import { OnboardingDialog } from "@/components/OnboardingDialog";
 import { useAcceptInvitations } from "@/hooks/useAcceptInvitations";
+import { useDashboardPreferences } from "@/hooks/useDashboardPreferences";
+import { DashboardCustomizeDialog } from "@/components/DashboardCustomizeDialog";
 
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
@@ -25,7 +27,9 @@ const Dashboard = () => {
   const [recentHealthLogs, setRecentHealthLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showCustomize, setShowCustomize] = useState(false);
   const navigate = useNavigate();
+  const { widgets, loading: prefsLoading, updatePreference, isWidgetVisible } = useDashboardPreferences(user?.id);
 
   useEffect(() => {
     checkUser();
@@ -108,6 +112,12 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <OnboardingDialog open={showOnboarding} onComplete={handleOnboardingComplete} />
+      <DashboardCustomizeDialog
+        open={showCustomize}
+        onOpenChange={setShowCustomize}
+        widgets={widgets}
+        onToggleWidget={updatePreference}
+      />
       
       {/* Hero Section */}
       <section className="relative h-[300px] md:h-[400px] overflow-hidden">
@@ -130,16 +140,28 @@ const Dashboard = () => {
             <p className="text-sm md:text-lg text-white/80 mb-6 md:mb-8 drop-shadow-md">
               Här är en översikt av dina hästar och aktiviteter
             </p>
-            <Link to="/horses">
-              <Button size="default" className="md:h-11 md:px-8 bg-primary hover:bg-primary/90">
-                Gå till mina hästar
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link to="/horses">
+                <Button size="default" className="md:h-11 md:px-8 bg-primary hover:bg-primary/90">
+                  Gå till mina hästar
+                </Button>
+              </Link>
+              <Button
+                size="default"
+                variant="outline"
+                className="md:h-11 md:px-8 bg-background/80 backdrop-blur"
+                onClick={() => setShowCustomize(true)}
+              >
+                <Settings className="w-4 h-4 mr-2" />
+                Anpassa Dashboard
               </Button>
-            </Link>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Quick Stats */}
+      {isWidgetVisible("quick_stats") && (
       <section className="max-w-7xl mx-auto px-4 -mt-12 md:-mt-16 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
           <Link to="/horses" className="block">
@@ -204,16 +226,20 @@ const Dashboard = () => {
           </Link>
         </div>
       </section>
+      )}
 
       {/* Main Content */}
       <section className="max-w-7xl mx-auto px-4 py-8 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Daily Tip */}
+          {isWidgetVisible("daily_tip") && (
           <div>
             <DailyTipCard />
           </div>
+          )}
 
           {/* Recent Health Logs */}
+          {isWidgetVisible("recent_health_logs") && (
           <div>
             <Card className="p-6 bg-gradient-to-br from-card to-muted/30 hover-scale animate-fade-in h-full">
             <div className="flex items-center justify-between mb-6">
@@ -261,10 +287,12 @@ const Dashboard = () => {
             </div>
             </Card>
           </div>
+          )}
         </div>
       </section>
 
       {/* Features Section */}
+      {isWidgetVisible("features_section") && (
       <section className="bg-muted/50 py-16">
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-foreground mb-12">
@@ -301,6 +329,7 @@ const Dashboard = () => {
           </div>
         </div>
       </section>
+      )}
     </div>
   );
 };
