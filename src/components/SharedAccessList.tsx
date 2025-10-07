@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Mail, Shield, Trash2, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { Mail, Shield, Trash2, Clock, CheckCircle2, XCircle, Edit } from "lucide-react";
+import { EditSharedAccessDialog } from "./EditSharedAccessDialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,6 +37,7 @@ interface SharedAccessListProps {
 export const SharedAccessList = ({ sharedAccess, horses, onUpdate }: SharedAccessListProps) => {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [editAccess, setEditAccess] = useState<SharedAccess | null>(null);
 
   const handleDelete = async () => {
     if (!deleteId) return;
@@ -104,6 +106,14 @@ export const SharedAccessList = ({ sharedAccess, horses, onUpdate }: SharedAcces
 
   return (
     <>
+      <EditSharedAccessDialog
+        open={!!editAccess}
+        onOpenChange={(open) => !open && setEditAccess(null)}
+        horses={horses}
+        sharedAccess={editAccess}
+        onSuccess={onUpdate}
+      />
+      
       <div className="space-y-3">
         {sharedAccess.map((access) => (
           <Card key={access.id} className="p-4">
@@ -139,14 +149,24 @@ export const SharedAccessList = ({ sharedAccess, horses, onUpdate }: SharedAcces
                 )}
               </div>
 
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setDeleteId(access.id)}
-                className="text-destructive hover:text-destructive"
-              >
-                <Trash2 className="w-4 h-4" />
-              </Button>
+              <div className="flex gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setEditAccess(access)}
+                  className="text-primary hover:text-primary"
+                >
+                  <Edit className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setDeleteId(access.id)}
+                  className="text-destructive hover:text-destructive"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </Card>
         ))}
