@@ -9,7 +9,6 @@ import { GoalCard } from "@/components/GoalCard";
 import { AddGoalDialog } from "@/components/AddGoalDialog";
 import { Loader2 } from "lucide-react";
 import { useBadgeManager } from "@/hooks/useBadgeManager";
-import { PreviewGoalCard } from "@/components/PreviewGoalCard";
 
 interface Goal {
   id: string;
@@ -349,46 +348,38 @@ const Goals = () => {
 
           <TabsContent value="active" className="mt-6">
             {activeGoals.length === 0 ? (
-              <div className="space-y-8">
-                <Card className="p-12 text-center animate-fade-in bg-gradient-to-br from-background to-muted/30 border-2 border-dashed">
-                  <div className="relative inline-block mb-6">
-                    <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse" />
-                    <div className="relative flex items-center justify-center">
-                      <Target className="w-16 h-16 text-primary" />
-                      <Sparkles className="w-8 h-8 text-primary absolute -top-2 -right-2 animate-pulse" />
-                    </div>
+              <Card className="p-12 text-center animate-fade-in bg-gradient-to-br from-background to-muted/30 border-2 border-dashed">
+                <div className="relative inline-block mb-6">
+                  <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full animate-pulse" />
+                  <div className="relative flex items-center justify-center">
+                    <Target className="w-16 h-16 text-primary" />
+                    <Sparkles className="w-8 h-8 text-primary absolute -top-2 -right-2 animate-pulse" />
                   </div>
-                  <h3 className="text-2xl font-bold mb-3">Sätt ditt första mål!</h3>
-                  <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                    {selectedHorse === "all" 
-                      ? "Välj en häst för att börja sätta inspirerande mål"
-                      : "Skapa mål och följ din hästs utveckling mot nya framgångar"
-                    }
-                  </p>
-                  {selectedHorse !== "all" && (
-                    <div className="space-y-3 text-left max-w-sm mx-auto mb-6">
-                      <div className="flex items-start gap-3">
-                        <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                        <p className="text-sm text-muted-foreground">Följ framsteg mot tävlingar och milstolpar</p>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                        <p className="text-sm text-muted-foreground">Få automatiska uppdateringar baserat på träning</p>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-                        <p className="text-sm text-muted-foreground">Fira varje framgång med din häst</p>
-                      </div>
-                    </div>
-                  )}
-                </Card>
-                
+                </div>
+                <h3 className="text-2xl font-bold mb-3">Sätt ditt första mål!</h3>
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                  {selectedHorse === "all" 
+                    ? "Välj en häst för att börja sätta inspirerande mål"
+                    : "Skapa mål och följ din hästs utveckling mot nya framgångar"
+                  }
+                </p>
                 {selectedHorse !== "all" && (
-                  <div className="space-y-4">
-                    <PreviewGoalCard />
+                  <div className="space-y-3 text-left max-w-sm mx-auto mb-6">
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                      <p className="text-sm text-muted-foreground">Följ framsteg mot tävlingar och milstolpar</p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                      <p className="text-sm text-muted-foreground">Få automatiska uppdateringar baserat på träning</p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                      <p className="text-sm text-muted-foreground">Fira varje framgång med din häst</p>
+                    </div>
                   </div>
                 )}
-              </div>
+              </Card>
             ) : (
               <div className="space-y-4">
                 {activeGoals.map((goal, index) => (
