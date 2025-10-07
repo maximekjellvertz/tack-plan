@@ -12,6 +12,7 @@ import { useBadgeManager } from "@/hooks/useBadgeManager";
 import { OnboardingDialog } from "@/components/OnboardingDialog";
 import { useDashboardPreferences } from "@/hooks/useDashboardPreferences";
 import { DashboardCustomizeDialog } from "@/components/DashboardCustomizeDialog";
+import { PreviewStatsCards } from "@/components/PreviewStatsCards";
 
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
@@ -162,68 +163,74 @@ const Dashboard = () => {
       {/* Quick Stats */}
       {isWidgetVisible("quick_stats") && (
       <section className="max-w-7xl mx-auto px-4 -mt-12 md:-mt-16 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-          <Link to="/horses" className="block">
-            <Card className="p-4 md:p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "0ms" }}>
-              <Heart className="w-6 h-6 md:w-8 md:h-8 text-primary mb-2 md:mb-3 transition-transform group-hover:scale-110" />
-              <h3 className="text-2xl md:text-3xl font-bold text-foreground transition-all group-hover:text-primary">
-                {loading ? "..." : stats.horses}
-              </h3>
-              <p className="text-muted-foreground">Hästar</p>
-              <div className="mt-2 h-1 bg-primary/20 rounded-full overflow-hidden">
-                <div className="h-full bg-primary rounded-full w-full animate-pulse" />
-              </div>
-            </Card>
-          </Link>
-          <Link to="/competitions" className="block">
-            <Card className="p-4 md:p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "100ms" }}>
-              <Calendar className="w-6 h-6 md:w-8 md:h-8 text-secondary mb-2 md:mb-3 transition-transform group-hover:scale-110" />
-              <h3 className="text-2xl md:text-3xl font-bold text-foreground transition-all group-hover:text-secondary">
-                {loading ? "..." : stats.competitions}
-              </h3>
-              <p className="text-muted-foreground">Kommande tävlingar</p>
-              <div className="mt-2 h-1 bg-secondary/20 rounded-full overflow-hidden">
-                <div className="h-full bg-secondary rounded-full w-full animate-pulse" />
-              </div>
-            </Card>
-          </Link>
-          <Link to="/health-log" className="block">
-            <Card className="p-4 md:p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "200ms" }}>
-              <FileText className="w-6 h-6 md:w-8 md:h-8 text-accent mb-2 md:mb-3 transition-transform group-hover:scale-110" />
-              <h3 className="text-2xl md:text-3xl font-bold text-foreground transition-all group-hover:text-accent">
-                {loading ? "..." : stats.healthLogs}
-              </h3>
-              <p className="text-muted-foreground">Loggade händelser</p>
-              <div className="mt-2 h-1 bg-accent/20 rounded-full overflow-hidden">
-                <div className="h-full bg-accent rounded-full w-full animate-pulse" />
-              </div>
-            </Card>
-          </Link>
-          <Link to="/badges" className="block">
-            <Card className="p-4 md:p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "300ms" }}>
-              <Award className="w-6 h-6 md:w-8 md:h-8 text-primary mb-2 md:mb-3 transition-transform group-hover:scale-110" />
-              <h3 className="text-2xl md:text-3xl font-bold text-foreground transition-all group-hover:text-primary">
-                {loading ? "..." : stats.badges}
-              </h3>
-              <p className="text-muted-foreground">Tjänade badges</p>
-              <div className="mt-2 h-1 bg-primary/20 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-primary to-secondary rounded-full w-full animate-pulse" />
-              </div>
-            </Card>
-          </Link>
-          <Link to="/reminders" className="block">
-            <Card className="p-4 md:p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "400ms" }}>
-              <Bell className="w-6 h-6 md:w-8 md:h-8 text-primary mb-2 md:mb-3 transition-transform group-hover:scale-110" />
-              <h3 className="text-2xl md:text-3xl font-bold text-foreground transition-all group-hover:text-primary">
-                {loading ? "..." : stats.reminders}
-              </h3>
-              <p className="text-muted-foreground">Aktiva påminnelser</p>
-              <div className="mt-2 h-1 bg-primary/20 rounded-full overflow-hidden">
-                <div className="h-full bg-primary rounded-full w-full animate-pulse" />
-              </div>
-            </Card>
-          </Link>
-        </div>
+        {stats.horses === 0 && stats.competitions === 0 && stats.healthLogs === 0 && stats.badges === 0 ? (
+          <div className="space-y-4">
+            <PreviewStatsCards />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+            <Link to="/horses" className="block">
+              <Card className="p-4 md:p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "0ms" }}>
+                <Heart className="w-6 h-6 md:w-8 md:h-8 text-primary mb-2 md:mb-3 transition-transform group-hover:scale-110" />
+                <h3 className="text-2xl md:text-3xl font-bold text-foreground transition-all group-hover:text-primary">
+                  {loading ? "..." : stats.horses}
+                </h3>
+                <p className="text-muted-foreground">Hästar</p>
+                <div className="mt-2 h-1 bg-primary/20 rounded-full overflow-hidden">
+                  <div className="h-full bg-primary rounded-full w-full animate-pulse" />
+                </div>
+              </Card>
+            </Link>
+            <Link to="/competitions" className="block">
+              <Card className="p-4 md:p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "100ms" }}>
+                <Calendar className="w-6 h-6 md:w-8 md:h-8 text-secondary mb-2 md:mb-3 transition-transform group-hover:scale-110" />
+                <h3 className="text-2xl md:text-3xl font-bold text-foreground transition-all group-hover:text-secondary">
+                  {loading ? "..." : stats.competitions}
+                </h3>
+                <p className="text-muted-foreground">Kommande tävlingar</p>
+                <div className="mt-2 h-1 bg-secondary/20 rounded-full overflow-hidden">
+                  <div className="h-full bg-secondary rounded-full w-full animate-pulse" />
+                </div>
+              </Card>
+            </Link>
+            <Link to="/health-log" className="block">
+              <Card className="p-4 md:p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "200ms" }}>
+                <FileText className="w-6 h-6 md:w-8 md:h-8 text-accent mb-2 md:mb-3 transition-transform group-hover:scale-110" />
+                <h3 className="text-2xl md:text-3xl font-bold text-foreground transition-all group-hover:text-accent">
+                  {loading ? "..." : stats.healthLogs}
+                </h3>
+                <p className="text-muted-foreground">Loggade händelser</p>
+                <div className="mt-2 h-1 bg-accent/20 rounded-full overflow-hidden">
+                  <div className="h-full bg-accent rounded-full w-full animate-pulse" />
+                </div>
+              </Card>
+            </Link>
+            <Link to="/badges" className="block">
+              <Card className="p-4 md:p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "300ms" }}>
+                <Award className="w-6 h-6 md:w-8 md:h-8 text-primary mb-2 md:mb-3 transition-transform group-hover:scale-110" />
+                <h3 className="text-2xl md:text-3xl font-bold text-foreground transition-all group-hover:text-primary">
+                  {loading ? "..." : stats.badges}
+                </h3>
+                <p className="text-muted-foreground">Tjänade badges</p>
+                <div className="mt-2 h-1 bg-primary/20 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-primary to-secondary rounded-full w-full animate-pulse" />
+                </div>
+              </Card>
+            </Link>
+            <Link to="/reminders" className="block">
+              <Card className="p-4 md:p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "400ms" }}>
+                <Bell className="w-6 h-6 md:w-8 md:h-8 text-primary mb-2 md:mb-3 transition-transform group-hover:scale-110" />
+                <h3 className="text-2xl md:text-3xl font-bold text-foreground transition-all group-hover:text-primary">
+                  {loading ? "..." : stats.reminders}
+                </h3>
+                <p className="text-muted-foreground">Aktiva påminnelser</p>
+                <div className="mt-2 h-1 bg-primary/20 rounded-full overflow-hidden">
+                  <div className="h-full bg-primary rounded-full w-full animate-pulse" />
+                </div>
+              </Card>
+            </Link>
+          </div>
+        )}
       </section>
       )}
 

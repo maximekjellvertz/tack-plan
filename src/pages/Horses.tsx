@@ -7,6 +7,7 @@ import { AddHorseDialog } from "@/components/AddHorseDialog";
 import { EditHorseDialog } from "@/components/EditHorseDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { ProgressRing } from "@/components/ProgressRing";
+import { PreviewHorseCard } from "@/components/PreviewHorseCard";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -173,13 +174,20 @@ const Horses = () => {
         </div>
 
         {horses.length === 0 ? (
-          <div className="text-center py-12">
-            <Heart className="mx-auto h-24 w-24 text-muted-foreground/40 mb-4" />
-            <h3 className="text-2xl font-semibold text-foreground mb-2">Inga hästar än</h3>
-            <p className="text-muted-foreground mb-6">
-              Lägg till din första häst för att komma igång
-            </p>
-            <AddHorseDialog onHorseAdded={fetchHorses} />
+          <div className="space-y-8">
+            <div className="text-center py-12">
+              <Heart className="mx-auto h-24 w-24 text-muted-foreground/40 mb-4" />
+              <h3 className="text-2xl font-semibold text-foreground mb-2">Inga hästar än</h3>
+              <p className="text-muted-foreground mb-6">
+                Lägg till din första häst för att komma igång
+              </p>
+              <AddHorseDialog onHorseAdded={fetchHorses} />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <PreviewHorseCard />
+              <PreviewHorseCard />
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
