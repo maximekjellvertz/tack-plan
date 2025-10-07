@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Trophy, Users, Clock, Phone, Mail, Globe } from "lucide-react";
+import { Calendar, MapPin, Trophy, Users, Clock, Phone, Mail, Globe, Info, Package } from "lucide-react";
+import { CompetitionPackingList } from "./CompetitionPackingList";
 
 interface Competition {
   id: string | number;
@@ -47,7 +49,7 @@ export const CompetitionDetailsDialog = ({
           </Button>
         </DialogTrigger>
       )}
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
             <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -67,107 +69,123 @@ export const CompetitionDetailsDialog = ({
           </div>
         </DialogHeader>
 
-        <div className="space-y-6 mt-4">
-          {/* Grundläggande information */}
-          <div className="space-y-3">
-            <h3 className="font-semibold text-lg">Grundläggande information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center gap-3">
-                <Calendar className="w-5 h-5 text-primary" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Datum</p>
-                  <p className="font-medium">{competition.date}</p>
-                </div>
-              </div>
-              {competition.time && (
+        <Tabs defaultValue="info" className="mt-4">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="info" className="gap-2">
+              <Info className="w-4 h-4" />
+              Information
+            </TabsTrigger>
+            <TabsTrigger value="packing" className="gap-2">
+              <Package className="w-4 h-4" />
+              Packlista
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="info" className="space-y-6 mt-4">
+            {/* Grundläggande information */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-lg">Grundläggande information</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="flex items-center gap-3">
-                  <Clock className="w-5 h-5 text-primary" />
+                  <Calendar className="w-5 h-5 text-primary" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Tid</p>
-                    <p className="font-medium">{competition.time}</p>
+                    <p className="text-sm text-muted-foreground">Datum</p>
+                    <p className="font-medium">{competition.date}</p>
                   </div>
                 </div>
-              )}
-              <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-primary" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Plats</p>
-                  <p className="font-medium">{competition.location}</p>
-                  {competition.district && (
-                    <p className="text-sm text-muted-foreground">{competition.district}</p>
+                {competition.time && (
+                  <div className="flex items-center gap-3">
+                    <Clock className="w-5 h-5 text-primary" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Tid</p>
+                      <p className="font-medium">{competition.time}</p>
+                    </div>
+                  </div>
+                )}
+                <div className="flex items-center gap-3">
+                  <MapPin className="w-5 h-5 text-primary" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Plats</p>
+                    <p className="font-medium">{competition.location}</p>
+                    {competition.district && (
+                      <p className="text-sm text-muted-foreground">{competition.district}</p>
+                    )}
+                  </div>
+                </div>
+                {competition.height && (
+                  <div className="flex items-center gap-3">
+                    <Trophy className="w-5 h-5 text-primary" />
+                    <div>
+                      <p className="text-sm text-muted-foreground">Höjd/Nivå</p>
+                      <p className="font-medium">{competition.height}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Klasser - only show if classes exist */}
+            {competition.classes && competition.classes.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="font-semibold text-lg">Klasser</h3>
+                <div className="space-y-2">
+                  {competition.classes.map((classItem: any, index: number) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-secondary/10 rounded-lg">
+                      <div>
+                        <p className="font-medium">{classItem.name || `Klass ${index + 1}`}</p>
+                        {classItem.time && (
+                          <p className="text-sm text-muted-foreground">{classItem.time}</p>
+                        )}
+                      </div>
+                      {classItem.fee && (
+                        <Badge variant="outline">{classItem.fee} kr</Badge>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Kontakt - only show if contact info exists */}
+            {(competition.organizer || competition.phone || competition.email || competition.website) && (
+              <div className="space-y-3">
+                <h3 className="font-semibold text-lg">Kontakt</h3>
+                <div className="space-y-2">
+                  {competition.organizer && (
+                    <div className="flex items-center gap-3">
+                      <Users className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm">Arrangör: {competition.organizer}</span>
+                    </div>
+                  )}
+                  {competition.phone && (
+                    <div className="flex items-center gap-3">
+                      <Phone className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm">{competition.phone}</span>
+                    </div>
+                  )}
+                  {competition.email && (
+                    <div className="flex items-center gap-3">
+                      <Mail className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm">{competition.email}</span>
+                    </div>
+                  )}
+                  {competition.website && (
+                    <div className="flex items-center gap-3">
+                      <Globe className="w-4 h-4 text-muted-foreground" />
+                      <a href={competition.website} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">
+                        {competition.website}
+                      </a>
+                    </div>
                   )}
                 </div>
               </div>
-              {competition.height && (
-                <div className="flex items-center gap-3">
-                  <Trophy className="w-5 h-5 text-primary" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Höjd/Nivå</p>
-                    <p className="font-medium">{competition.height}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+            )}
+          </TabsContent>
 
-          {/* Klasser - only show if classes exist */}
-          {competition.classes && competition.classes.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="font-semibold text-lg">Klasser</h3>
-              <div className="space-y-2">
-                {competition.classes.map((classItem: any, index: number) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-secondary/10 rounded-lg">
-                    <div>
-                      <p className="font-medium">{classItem.name || `Klass ${index + 1}`}</p>
-                      {classItem.time && (
-                        <p className="text-sm text-muted-foreground">{classItem.time}</p>
-                      )}
-                    </div>
-                    {classItem.fee && (
-                      <Badge variant="outline">{classItem.fee} kr</Badge>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Kontakt - only show if contact info exists */}
-          {(competition.organizer || competition.phone || competition.email || competition.website) && (
-            <div className="space-y-3">
-              <h3 className="font-semibold text-lg">Kontakt</h3>
-              <div className="space-y-2">
-                {competition.organizer && (
-                  <div className="flex items-center gap-3">
-                    <Users className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm">Arrangör: {competition.organizer}</span>
-                  </div>
-                )}
-                {competition.phone && (
-                  <div className="flex items-center gap-3">
-                    <Phone className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm">{competition.phone}</span>
-                  </div>
-                )}
-                {competition.email && (
-                  <div className="flex items-center gap-3">
-                    <Mail className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm">{competition.email}</span>
-                  </div>
-                )}
-                {competition.website && (
-                  <div className="flex items-center gap-3">
-                    <Globe className="w-4 h-4 text-muted-foreground" />
-                    <a href={competition.website} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">
-                      {competition.website}
-                    </a>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-        </div>
+          <TabsContent value="packing" className="mt-4">
+            <CompetitionPackingList competitionId={competition.id} />
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );
