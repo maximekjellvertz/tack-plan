@@ -239,10 +239,12 @@ export const CompetitionPackingList = ({ competitionId }: CompetitionPackingList
   const totalCount = items.length;
   const progressPercent = totalCount > 0 ? Math.round((checkedCount / totalCount) * 100) : 0;
 
-  const itemsByCategory = CATEGORIES.map(category => ({
+  // Get all unique categories from actual items, not just predefined ones
+  const allCategories = Array.from(new Set(items.map(item => item.category)));
+  const itemsByCategory = allCategories.map(category => ({
     category,
     items: items.filter(item => item.category === category),
-  })).filter(group => group.items.length > 0);
+  }));
 
   if (loading) {
     return <div className="text-center py-8">Laddar packlista...</div>;
