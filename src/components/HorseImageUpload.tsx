@@ -162,11 +162,11 @@ export const HorseImageUpload = ({
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          size="sm"
-          className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm hover:bg-background/90"
+          size="icon"
+          className="absolute bottom-2 right-2 bg-background/90 backdrop-blur-sm hover:bg-background shadow-lg"
+          title={currentImageUrl ? "Byt bild" : "Lägg till bild"}
         >
-          <Camera className="w-4 h-4 mr-2" />
-          {currentImageUrl ? "Byt bild" : "Lägg till bild"}
+          <Camera className="w-4 h-4" />
         </Button>
       </DialogTrigger>
       <DialogContent>
