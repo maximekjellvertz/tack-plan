@@ -47,6 +47,13 @@ export const AddDailyScheduleDialog = ({
       const horse = horses.find((h) => h.id === selectedHorse);
       if (!horse) throw new Error("Häst hittades inte");
 
+      // Get user's full name
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+
       const { error } = await supabase.from("daily_schedule").insert({
         user_id: user.id,
         horse_id: selectedHorse,
@@ -56,6 +63,7 @@ export const AddDailyScheduleDialog = ({
         time: time,
         duration: parseInt(duration),
         notes: notes || null,
+        created_by_name: profile?.full_name || "Okänd användare",
       });
 
       if (error) throw error;

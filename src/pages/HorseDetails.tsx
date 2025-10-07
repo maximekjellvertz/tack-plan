@@ -403,6 +403,13 @@ const HorseDetails = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Get user's full name
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+
       const status = new Date(newComp.date) > new Date() ? "upcoming" : "completed";
       
       const { error } = await supabase
@@ -414,6 +421,7 @@ const HorseDetails = () => {
           location: newComp.location,
           discipline: newComp.discipline,
           status: status,
+          created_by_name: profile?.full_name || "Okänd användare",
         });
 
       if (error) throw error;
@@ -515,6 +523,13 @@ const HorseDetails = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Get user's full name
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+
       const { error } = await supabase
         .from('training_sessions')
         .insert({
@@ -526,6 +541,7 @@ const HorseDetails = () => {
           duration: newSession.duration,
           intensity: newSession.intensity,
           notes: newSession.notes,
+          created_by_name: profile?.full_name || "Okänd användare",
         });
 
       if (error) throw error;
@@ -642,6 +658,13 @@ const HorseDetails = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Get user's full name
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+
       const { error } = await supabase
         .from('health_logs')
         .insert({
@@ -654,6 +677,7 @@ const HorseDetails = () => {
           notes: newLog.notes,
           images: newLog.images || [],
           status: 'Pågående',
+          created_by_name: profile?.full_name || "Okänd användare",
         });
 
       if (error) throw error;
@@ -674,9 +698,22 @@ const HorseDetails = () => {
 
   const handleUpdateHealthLog = async (id: string, updates: Partial<HealthLog>) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Get user's full name
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+
       const { error } = await supabase
         .from('health_logs')
-        .update(updates)
+        .update({
+          ...updates,
+          updated_by_name: profile?.full_name || "Okänd användare",
+        })
         .eq('id', id);
 
       if (error) throw error;

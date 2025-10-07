@@ -108,9 +108,22 @@ const HealthLog = () => {
 
   const handleUpdateLog = async (id: string, updates: Partial<HealthLog>) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Get user's full name
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+
       const { error } = await supabase
         .from("health_logs")
-        .update(updates)
+        .update({
+          ...updates,
+          updated_by_name: profile?.full_name || "Okänd användare",
+        })
         .eq("id", id);
 
       if (error) throw error;

@@ -111,12 +111,20 @@ const Goals = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Get user's full name
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+
       const { error } = await supabase
         .from("goals")
         .insert({
           user_id: user.id,
           horse_id: selectedHorse,
           ...newGoal,
+          created_by_name: profile?.full_name || "Okänd användare",
         });
 
       if (error) throw error;
@@ -139,9 +147,22 @@ const Goals = () => {
 
   const handleUpdateProgress = async (id: string, progress: number) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Get user's full name
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+
       const { error } = await supabase
         .from("goals")
-        .update({ progress_percent: progress })
+        .update({ 
+          progress_percent: progress,
+          updated_by_name: profile?.full_name || "Okänd användare",
+        })
         .eq("id", id);
 
       if (error) throw error;
@@ -167,6 +188,16 @@ const Goals = () => {
       const goal = goals.find((g) => g.id === id);
       if (!goal) return;
 
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Get user's full name
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+
       // Mark goal as completed
       const { error: goalError } = await supabase
         .from("goals")
@@ -174,15 +205,13 @@ const Goals = () => {
           is_completed: true,
           completed_at: new Date().toISOString(),
           progress_percent: 100,
+          updated_by_name: profile?.full_name || "Okänd användare",
         })
         .eq("id", id);
 
       if (goalError) throw goalError;
 
-      // Create milestone
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
+      // Create milestone (user already declared above)
       const { error: milestoneError } = await supabase
         .from("milestones")
         .insert({
