@@ -3,13 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Settings as SettingsIcon, HelpCircle, Sparkles } from "lucide-react";
+import { Settings as SettingsIcon, HelpCircle, Sparkles, UserPlus, Users } from "lucide-react";
 import { OnboardingDialog } from "@/components/OnboardingDialog";
+import { ShareAccessDialog } from "@/components/ShareAccessDialog";
+import { SharedAccessList } from "@/components/SharedAccessList";
 import { toast } from "sonner";
 
 const Settings = () => {
   const [user, setUser] = useState<any>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [horses, setHorses] = useState<Array<{ id: string; name: string }>>([]);
+  const [refreshKey, setRefreshKey] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,6 +25,17 @@ const Settings = () => {
         return;
       }
       setUser(session.user);
+
+      // Fetch horses for share dialog
+      const { data: horsesData } = await supabase
+        .from("horses")
+        .select("id, name")
+        .eq("user_id", session.user.id)
+        .order("name");
+      
+      if (horsesData) {
+        setHorses(horsesData);
+      }
     };
     checkAuth();
   }, [navigate]);
@@ -33,11 +49,21 @@ const Settings = () => {
     toast.success("Guiden avslutad!");
   };
 
+  const handleShareSuccess = () => {
+    setRefreshKey(prev => prev + 1);
+  };
+
   if (!user) return null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 pb-8">
       <OnboardingDialog open={showOnboarding} onComplete={handleOnboardingComplete} />
+      <ShareAccessDialog 
+        open={showShareDialog} 
+        onOpenChange={setShowShareDialog}
+        onSuccess={handleShareSuccess}
+        horses={horses}
+      />
       
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-8 text-center">
@@ -87,6 +113,24 @@ const Settings = () => {
                 </Button>
               </div>
             </div>
+          </Card>
+
+          {/* Shared Access Section */}
+          <Card className="p-6 bg-gradient-to-br from-card to-muted/30 border-2 shadow-lg">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                <Users className="w-6 h-6 text-primary" />
+                Dela tillgång
+              </h2>
+              <Button onClick={() => setShowShareDialog(true)} className="gap-2">
+                <UserPlus className="w-4 h-4" />
+                Bjud in person
+              </Button>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4">
+              Ge andra personer tillgång till ditt konto. Du kan välja om de ska se alla hästar eller bara specifika.
+            </p>
+            <SharedAccessList key={refreshKey} />
           </Card>
         </div>
       </div>

@@ -624,6 +624,51 @@ export type Database = {
         }
         Relationships: []
       }
+      shared_access: {
+        Row: {
+          accepted_at: string | null
+          access_type: Database["public"]["Enums"]["access_type"]
+          collaborator_email: string
+          collaborator_id: string | null
+          created_at: string
+          horse_ids: string[] | null
+          id: string
+          invited_at: string
+          owner_id: string
+          role: Database["public"]["Enums"]["access_role"]
+          status: Database["public"]["Enums"]["invitation_status"]
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          access_type?: Database["public"]["Enums"]["access_type"]
+          collaborator_email: string
+          collaborator_id?: string | null
+          created_at?: string
+          horse_ids?: string[] | null
+          id?: string
+          invited_at?: string
+          owner_id: string
+          role?: Database["public"]["Enums"]["access_role"]
+          status?: Database["public"]["Enums"]["invitation_status"]
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          access_type?: Database["public"]["Enums"]["access_type"]
+          collaborator_email?: string
+          collaborator_id?: string | null
+          created_at?: string
+          horse_ids?: string[] | null
+          id?: string
+          invited_at?: string
+          owner_id?: string
+          role?: Database["public"]["Enums"]["access_role"]
+          status?: Database["public"]["Enums"]["invitation_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       tdb_credentials: {
         Row: {
           created_at: string
@@ -701,10 +746,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_horse_access: {
+        Args: { _horse_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      access_role: "viewer" | "editor" | "manager"
+      access_type: "full_account" | "specific_horses"
+      invitation_status: "pending" | "active" | "revoked"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -831,6 +881,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      access_role: ["viewer", "editor", "manager"],
+      access_type: ["full_account", "specific_horses"],
+      invitation_status: ["pending", "active", "revoked"],
+    },
   },
 } as const
