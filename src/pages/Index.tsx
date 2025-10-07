@@ -244,8 +244,231 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Health Log Feature */}
+      <section id="health" className="py-16 md:py-24 bg-background">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <FileText className="w-8 h-8 text-primary" />
+                <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                  Hälsologg & Spårning
+                </h2>
+              </div>
+              <p className="text-lg text-muted-foreground mb-6">
+                Dokumentera allt som rör din hästs hälsa på ett ställe. Få påminnelser och se trender över tid.
+              </p>
+              
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold text-foreground">Logga symptom och behandlingar</p>
+                    <p className="text-sm text-muted-foreground">Håll koll på vad som hänt och när</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold text-foreground">Veterinärbesök & vaccinationer</p>
+                    <p className="text-sm text-muted-foreground">Få påminnelser för återkommande hälsocheckar</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold text-foreground">Viktspårning & kondition</p>
+                    <p className="text-sm text-muted-foreground">Följ utvecklingen och upptäck mönster</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-primary mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold text-foreground">Dela med veterinär</p>
+                    <p className="text-sm text-muted-foreground">Ge veterinären fullständig historik direkt</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <Card className="p-6 bg-gradient-to-br from-card to-muted/30">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Badge variant="destructive">Hög prioritet</Badge>
+                      <span className="text-xs text-muted-foreground">2024-03-15</span>
+                    </div>
+                    <h4 className="font-bold text-lg">Halta vänster fram</h4>
+                    <p className="text-sm text-muted-foreground mt-1">Fiona</p>
+                  </div>
+                </div>
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <span className="text-muted-foreground">Behandling:</span>
+                    <p className="text-foreground">Hovvård + vila i 3 dagar</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Status:</span>
+                    <Badge variant="outline" className="ml-2">Pågående</Badge>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6 bg-gradient-to-br from-card to-muted/30">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Badge variant="secondary">Vaccination</Badge>
+                      <span className="text-xs text-muted-foreground">2024-04-01</span>
+                    </div>
+                    <h4 className="font-bold text-lg">Påminnelse: Influensavaccin</h4>
+                    <p className="text-sm text-muted-foreground mt-1">Thunder & Luna</p>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Competition Management Feature */}
+      <section id="competitions" className="py-16 md:py-24 bg-muted/30">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Trophy className="w-8 h-8 text-primary" />
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                Komplett tävlingshantering
+              </h2>
+            </div>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Allt du behöver för att planera, förbereda och genomföra tävlingar
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 mb-12">
+            <Card className="p-6">
+              <Calendar className="w-12 h-12 text-primary mb-4" />
+              <h3 className="text-xl font-bold mb-3">Tävlingskalender</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                  Sök och filtrera tävlingar
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                  Spara favoriter och få påminnelser
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                  Lägg till anmälningsdeadlines
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                  Planera resor och boende
+                </li>
+              </ul>
+            </Card>
+
+            <Card className="p-6">
+              <FileText className="w-12 h-12 text-primary mb-4" />
+              <h3 className="text-xl font-bold mb-3">Tävlingsregler</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                  Sök i regeldokument
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                  Spara viktiga regler
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                  Få koll på olika klasser
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                  Alltid uppdaterad information
+                </li>
+              </ul>
+            </Card>
+
+            <Card className="p-6">
+              <Award className="w-12 h-12 text-primary mb-4" />
+              <h3 className="text-xl font-bold mb-3">Packlistor</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                  Förberedda mallar per disciplin
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                  Anpassa efter dina behov
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                  Bocka av när du packar
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                  Glöm aldrig något viktigt
+                </li>
+              </ul>
+            </Card>
+          </div>
+
+          {/* Competition Card Example */}
+          <div className="max-w-3xl mx-auto">
+            <Card className="p-6 bg-gradient-to-br from-card to-muted/30">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge>Dressyr</Badge>
+                    <Badge variant="outline">M-nivå</Badge>
+                  </div>
+                  <h3 className="text-2xl font-bold">Svenska Mästerskapen</h3>
+                  <p className="text-muted-foreground">Strömsholm, 15-17 Juni 2025</p>
+                </div>
+                <Trophy className="w-10 h-10 text-primary" />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 text-sm mb-4">
+                <div>
+                  <span className="text-muted-foreground">Anmälan senast:</span>
+                  <p className="font-semibold">1 Juni 2025</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Häst:</span>
+                  <p className="font-semibold">Fiona</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Avresa:</span>
+                  <p className="font-semibold">15 Juni, 07:00</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Packlista:</span>
+                  <p className="font-semibold text-primary">12/15 ✓</p>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" />
+                  Anmäld
+                </Badge>
+                <Badge variant="secondary" className="flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" />
+                  Boende bokat
+                </Badge>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Goals Preview */}
-      <section id="goals" className="py-16 md:py-24 bg-muted/30">
+      <section id="goals" className="py-16 md:py-24 bg-background">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
@@ -287,7 +510,7 @@ const Index = () => {
       </section>
 
       {/* Features Highlight */}
-      <section id="features" className="py-16 md:py-24 bg-background">
+      <section id="features" className="py-16 md:py-24 bg-muted/30">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">

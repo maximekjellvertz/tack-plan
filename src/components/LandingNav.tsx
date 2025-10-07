@@ -27,9 +27,10 @@ export const LandingNav = () => {
   const navItems = [
     { label: "Översikt", id: "hero" },
     { label: "Dashboard", id: "dashboard" },
-    { label: "Hästprofiler", id: "horses" },
+    { label: "Hästar", id: "horses" },
+    { label: "Hälsa", id: "health" },
+    { label: "Tävling", id: "competitions" },
     { label: "Mål", id: "goals" },
-    { label: "Funktioner", id: "features" },
   ];
 
   return (
