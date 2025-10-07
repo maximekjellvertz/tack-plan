@@ -7,7 +7,6 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-horse.jpg";
 import { DailyTipCard } from "@/components/DailyTipCard";
-import { DailyTipBanner } from "@/components/DailyTipBanner";
 import { TodaysScheduleCard } from "@/components/TodaysScheduleCard";
 import { useBadgeManager } from "@/hooks/useBadgeManager";
 import { OnboardingDialog } from "@/components/OnboardingDialog";
@@ -162,20 +161,9 @@ const Dashboard = () => {
         </div>
       </section>
 
-      {/* Daily Tip Banner */}
-      {isWidgetVisible("daily_tip") && (
-        <section className="max-w-7xl mx-auto px-4 -mt-12 md:-mt-16 mb-6 relative z-20">
-          <DailyTipBanner />
-        </section>
-      )}
-
       {/* Quick Stats */}
       {isWidgetVisible("quick_stats") && (
-      <section 
-        className={`max-w-7xl mx-auto px-4 relative z-10 ${
-          isWidgetVisible("daily_tip") ? "" : "-mt-12 md:-mt-16"
-        }`}
-      >
+      <section className="max-w-7xl mx-auto px-4 -mt-12 md:-mt-16 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
           <Link to="/horses" className="block">
             <Card className="p-4 md:p-6 bg-card shadow-elevated hover:shadow-lg transition-all hover-scale animate-fade-in group cursor-pointer" style={{ animationDelay: "0ms" }}>
@@ -243,6 +231,13 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <section className="max-w-7xl mx-auto px-4 py-8 md:py-16">
+        {/* Daily Tip - Top Widget */}
+        {isWidgetVisible("daily_tip") && (
+          <div className="mb-8">
+            <DailyTipCard />
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Todays Schedule */}
           {isWidgetVisible("todays_schedule") && (
