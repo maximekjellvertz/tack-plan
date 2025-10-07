@@ -20,6 +20,8 @@ interface HealthLog {
   notes: string | null;
   images: any;
   created_at: string;
+  created_by_name?: string | null;
+  updated_by_name?: string | null;
 }
 
 const getSeverityColor = (severity: string) => {
@@ -249,6 +251,9 @@ const HealthLog = () => {
                         </div>
                         <p className="text-sm text-muted-foreground">
                           {log.horse_name} • {new Date(log.created_at).toLocaleDateString('sv-SE')}
+                          {log.created_by_name && (
+                            <> • Tillagd av {log.created_by_name}</>
+                          )}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">

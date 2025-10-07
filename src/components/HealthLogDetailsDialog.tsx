@@ -15,6 +15,8 @@ interface HealthLog {
   notes: string | null;
   images: any;
   created_at: string;
+  created_by_name?: string | null;
+  updated_by_name?: string | null;
 }
 
 interface HealthLogDetailsDialogProps {
@@ -100,6 +102,20 @@ export const HealthLogDetailsDialog = ({ log, onDelete }: HealthLogDetailsDialog
                 <p className="font-medium">{log.horse_name}</p>
               </div>
             </div>
+            {(log.created_by_name || log.updated_by_name) && (
+              <div className="pt-2 mt-2 border-t border-border/50">
+                {log.created_by_name && (
+                  <p className="text-sm text-muted-foreground">
+                    Tillagd av: <span className="font-medium text-foreground">{log.created_by_name}</span>
+                  </p>
+                )}
+                {log.updated_by_name && (
+                  <p className="text-sm text-muted-foreground">
+                    Senast uppdaterad av: <span className="font-medium text-foreground">{log.updated_by_name}</span>
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Behandling */}
