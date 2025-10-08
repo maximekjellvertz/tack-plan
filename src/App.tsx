@@ -16,6 +16,7 @@ import Auth from "./pages/Auth";
 import About from "./pages/About";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import Documents from "./pages/Documents";
 import Navigation from "./components/Navigation";
 import Calendar from "./pages/Calendar";
 import { InvitationHandler } from "./components/InvitationHandler";
@@ -44,6 +45,7 @@ const App = () => {
           <Route path="/goals" element={<><Navigation /><Goals /></>} />
           <Route path="/badges" element={<><Navigation /><Badges /></>} />
           <Route path="/settings" element={<><Navigation /><Settings /></>} />
+          <Route path="/documents" element={<><Navigation /><Documents /></>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

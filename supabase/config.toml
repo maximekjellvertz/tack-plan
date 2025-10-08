@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.search-rule-pdfs]
 verify_jwt = false
+
+[functions.export-health-pdf]
+verify_jwt = true

@@ -391,6 +391,65 @@ export type Database = {
           },
         ]
       }
+      horse_documents: {
+        Row: {
+          created_at: string
+          created_by_name: string | null
+          document_type: Database["public"]["Enums"]["document_type"]
+          expires_at: string | null
+          file_name: string
+          file_path: string
+          file_size: number | null
+          horse_id: string
+          id: string
+          notes: string | null
+          title: string
+          updated_at: string
+          updated_by_name: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by_name?: string | null
+          document_type: Database["public"]["Enums"]["document_type"]
+          expires_at?: string | null
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          horse_id: string
+          id?: string
+          notes?: string | null
+          title: string
+          updated_at?: string
+          updated_by_name?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by_name?: string | null
+          document_type?: Database["public"]["Enums"]["document_type"]
+          expires_at?: string | null
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          horse_id?: string
+          id?: string
+          notes?: string | null
+          title?: string
+          updated_at?: string
+          updated_by_name?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "horse_documents_horse_id_fkey"
+            columns: ["horse_id"]
+            isOneToOne: false
+            referencedRelation: "horses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       horses: {
         Row: {
           age: number
@@ -841,6 +900,14 @@ export type Database = {
     Enums: {
       access_role: "viewer" | "editor" | "manager"
       access_type: "full_account" | "specific_horses"
+      document_type:
+        | "vaccination_certificate"
+        | "passport"
+        | "insurance"
+        | "xray"
+        | "veterinary_report"
+        | "registration"
+        | "other"
       invitation_status: "pending" | "active" | "revoked"
     }
     CompositeTypes: {
@@ -971,6 +1038,15 @@ export const Constants = {
     Enums: {
       access_role: ["viewer", "editor", "manager"],
       access_type: ["full_account", "specific_horses"],
+      document_type: [
+        "vaccination_certificate",
+        "passport",
+        "insurance",
+        "xray",
+        "veterinary_report",
+        "registration",
+        "other",
+      ],
       invitation_status: ["pending", "active", "revoked"],
     },
   },

@@ -6,6 +6,7 @@ import { FileText, AlertCircle, CheckCircle, Clock, Image as ImageIcon } from "l
 import { AddHealthLogDialog } from "@/components/AddHealthLogDialog";
 import { HealthLogDetailsDialog } from "@/components/HealthLogDetailsDialog";
 import { UpdateHealthLogDialog } from "@/components/UpdateHealthLogDialog";
+import { ExportHealthPdfButton } from "@/components/ExportHealthPdfButton";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";

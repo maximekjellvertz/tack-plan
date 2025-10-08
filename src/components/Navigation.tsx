@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Heart, Calendar, FileText, Home, Bell, LogOut, Menu, Target, Trophy, Info, Settings } from "lucide-react";
+import { Heart, Calendar, FileText, Home, Bell, LogOut, Menu, Target, Trophy, Info, Settings, File } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +17,7 @@ const navItems = [
   { name: "Hälsologg", path: "/health-log", icon: FileText },
   { name: "Mål", path: "/goals", icon: Target },
   { name: "Påminnelser", path: "/reminders", icon: Bell },
+  { name: "Dokument", path: "/documents", icon: File },
   { name: "Inställningar", path: "/settings", icon: Settings },
   { name: "Om oss", path: "/about", icon: Info },
 ];
@@ -126,6 +127,7 @@ const Navigation = () => {
                 "/health-log": "Dokumentera hälsohändelser och behandlingar",
                 "/goals": "Sätt mål och följ din utveckling",
                 "/reminders": "Skapa påminnelser för viktiga uppgifter",
+                "/documents": "Hantera dokument för dina hästar",
                 "/settings": "Hantera konto och preferenser",
                 "/about": "Information om Hoofprints",
               };
